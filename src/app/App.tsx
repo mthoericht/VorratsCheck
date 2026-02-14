@@ -1,0 +1,46 @@
+import React, { useEffect } from 'react';
+import { RouterProvider } from 'react-router';
+import { Toaster } from './components/ui/sonner';
+import { useAuthStore } from './stores/authStore';
+import { useInventoryStore } from './stores/inventoryStore';
+import { useMustHaveStore } from './stores/mustHaveStore';
+import { useWishlistStore } from './stores/wishlistStore';
+import { useRecipesStore } from './stores/recipesStore';
+import { useDealsStore } from './stores/dealsStore';
+import { useCategoriesStore } from './stores/categoriesStore';
+import { router } from './routes';
+
+function DataLoader() 
+{
+  const user = useAuthStore((s) => s.user);
+  useEffect(() => 
+  {
+    if (!user) return;
+    useInventoryStore.getState().fetch();
+    useMustHaveStore.getState().fetch();
+    useWishlistStore.getState().fetch();
+    useCategoriesStore.getState().fetch();
+    useRecipesStore.getState().fetch();
+    useDealsStore.getState().fetch();
+  }, [user]);
+  return null;
+}
+
+function App() 
+{
+  const setLoading = useAuthStore((s) => s.setLoading);
+  useEffect(() => 
+  {
+    setLoading(false);
+  }, [setLoading]);
+
+  return (
+    <>
+      <DataLoader />
+      <RouterProvider router={router} />
+      <Toaster />
+    </>
+  );
+}
+
+export default App;

@@ -1,0 +1,95 @@
+// VorratsCheck – Vorratsverwaltung für Lebensmittel
+// Prisma Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  username     String
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  inventory    InventoryItem[]
+  mustHaveList MustHaveItem[]
+  wishList     WishListItem[]
+  recipes      Recipe[]
+  deals        Deal[]
+  categories   Category[]
+}
+
+model Category {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name   String
+}
+
+model InventoryItem {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  category   String
+  brand      String?
+  barcode    String?
+  quantity   Float
+  unit       String
+  expiryDate DateTime?
+  location   String?
+  addedDate  DateTime @default(now())
+}
+
+model MustHaveItem {
+  id          String  @id @default(cuid())
+  userId      String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String  // Artikelname, z.B. Butter (wird mit Vorrats-Namen gematcht)
+  category    String? // Kategorie, z.B. Milchprodukte (zur Einordnung)
+  minQuantity Int     @default(1)
+}
+
+model WishListItem {
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name     String
+  type     String   // 'category' | 'specific'
+  category String?
+  brand    String?
+  priority String   // 'low' | 'medium' | 'high'
+}
+
+model Recipe {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  ingredients String   // JSON array of strings
+  instructions String  // JSON array of strings
+  cookingTime Int      // minutes
+  difficulty  String   // 'easy' | 'medium' | 'hard'
+  servings    Int
+}
+
+model Deal {
+  id             String   @id @default(cuid())
+  userId         String?
+  user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  product        String
+  category       String
+  store          String
+  originalPrice  Float
+  discountPrice  Float
+  discount       Int      // percent
+  validUntil     DateTime
+  distance       Float    // km
+  inStock        Boolean? @default(true)
+}

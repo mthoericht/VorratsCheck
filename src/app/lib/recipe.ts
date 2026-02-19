@@ -1,11 +1,58 @@
 /**
- * Recipe–inventory matching: check if an ingredient is covered by inventory (by name and quantity/unit).
+ * Recipe helpers: ingredients, formatting, difficulty labels, inventory matching.
  */
 
 import type { Recipe } from '../stores/recipesStore';
-import type { RecipeIngredient } from './recipeIngredients';
 import type { InventoryItem } from '../stores/inventoryStore';
 import { quantityCovers } from './units';
+
+// --- Ingredients ---
+
+export interface RecipeIngredient {
+  name: string;
+  quantity?: number;
+  unit?: string;
+}
+
+/** Formats ingredient for display (e.g. "400 g Spaghetti" or "Salz"). */
+export function formatIngredient(ing: RecipeIngredient): string 
+{
+  if (!ing.name) return '';
+  if (ing.quantity != null && ing.unit) 
+  {
+    const q = Number(ing.quantity);
+    if (Number.isFinite(q)) return `${ing.quantity} ${ing.unit} ${ing.name}`;
+  }
+  return ing.name;
+}
+
+// --- Difficulty (UI labels and badge classes) ---
+
+/** Tailwind class for difficulty badge (e.g. bg-green-100 text-green-800). */
+export function getDifficultyColor(difficulty: string): string 
+{
+  switch (difficulty) 
+  {
+    case 'easy': return 'bg-green-100 text-green-800';
+    case 'medium': return 'bg-yellow-100 text-yellow-800';
+    case 'hard': return 'bg-red-100 text-red-800';
+    default: return 'bg-gray-100 text-gray-800';
+  }
+}
+
+/** German label for difficulty. */
+export function getDifficultyLabel(difficulty: string): string 
+{
+  switch (difficulty) 
+  {
+    case 'easy': return 'Einfach';
+    case 'medium': return 'Mittel';
+    case 'hard': return 'Schwer';
+    default: return difficulty;
+  }
+}
+
+// --- Recipe–inventory matching ---
 
 export interface RecipeWithMatch extends Recipe {
   availableIngredients: RecipeIngredient[];

@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useRecipesStore } from '../stores/recipesStore';
+import { useInventoryStore } from '../stores/inventoryStore';
 import type { Recipe } from '../stores/recipesStore';
-import type { RecipeIngredient } from '../lib/recipeIngredients';
+import { computeRecipesWithMatch, type RecipeIngredient, type RecipeWithMatch } from '../lib/recipe';
 
 const initialFormData = {
   name: '',
@@ -15,20 +16,61 @@ const initialFormData = {
 
 export type RecipeFormData = typeof initialFormData;
 
-/** Form state and handlers for add/edit recipe dialog. */
-export function useRecipeForm() 
+/** Form API returned by useRecipesPage (for RecipeEditDialog). */
+export type RecipeFormApi = ReturnType<typeof useRecipesPage>['form'];
+
+/**
+ * Single hook for the Recipes page: match/sort state, form state for add/edit dialog,
+ * and delete handler. Reads recipes and inventory from stores.
+ */
+export function useRecipesPage() 
 {
+  const inventory = useInventoryStore((s) => s.items);
+  const recipes = useRecipesStore((s) => s.items);
   const addRecipe = useRecipesStore((s) => s.add);
   const updateRecipe = useRecipesStore((s) => s.update);
+  const deleteRecipe = useRecipesStore((s) => s.remove);
+
+  const [sortBy, setSortBy] = useState<'match' | 'time'>('match');
   const [formData, setFormData] = useState<RecipeFormData>(initialFormData);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
+
+  const recipesWithMatch = useMemo(
+    () => computeRecipesWithMatch(recipes, inventory),
+    [recipes, inventory]
+  );
+
+  const sortedRecipes = useMemo(() => 
+  {
+    const sorted = [...recipesWithMatch];
+    if (sortBy === 'match') 
+      sorted.sort((a, b) => b.matchPercentage - a.matchPercentage);
+    else 
+      sorted.sort((a, b) => a.cookingTime - b.cookingTime);
+    return sorted;
+  }, [recipesWithMatch, sortBy]);
+
+  const fullMatchRecipes = useMemo(
+    () => sortedRecipes.filter((r) => r.matchPercentage === 100),
+    [sortedRecipes]
+  );
+
+  const partialMatchRecipes = useMemo(
+    () => sortedRecipes.filter((r) => r.matchPercentage > 0 && r.matchPercentage < 100),
+    [sortedRecipes]
+  );
+  
+  const noMatchRecipes = useMemo(
+    () => sortedRecipes.filter((r) => r.matchPercentage === 0),
+    [sortedRecipes]
+  );
 
   const openAdd = () => 
   {
     setEditingRecipe(null);
     setFormData(initialFormData);
-    setIsOpen(true);
+    setIsFormOpen(true);
   };
 
   const openEdit = (recipe: Recipe) => 
@@ -39,22 +81,22 @@ export function useRecipeForm()
       ingredients:
         recipe.ingredients.length > 0
           ? recipe.ingredients.map((ing) => ({
-              name: ing.name,
-              quantity: ing.quantity,
-              unit: ing.unit || 'Stück',
-            }))
+            name: ing.name,
+            quantity: ing.quantity,
+            unit: ing.unit || 'Stück',
+          }))
           : [{ name: '', unit: 'Stück' }],
       instructions: recipe.instructions.join('\n'),
       cookingTime: recipe.cookingTime.toString(),
       difficulty: recipe.difficulty,
       servings: recipe.servings.toString(),
     });
-    setIsOpen(true);
+    setIsFormOpen(true);
   };
 
-  const close = () => 
+  const closeForm = () => 
   {
-    setIsOpen(false);
+    setIsFormOpen(false);
     setEditingRecipe(null);
   };
 
@@ -109,7 +151,7 @@ export function useRecipeForm()
         await addRecipe(recipeData);
         toast.success('Rezept hinzugefügt');
       }
-      close();
+      closeForm();
     }
     catch (err) 
     {
@@ -117,14 +159,42 @@ export function useRecipeForm()
     }
   };
 
-  return {
+  const handleDelete = async (id: string, name: string, e: React.MouseEvent) => 
+  {
+    e.stopPropagation();
+    if (!confirm(`Möchten Sie das Rezept "${name}" wirklich löschen?`)) return;
+    try 
+    {
+      await deleteRecipe(id);
+      toast.success(`${name} wurde gelöscht`);
+    }
+    catch (err) 
+    {
+      toast.error((err as Error).message);
+    }
+  };
+
+  const form = {
     formData,
     setFormData,
-    isOpen,
+    isOpen: isFormOpen,
     openAdd,
     openEdit,
-    close,
+    close: closeForm,
     handleSubmit,
     editingRecipe,
+  };
+
+  return {
+    recipes,
+    sortedRecipes,
+    sortBy,
+    setSortBy,
+    fullMatchRecipes,
+    partialMatchRecipes,
+    noMatchRecipes,
+    inventory,
+    form,
+    handleDelete,
   };
 }

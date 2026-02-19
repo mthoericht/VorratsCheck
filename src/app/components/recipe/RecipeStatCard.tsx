@@ -1,4 +1,4 @@
-import React from 'react';
+import { cn } from '../ui/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
 interface RecipeStatCardProps {
@@ -21,13 +21,13 @@ export function RecipeStatCard({
 }: RecipeStatCardProps) 
 {
   return (
-    <Card className={borderClassName}>
-      <CardHeader className="pb-2">
+    <Card className={cn('gap-2', borderClassName)}>
+      <CardHeader className="px-4 pt-4 pb-0">
         <CardTitle className={titleClassName}>{title}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 pb-4 pt-0">
         <div className={valueClassName}>{value}</div>
-        <p className="text-xs text-gray-600 mt-1">{subtitle}</p>
+        <p className="text-xs text-gray-600 mt-0.5">{subtitle}</p>
       </CardContent>
     </Card>
   );

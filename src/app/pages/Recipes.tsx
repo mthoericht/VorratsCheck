@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import { useRecipesStore } from '../stores/recipesStore';
-import { useInventoryStore } from '../stores/inventoryStore';
+import { useState } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import {
@@ -10,60 +8,23 @@ import {
   RecipeViewDialog,
 } from '../components/recipe';
 import { ChefHat, CheckCircle2, XCircle, Plus, TrendingUp } from 'lucide-react';
-import { toast } from 'sonner';
-import type { RecipeWithMatch } from '../lib/recipeMatching';
-import { useRecipesWithMatch } from '../hooks/useRecipesWithMatch';
-import { useRecipeForm } from '../hooks/useRecipeForm';
-
-function getDifficultyColor(difficulty: string): string 
-{
-  switch (difficulty) 
-  {
-    case 'easy': return 'bg-green-100 text-green-800';
-    case 'medium': return 'bg-yellow-100 text-yellow-800';
-    case 'hard': return 'bg-red-100 text-red-800';
-    default: return 'bg-gray-100 text-gray-800';
-  }
-}
-
-function getDifficultyLabel(difficulty: string): string 
-{
-  switch (difficulty) 
-  {
-    case 'easy': return 'Einfach';
-    case 'medium': return 'Mittel';
-    case 'hard': return 'Schwer';
-    default: return difficulty;
-  }
-}
+import type { RecipeWithMatch } from '../lib/recipe';
+import { useRecipesPage } from '../hooks/useRecipesPage';
 
 export function Recipes() 
 {
-  const inventory = useInventoryStore((s) => s.items);
-  const recipes = useRecipesStore((s) => s.items);
-  const deleteRecipe = useRecipesStore((s) => s.remove);
-  const { sortedRecipes, sortBy, setSortBy } = useRecipesWithMatch(recipes, inventory);
-  const form = useRecipeForm();
+  const {
+    recipes,
+    sortBy,
+    setSortBy,
+    fullMatchRecipes,
+    partialMatchRecipes,
+    noMatchRecipes,
+    inventory,
+    form,
+    handleDelete,
+  } = useRecipesPage();
   const [selectedRecipe, setSelectedRecipe] = useState<RecipeWithMatch | null>(null);
-
-  const handleDelete = async (id: string, name: string, e: React.MouseEvent) => 
-  {
-    e.stopPropagation();
-    if (!confirm(`Möchten Sie das Rezept "${name}" wirklich löschen?`)) return;
-    try 
-    {
-      await deleteRecipe(id);
-      toast.success(`${name} wurde gelöscht`);
-    }
-    catch (err) 
-    {
-      toast.error((err as Error).message);
-    }
-  };
-
-  const fullMatchRecipes = sortedRecipes.filter(r => r.matchPercentage === 100);
-  const partialMatchRecipes = sortedRecipes.filter(r => r.matchPercentage > 0 && r.matchPercentage < 100);
-  const noMatchRecipes = sortedRecipes.filter(r => r.matchPercentage === 0);
 
   return (
     <div className="space-y-6">
@@ -144,8 +105,6 @@ export function Recipes()
         onSelectRecipe={setSelectedRecipe}
         onEdit={(recipe) => { setSelectedRecipe(null); form.openEdit(recipe); }}
         onDelete={handleDelete}
-        getDifficultyColor={getDifficultyColor}
-        getDifficultyLabel={getDifficultyLabel}
       />
 
       <RecipeListSection
@@ -155,8 +114,6 @@ export function Recipes()
         onSelectRecipe={setSelectedRecipe}
         onEdit={(recipe) => { setSelectedRecipe(null); form.openEdit(recipe); }}
         onDelete={handleDelete}
-        getDifficultyColor={getDifficultyColor}
-        getDifficultyLabel={getDifficultyLabel}
       />
 
       <RecipeListSection
@@ -166,8 +123,6 @@ export function Recipes()
         onSelectRecipe={setSelectedRecipe}
         onEdit={(recipe) => { setSelectedRecipe(null); form.openEdit(recipe); }}
         onDelete={handleDelete}
-        getDifficultyColor={getDifficultyColor}
-        getDifficultyLabel={getDifficultyLabel}
       />
 
       <RecipeViewDialog
@@ -176,8 +131,6 @@ export function Recipes()
         onClose={() => setSelectedRecipe(null)}
         onEdit={(recipe) => { setSelectedRecipe(null); form.openEdit(recipe); }}
         onDelete={(e) => selectedRecipe && handleDelete(selectedRecipe.id, selectedRecipe.name, e)}
-        getDifficultyColor={getDifficultyColor}
-        getDifficultyLabel={getDifficultyLabel}
       />
     </div>
   );

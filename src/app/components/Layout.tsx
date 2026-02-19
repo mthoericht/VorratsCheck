@@ -28,8 +28,8 @@ export function Layout()
     { path: '/inventory', icon: Package, label: 'Vorrat' },
     { path: '/must-have', icon: ListChecks, label: 'Must-Have' },
     { path: '/wishlist', icon: Heart, label: 'Wunschliste' },
-    { path: '/deals', icon: Tag, label: 'Angebote' },
     { path: '/recipes', icon: ChefHat, label: 'Rezepte' },
+    { path: '/deals', icon: Tag, label: 'Angebote' },
   ];
 
   const handleLogout = () => 

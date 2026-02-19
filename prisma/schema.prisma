@@ -54,6 +54,7 @@ model MustHaveItem {
   name        String  // Artikelname, z.B. Butter (wird mit Vorrats-Namen gematcht)
   category    String? // Kategorie, z.B. Milchprodukte (zur Einordnung)
   minQuantity Int     @default(1)
+  unit        String? // Einheit für minQuantity, z.B. Stück, g, ml (für Vergleich mit Vorrat)
 }
 
 model WishListItem {

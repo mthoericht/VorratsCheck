@@ -13,7 +13,7 @@ export {
 } from './inventory';
 
 // Must-have
-export { getMustHave, createMustHaveItem, deleteMustHaveItem } from './mustHave';
+export { getMustHave, createMustHaveItem, updateMustHaveItem, deleteMustHaveItem } from './mustHave';
 
 // Wishlist
 export { getWishlist, createWishlistItem, deleteWishlistItem } from './wishlist';

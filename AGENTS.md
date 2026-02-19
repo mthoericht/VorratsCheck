@@ -47,8 +47,7 @@ VorratsCheck/
 │       │   ├── dealsStore.ts
 │       │   └── categoriesStore.ts
 │       ├── hooks/               # Custom hooks
-│       │   ├── useRecipeForm.ts
-│       │   └── useRecipesWithMatch.ts
+│       │   └── useRecipesPage.ts  # Recipes page: match/sort, form (add/edit), delete
 │       ├── pages/               # Route components
 │       │   ├── Dashboard.tsx
 │       │   ├── Inventory.tsx
@@ -185,7 +184,7 @@ Protected routes require header: `Authorization: Bearer <token>`.
 - **Auth flow**: `server/routes/auth.ts`, `server/middleware/auth.ts`, `src/app/stores/authStore.ts`, `src/app/components/ProtectedRoute.tsx`.
 - **Data model**: `prisma/schema.prisma`, then `db:generate` and `db:push`; adjust routes and stores.
 - **UI/theme**: Tailwind + components in `src/app/components/ui/`; app shell and nav in `Layout.tsx`. **Colors**: edit only `src/styles/theme.css` – `:root` (light) and `.dark` (dark) with base and semantic variables. **Appearance**: user menu → Settings → Appearance (light/dark/system). **Categories**: user menu → Settings → Categories.
-- **Recipe UI**: All recipe-related components live in `src/app/components/recipe/` (RecipeCard, RecipeEditDialog, RecipeListSection, RecipeStatCard, RecipeViewDialog). Import from `../components/recipe` or `../components/recipe/RecipeCard` etc. Recipe page uses hooks `useRecipeForm`, `useRecipesWithMatch` and lib helpers in `src/app/lib/recipeMatching.ts`, `recipeIngredients.ts`, `units.ts`.
+- **Recipe UI**: All recipe-related components live in `src/app/components/recipe/` (RecipeCard, RecipeEditDialog, RecipeListSection, RecipeStatCard, RecipeViewDialog). Import from `../components/recipe`. The Recipes page uses a single hook `useRecipesPage()` (match/sort, form state, delete); lib helpers in `src/app/lib/recipe.ts` (ingredients, difficulty, matching) and `units.ts` (conversion for matching).
 
 ---
 

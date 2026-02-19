@@ -3,16 +3,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { ChefHat, Edit, Trash2 } from 'lucide-react';
-import { formatIngredient } from '../../lib/recipeIngredients';
-import type { RecipeWithMatch } from '../../lib/recipeMatching';
+import {
+  formatIngredient,
+  getDifficultyColor,
+  getDifficultyLabel,
+  type RecipeWithMatch,
+} from '../../lib/recipe';
 
 interface RecipeCardProps {
   recipe: RecipeWithMatch;
   onClick: () => void;
   onEdit: () => void;
   onDelete: (e: React.MouseEvent) => void;
-  getDifficultyColor: (difficulty: string) => string;
-  getDifficultyLabel: (difficulty: string) => string;
 }
 
 export function RecipeCard({
@@ -20,8 +22,6 @@ export function RecipeCard({
   onClick,
   onEdit,
   onDelete,
-  getDifficultyColor,
-  getDifficultyLabel,
 }: RecipeCardProps) 
 {
   return (

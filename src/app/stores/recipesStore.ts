@@ -6,7 +6,7 @@ import {
   deleteRecipe,
 } from '../lib/api';
 
-import type { RecipeIngredient } from '../lib/recipeIngredients';
+import type { RecipeIngredient } from '../lib/recipe';
 
 export interface Recipe 
 {

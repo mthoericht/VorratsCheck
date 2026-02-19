@@ -15,6 +15,14 @@ export async function createMustHaveItem<T>(item: Record<string, unknown>): Prom
   });
 }
 
+export async function updateMustHaveItem<T>(id: string, item: Record<string, unknown>): Promise<T> 
+{
+  return api<T>(`${basePath}/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(item),
+  });
+}
+
 export async function deleteMustHaveItem(id: string): Promise<void> 
 {
   await api<void>(`${basePath}/${id}`, { method: 'DELETE' });

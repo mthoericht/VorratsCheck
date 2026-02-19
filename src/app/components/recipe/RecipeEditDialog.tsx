@@ -7,12 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from '../ui/textarea';
 import { Quantity } from '../Quantity';
 import { Plus, Trash2 } from 'lucide-react';
-import type { useRecipeForm } from '../../hooks/useRecipeForm';
-
-type RecipeForm = ReturnType<typeof useRecipeForm>;
+import type { RecipeFormApi } from '../../hooks/useRecipesPage';
 
 interface RecipeEditDialogProps {
-  form: RecipeForm;
+  form: RecipeFormApi;
   trigger: React.ReactNode;
 }
 

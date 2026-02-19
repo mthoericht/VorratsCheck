@@ -1,6 +1,6 @@
 import React from 'react';
 import { RecipeCard } from './RecipeCard';
-import type { RecipeWithMatch } from '../../lib/recipeMatching';
+import type { RecipeWithMatch } from '../../lib/recipe';
 
 interface RecipeListSectionProps {
   title: string;
@@ -9,8 +9,6 @@ interface RecipeListSectionProps {
   onSelectRecipe: (recipe: RecipeWithMatch) => void;
   onEdit: (recipe: RecipeWithMatch) => void;
   onDelete: (id: string, name: string, e: React.MouseEvent) => void;
-  getDifficultyColor: (difficulty: string) => string;
-  getDifficultyLabel: (difficulty: string) => string;
 }
 
 /** Eine Sektion mit Überschrift und Grid aus RecipeCards (z. B. Sofort kochbar, Teilweise möglich). */
@@ -21,8 +19,6 @@ export function RecipeListSection({
   onSelectRecipe,
   onEdit,
   onDelete,
-  getDifficultyColor,
-  getDifficultyLabel,
 }: RecipeListSectionProps) 
 {
   if (recipes.length === 0) return null;
@@ -41,8 +37,6 @@ export function RecipeListSection({
             onClick={() => onSelectRecipe(recipe)}
             onEdit={() => onEdit(recipe)}
             onDelete={(e) => onDelete(recipe.id, recipe.name, e)}
-            getDifficultyColor={getDifficultyColor}
-            getDifficultyLabel={getDifficultyLabel}
           />
         ))}
       </div>

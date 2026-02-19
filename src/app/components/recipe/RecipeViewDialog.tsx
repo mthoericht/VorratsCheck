@@ -3,8 +3,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { ChefHat, Clock, Edit, Trash2, CheckCircle2, XCircle } from 'lucide-react';
-import { formatIngredient } from '../../lib/recipeIngredients';
-import { ingredientMatches, type RecipeWithMatch } from '../../lib/recipeMatching';
+import {
+  formatIngredient,
+  getDifficultyColor,
+  getDifficultyLabel,
+  ingredientMatches,
+  type RecipeWithMatch,
+} from '../../lib/recipe';
 import type { InventoryItem } from '../../stores/inventoryStore';
 
 interface RecipeViewDialogProps {
@@ -13,8 +18,6 @@ interface RecipeViewDialogProps {
   onClose: () => void;
   onEdit: (recipe: RecipeWithMatch) => void;
   onDelete: (e: React.MouseEvent) => void;
-  getDifficultyColor: (difficulty: string) => string;
-  getDifficultyLabel: (difficulty: string) => string;
 }
 
 /** Read-only recipe detail dialog with meta, ingredients (availability), instructions, missing ingredients. */
@@ -24,8 +27,6 @@ export function RecipeViewDialog({
   onClose,
   onEdit,
   onDelete,
-  getDifficultyColor,
-  getDifficultyLabel,
 }: RecipeViewDialogProps) 
 {
   if (!recipe) return null;

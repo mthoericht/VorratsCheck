@@ -1,42 +1,23 @@
 import { Outlet, Link, useLocation } from 'react-router';
-import { 
-  Package, 
-  ListChecks, 
-  Heart, 
-  Tag, 
-  ChefHat,
-  LayoutDashboard,
-  LogOut,
-  User,
-  ChevronDown,
-  Settings
-} from 'lucide-react';
+import { Package, LogOut, User, ChevronDown, Settings, Menu } from 'lucide-react';
 import { cn } from './ui/utils';
-import { useAuthStore } from '../stores/authStore';
 import { Button } from './ui/button';
-import React, { useState } from 'react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
+import { NAV_ITEMS, getNavBreakpointClasses } from '../lib/layoutNav';
+import { useLayout } from '../hooks/useLayout';
 
-export function Layout() 
+export function Layout()
 {
   const location = useLocation();
-  const user = useAuthStore((s) => s.user);
-  const logout = useAuthStore((s) => s.logout);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-
-  const navItems = [
-    { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
-    { path: '/inventory', icon: Package, label: 'Vorrat' },
-    { path: '/must-have', icon: ListChecks, label: 'Must-Have' },
-    { path: '/wishlist', icon: Heart, label: 'Wunschliste' },
-    { path: '/recipes', icon: ChefHat, label: 'Rezepte' },
-    { path: '/deals', icon: Tag, label: 'Angebote' },
-  ];
-
-  const handleLogout = () => 
-  {
-    setIsUserMenuOpen(false);
-    logout();
-  };
+  const {
+    user,
+    isUserMenuOpen,
+    setIsUserMenuOpen,
+    isNavOpen,
+    setIsNavOpen,
+    handleLogout,
+  } = useLayout();
+  const navBreakpoint = getNavBreakpointClasses();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-background">
@@ -45,10 +26,72 @@ export function Layout()
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <Package className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">VorratsCheck</h1>
+              {/* Mobile: Burger-Menü */}
+              <Sheet open={isNavOpen} onOpenChange={setIsNavOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(navBreakpoint.burgerButton, 'shrink-0')}
+                    aria-label="Menü öffnen"
+                  >
+                    <Menu className="w-6 h-6" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[min(85vw,20rem)] p-0 flex flex-col">
+                  <SheetHeader className="border-b border-border px-4 py-3 text-left">
+                    <SheetTitle className="text-lg">Menü</SheetTitle>
+                  </SheetHeader>
+                  <nav className="flex flex-col flex-1 overflow-y-auto py-2">
+                    {NAV_ITEMS.map((item) => 
+                    {
+                      const Icon = item.icon;
+                      const isActive = location.pathname === item.path;
+                      return (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          onClick={() => setIsNavOpen(false)}
+                          className={cn(
+                            'flex items-center gap-3 px-4 py-3 text-base font-medium transition-colors',
+                            isActive
+                              ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-r-2 border-emerald-600 dark:border-emerald-400'
+                              : 'text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-accent'
+                          )}
+                        >
+                          <Icon className="w-5 h-5 shrink-0" />
+                          {item.label}
+                        </Link>
+                      );
+                    })}
+                  </nav>
+                  <div className="border-t border-border py-2">
+                    <Link
+                      to="/settings"
+                      onClick={() => setIsNavOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-base text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-accent"
+                    >
+                      <Settings className="w-5 h-5 shrink-0" />
+                      Einstellungen
+                    </Link>
+                    <button
+                      onClick={() => 
+                      {
+                        setIsNavOpen(false);
+                        handleLogout();
+                      }}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-base text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
+                    >
+                      <LogOut className="w-5 h-5 shrink-0" />
+                      Abmelden
+                    </button>
+                  </div>
+                </SheetContent>
+              </Sheet>
+              <Package className="w-8 h-8 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground truncate">VorratsCheck</h1>
             </div>
-            
+
             {/* User Menu */}
             <div className="relative">
               <Button 
@@ -104,11 +147,11 @@ export function Layout()
         </div>
       </header>
 
-      {/* Navigation */}
-      <nav className="border-b border-gray-200 dark:border-border bg-white dark:bg-card">
+      {/* Navigation (nur Desktop) */}
+      <nav className={cn(navBreakpoint.desktopNav, 'border-b border-gray-200 dark:border-border bg-white dark:bg-card')}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-6 overflow-x-auto">
-            {navItems.map((item) => 
+            {NAV_ITEMS.map((item) => 
             {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;

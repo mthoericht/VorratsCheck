@@ -55,7 +55,8 @@ VorratsCheck/
 │       │   ├── useInventoryPage.ts # Inventory page: form (add/edit), filters, CRUD
 │       │   ├── useMustHavePage.ts  # Must-Have page: form (add/edit), stock counts, CRUD
 │       │   ├── useWishlistPage.ts  # Wishlist page: form (add/edit), grouped by priority, CRUD
-│       │   └── useDealsPage.ts     # Deals page: filter (all/mustHave/wishList), match counts, filtered deals
+│       │   ├── useDealsPage.ts     # Deals page: filter (all/mustHave/wishList), match counts, filtered deals
+│       │   └── useBarcodeScanner.ts # Barcode scanner: Html5Qrcode start/stop, autoStart, error state
 │       ├── pages/               # Route components
 │       │   ├── Dashboard.tsx
 │       │   ├── Inventory.tsx

@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useCategoriesStore } from '../stores/categoriesStore';
 import { INVENTORY_LOCATION_OPTIONS } from '../lib/inventory';
+import { lookupProductByBarcode } from '../lib/productLookup';
 import type { InventoryItem } from '../stores/inventoryStore';
 
 export const initialInventoryFormData = {
@@ -54,12 +55,33 @@ export function useInventoryPage()
     [inventory, filterCategory, filterLocation]
   );
 
-  const handleBarcodeScanned = (barcode: string) =>
+  const handleBarcodeScanned = async (barcode: string) =>
   {
-    setFormData(prev => ({ ...prev, barcode }));
     setShowScanner(false);
-    setShowAddDialog(true);
-    toast.success(`Barcode ${barcode} gescannt`);
+
+    try
+    {
+      const product = await lookupProductByBarcode(barcode);
+      setFormData(prev => ({
+        ...prev,
+        barcode: barcode.trim(),
+        name: product?.name ?? prev.name,
+        brand: product?.brand ?? prev.brand,
+      }));
+
+      setShowAddDialog(true);
+
+      if (product?.name)
+        toast.success(`„${product.name}" gefunden – Formular ausgefüllt`);
+      else
+        toast.success(`Barcode ${barcode} gescannt`);
+    }
+    catch
+    {
+      setFormData(prev => ({ ...prev, barcode: barcode.trim() }));
+      setShowAddDialog(true);
+      toast.success(`Barcode ${barcode} gescannt`);
+    }
   };
 
   const openAdd = () =>

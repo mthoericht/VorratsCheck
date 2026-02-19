@@ -27,12 +27,12 @@ export function Recipes()
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-3xl font-bold text-gray-900">Rezepte</h2>
           <p className="text-gray-600 mt-1">Basierend auf Ihrem aktuellen Vorrat</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant={sortBy === 'match' ? 'default' : 'outline'}
             size="sm"
@@ -50,9 +50,9 @@ export function Recipes()
           <RecipeEditDialog
             form={form}
             trigger={
-              <Button className="gap-2" onClick={form.openAdd}>
-                <Plus className="w-4 h-4" />
-                Rezept hinzufügen
+              <Button className="gap-2 whitespace-normal text-center min-w-0" onClick={form.openAdd}>
+                <Plus className="w-4 h-4 shrink-0" />
+                <span>Rezept hinzufügen</span>
               </Button>
             }
           />

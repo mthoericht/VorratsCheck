@@ -46,6 +46,7 @@ const COUNTABLE_UNITS = new Set([
   'stück', 'zehen', 'prise', 'kugeln', 'dose', 'packung',
 ]);
 
+/** Normalizes a unit string to lowercase and trimmed. */
 function normalizeUnit(unit: string): string 
 {
   return (unit || '').toLowerCase().trim();
@@ -55,29 +56,49 @@ function normalizeUnit(unit: string): string
  * Returns the comparison kind and value in base unit (g or ml),
  * or the raw value for countable units.
  */
-export function toComparable(quantity: number, unit: string): { kind: CompareKind; value: number } | null 
+export function convertFromGivenToBaseUnit(quantity: number, unit: string): { kind: CompareKind; value: number } | null 
 {
   if (!Number.isFinite(quantity) || quantity < 0) return null;
-  const u = normalizeUnit(unit);
-  if (!u) return null;
+  const normalizedUnit = normalizeUnit(unit);
+  if (!normalizedUnit) return null;
 
-  const gram = UNIT_TO_GRAM[u];
+  const gram = UNIT_TO_GRAM[normalizedUnit];
   if (gram != null) 
   {
     return { kind: 'weight', value: quantity * gram };
   }
 
-  const ml = UNIT_TO_ML[u];
+  const ml = UNIT_TO_ML[normalizedUnit];
   if (ml != null) 
   {
     return { kind: 'volume', value: quantity * ml };
   }
 
-  if (COUNTABLE_UNITS.has(u)) 
+  if (COUNTABLE_UNITS.has(normalizedUnit)) 
   {
     return { kind: 'countable', value: quantity };
   }
+
   return null;
+}
+
+/**
+ * Converts a value from base unit (g or ml) to the given unit for display.
+ */
+export function convertFromBaseToGivenUnit(valueInBase: number, unit: string, kind: 'weight' | 'volume'): number | null 
+{
+  const normalizedUnit = normalizeUnit(unit);
+
+  if (kind === 'weight') 
+  {
+    const factor = UNIT_TO_GRAM[normalizedUnit];
+    if (factor == null) return null;
+    return valueInBase / factor;
+  }
+
+  const factor = UNIT_TO_ML[normalizedUnit];
+  if (factor == null) return null;
+  return valueInBase / factor;
 }
 
 /**
@@ -86,8 +107,8 @@ export function toComparable(quantity: number, unit: string): { kind: CompareKin
  */
 export function quantityCovers(haveQuantity: number, haveUnit: string, needQuantity: number, needUnit: string): boolean 
 {
-  const need = toComparable(needQuantity, needUnit);
-  const have = toComparable(haveQuantity, haveUnit);
+  const need = convertFromGivenToBaseUnit(needQuantity, needUnit);
+  const have = convertFromGivenToBaseUnit(haveQuantity, haveUnit);
   
   if (!need || !have) return false;
 

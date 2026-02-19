@@ -4,7 +4,7 @@ import { getDeals } from '../lib/api';
 export interface Deal {
   id: string;
   product: string;
-  category: string;
+  name: string; // category name for display (e.g. Milchprodukte, Schokolade)
   store: string;
   originalPrice: number;
   discountPrice: number;

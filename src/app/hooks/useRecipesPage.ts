@@ -32,6 +32,7 @@ export function useRecipesPage()
   const deleteRecipe = useRecipesStore((s) => s.remove);
 
   const [sortBy, setSortBy] = useState<'match' | 'time'>('match');
+  const [selectedRecipe, setSelectedRecipe] = useState<RecipeWithMatch | null>(null);
   const [formData, setFormData] = useState<RecipeFormData>(initialFormData);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
@@ -75,6 +76,7 @@ export function useRecipesPage()
 
   const openEdit = (recipe: Recipe) => 
   {
+    setSelectedRecipe(null);
     setEditingRecipe(recipe);
     setFormData({
       name: recipe.name,
@@ -195,6 +197,8 @@ export function useRecipesPage()
     noMatchRecipes,
     inventory,
     form,
+    selectedRecipe,
+    setSelectedRecipe,
     handleDelete,
   };
 }

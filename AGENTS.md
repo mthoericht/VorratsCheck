@@ -26,18 +26,22 @@ VorratsCheck/
 │       ├── App.tsx              # RouterProvider, DataLoader, Toaster
 │       ├── routes.tsx           # createBrowserRouter: public /login, /signup; protected / with Layout
 │       ├── lib/
-│       │   └── api/            # API client (modular; do not call api() directly)
-│       │       ├── index.ts    # Re-exports: errors, getAuthHeader, resource functions
-│       │       ├── errors.ts   # ApiError, isApiError(), getErrorMessage()
-│       │       ├── client.ts   # getAuthHeader(), internal api() – base HTTP client
-│       │       ├── crud.ts     # createCrud(basePath) – shared get/create/update/delete
-│       │       ├── inventory.ts # getInventory, create/update/deleteInventoryItem
-│       │       ├── mustHave.ts  # getMustHave, createMustHaveItem, deleteMustHaveItem
-│       │       ├── wishlist.ts  # getWishlist, createWishlistItem, deleteWishlistItem
-│       │       ├── categories.ts# getCategories, createCategory, deleteCategory
-│       │       ├── recipes.ts   # getRecipes, create/update/deleteRecipe
-│       │       ├── deals.ts     # getDeals
-│       │       └── auth.ts      # login, signup
+│       │   ├── api/            # API client (modular; do not call api() directly)
+│       │   │   ├── index.ts    # Re-exports: errors, getAuthHeader, resource functions
+│       │   │   ├── errors.ts   # ApiError, isApiError(), getErrorMessage()
+│       │   │   ├── client.ts   # getAuthHeader(), internal api() – base HTTP client
+│       │   │   ├── crud.ts     # createCrud(basePath) – shared get/create/update/delete
+│       │   │   ├── inventory.ts # getInventory, create/update/deleteInventoryItem
+│       │   │   ├── mustHave.ts  # getMustHave, createMustHaveItem, updateMustHaveItem, deleteMustHaveItem
+│       │   │   ├── wishlist.ts  # getWishlist, createWishlistItem, updateWishlistItem, deleteWishlistItem
+│       │   │   ├── categories.ts# getCategories, createCategory, deleteCategory
+│       │   │   ├── recipes.ts   # getRecipes, create/update/deleteRecipe
+│       │   │   ├── deals.ts     # getDeals
+│       │   │   └── auth.ts      # login, signup
+│       │   ├── units.ts        # UNITS, convertFromGivenToBaseUnit, convertFromBaseToGivenUnit, quantityCovers
+│       │   ├── recipe.ts       # Recipe helpers (ingredients, difficulty, inventory matching)
+│       │   ├── mustHave.ts     # getStockStatus (unit-aware low-stock logic for Dashboard and Must-Have)
+│       │   └── inventory.ts    # INVENTORY_LOCATION_OPTIONS, getExpiryStatus (expiry badge for Inventory cards)
 │       ├── stores/              # Zustand stores (auth persisted; others fetch on login)
 │       │   ├── authStore.ts
 │       │   ├── inventoryStore.ts
@@ -47,7 +51,11 @@ VorratsCheck/
 │       │   ├── dealsStore.ts
 │       │   └── categoriesStore.ts
 │       ├── hooks/               # Custom hooks
-│       │   └── useRecipesPage.ts  # Recipes page: match/sort, form (add/edit), delete
+│       │   ├── useRecipesPage.ts   # Recipes page: match/sort, form (add/edit), delete
+│       │   ├── useInventoryPage.ts # Inventory page: form (add/edit), filters, CRUD
+│       │   ├── useMustHavePage.ts  # Must-Have page: form (add/edit), stock counts, CRUD
+│       │   ├── useWishlistPage.ts  # Wishlist page: form (add/edit), grouped by priority, CRUD
+│       │   └── useDealsPage.ts     # Deals page: filter (all/mustHave/wishList), match counts, filtered deals
 │       ├── pages/               # Route components
 │       │   ├── Dashboard.tsx
 │       │   ├── Inventory.tsx
@@ -65,15 +73,40 @@ VorratsCheck/
 │           ├── ProtectedRoute.tsx  # Redirects to /login if not authenticated; shows loading while auth resolves
 │           ├── BarcodeScanner.tsx
 │           ├── Quantity.tsx     # Quantity + unit input (used in recipe form, etc.)
-│           ├── figma/ImageWithFallback.tsx
+│           ├── dashboard/       # Dashboard alert and quick-action cards (import from '../components/dashboard')
+│           │   ├── index.ts     # Re-exports all dashboard components
+│           │   ├── ExpiredItemsCard.tsx
+│           │   ├── ExpiringSoonCard.tsx
+│           │   ├── LowStockCard.tsx
+│           │   └── QuickActionsCard.tsx
+│           ├── inventory/       # Inventory page UI (import from '../components/inventory')
+│           │   ├── index.ts     # Re-exports all inventory components
+│           │   ├── InventoryItemFormDialog.tsx
+│           │   ├── InventoryItemCard.tsx
+│           │   ├── InventoryFilter.tsx
+│           │   ├── InventoryFilterBar.tsx
+│           │   └── InventoryEmptyState.tsx
+│           ├── mustHave/        # Must-Have page UI (import from '../components/mustHave')
+│           │   ├── index.ts     # Re-exports all must-have components
+│           │   ├── MustHaveCard.tsx
+│           │   ├── MustHaveStats.tsx
+│           │   ├── MustHaveEmptyState.tsx
+│           │   └── MustHaveItemDialog.tsx
+│           ├── wishlist/        # Wishlist page UI (import from '../components/wishlist')
+│           │   ├── index.ts     # Re-exports all wishlist components
+│           │   ├── priorityUtils.ts   # getPriorityColor, getPriorityLabel, WishlistPriority type
+│           │   ├── WishlistItemDialog.tsx
+│           │   ├── WishlistItemCard.tsx
+│           │   ├── WishlistStats.tsx
+│           │   ├── WishlistPrioritySection.tsx
+│           │   └── WishlistEmptyState.tsx
 │           ├── recipe/          # Recipe page UI (import from '../components/recipe')
 │           │   ├── index.ts     # Re-exports all recipe components
 │           │   ├── RecipeCard.tsx
 │           │   ├── RecipeEditDialog.tsx
 │           │   ├── RecipeListSection.tsx
-│           │   ├── RecipeStatCard.tsx
 │           │   └── RecipeViewDialog.tsx
-│           └── ui/              # Radix/shadcn-style primitives (button, dialog, select, etc.)
+│           └── ui/              # Radix/shadcn-style primitives (button, dialog, select, stat-card, etc.)
 ├── src/styles/
 │   ├── index.css                 # Imports theme.css, tailwind
 │   └── theme.css                 # Central theme: :root (light), .dark (dark), CSS variables
@@ -84,8 +117,8 @@ VorratsCheck/
 │   └── routes/
 │       ├── auth.ts              # POST /api/auth/login, /api/auth/signup
 │       ├── inventory.ts         # GET/POST /api/inventory, PATCH/DELETE /api/inventory/:id
-│       ├── mustHave.ts          # GET/POST/DELETE /api/must-have
-│       ├── wishlist.ts          # GET/POST/DELETE /api/wishlist
+│       ├── mustHave.ts          # GET/POST/PATCH/DELETE /api/must-have
+│       ├── wishlist.ts          # GET/POST/PATCH/DELETE /api/wishlist
 │       ├── recipes.ts           # GET/POST/PATCH/DELETE /api/recipes
 │       ├── deals.ts             # GET /api/deals (optionalAuth: user-scoped or all)
 │       └── categories.ts        # GET/POST/DELETE /api/categories
@@ -112,9 +145,9 @@ VorratsCheck/
 - **Category** – id, userId, name. User-defined categories; used in inventory, must-have, and wishlist (selectable only, no free text).
 - **InventoryItem** – userId, name, category, brand?, barcode?, quantity, unit, expiryDate?, location?, addedDate.
 - **MustHaveItem** – userId, name, category?, minQuantity (default 1). “Always in stock” items; matched by name (and optionally category).
-- **WishListItem** – userId, name, type ('category' | 'specific'), category?, brand?, priority ('low' | 'medium' | 'high').
+- **WishListItem** – userId, name, type ('category' | 'specific'), category?, brand?, priority ('low' | 'medium' | 'high'). The UI uses a single form (name required; category and brand optional; priority). New/updated items are sent with type `'specific'`; the type field is kept for API/DB compatibility.
 - **Recipe** – userId, name, ingredients (JSON array), instructions (JSON array), cookingTime, difficulty, servings.
-- **Deal** – product, category, store, originalPrice, discountPrice, discount (%), validUntil, distance, inStock?; userId optional (nullable for seeded deals).
+- **Deal** – product, name (category name for display, e.g. Milchprodukte), store, originalPrice, discountPrice, discount (%), validUntil, distance, inStock?; userId optional (nullable for seeded deals).
 
 All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from the JWT.
 
@@ -143,7 +176,7 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 
 ### Database
 
-- **Prisma**: `prisma generate`, `prisma db push`. Seeds live in `scripts/`: `npm run db:seed-deals`, `db:seed-categories`, `db:seed-recipes`. SQLite for dev; production can switch to PostgreSQL via `DATABASE_URL` and `provider` in `schema.prisma`.
+- **Prisma**: `prisma generate`, `prisma db push`. Seeds in `scripts/`: `npm run db:seed-deals`, `db:seed-categories`, `db:seed-recipes`. Each seed **overwrites** its data (deletes existing, then inserts defaults). SQLite for dev; production can switch to PostgreSQL via `DATABASE_URL` and `provider` in `schema.prisma`.
 
 ---
 
@@ -167,8 +200,8 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 | POST | /api/auth/signup | Body: username, email, password, inviteCode. Returns token, user. |
 | GET | /api/health | No auth. Returns { ok: true }. |
 | GET/POST | /api/inventory | List / create. PATCH/DELETE /api/inventory/:id. |
-| GET/POST/DELETE | /api/must-have | Must-have list. |
-| GET/POST/DELETE | /api/wishlist | Wishlist. |
+| GET/POST/PATCH/DELETE | /api/must-have | Must-have list. |
+| GET/POST/PATCH/DELETE | /api/wishlist | Wishlist. |
 | GET/POST/PATCH/DELETE | /api/recipes | Recipes. |
 | GET | /api/deals | Optional auth; user-scoped or all deals. |
 | GET/POST/DELETE | /api/categories | Categories. |
@@ -184,7 +217,12 @@ Protected routes require header: `Authorization: Bearer <token>`.
 - **Auth flow**: `server/routes/auth.ts`, `server/middleware/auth.ts`, `src/app/stores/authStore.ts`, `src/app/components/ProtectedRoute.tsx`.
 - **Data model**: `prisma/schema.prisma`, then `db:generate` and `db:push`; adjust routes and stores.
 - **UI/theme**: Tailwind + components in `src/app/components/ui/`; app shell and nav in `Layout.tsx`. **Colors**: edit only `src/styles/theme.css` – `:root` (light) and `.dark` (dark) with base and semantic variables. **Appearance**: user menu → Settings → Appearance (light/dark/system). **Categories**: user menu → Settings → Categories.
-- **Recipe UI**: All recipe-related components live in `src/app/components/recipe/` (RecipeCard, RecipeEditDialog, RecipeListSection, RecipeStatCard, RecipeViewDialog). Import from `../components/recipe`. The Recipes page uses a single hook `useRecipesPage()` (match/sort, form state, delete); lib helpers in `src/app/lib/recipe.ts` (ingredients, difficulty, matching) and `units.ts` (conversion for matching).
+- **Recipe UI**: All recipe-related components live in `src/app/components/recipe/` (RecipeCard, RecipeEditDialog, RecipeListSection, RecipeViewDialog). Import from `../components/recipe`. The Recipes page uses a single hook `useRecipesPage()` (match/sort, form state, delete); lib helpers in `src/app/lib/recipe.ts` (ingredients, difficulty, matching) and `lib/units.ts` (convertFromGivenToBaseUnit, convertFromBaseToGivenUnit, quantityCovers for matching).
+- **Dashboard UI**: Alert and quick-action cards in `src/app/components/dashboard/` (ExpiredItemsCard, ExpiringSoonCard, LowStockCard, QuickActionsCard). Import from `../components/dashboard`. Dashboard page uses StatCard for stats and these components for alerts and quick actions.
+- **Inventory UI**: Components in `src/app/components/inventory/` (InventoryItemFormDialog, InventoryItemCard, InventoryFilter, InventoryFilterBar, InventoryEmptyState). Import from `../components/inventory`. The Inventory page uses `useInventoryPage()` for form state, filters, filtered list, and CRUD. Location options (form and filter) and expiry display come from `lib/inventory.ts` (`INVENTORY_LOCATION_OPTIONS`, `getExpiryStatus`). Dialogs use `Category` from `stores/categoriesStore`.
+- **Must-Have UI**: Components in `src/app/components/mustHave/` (MustHaveCard, MustHaveStats, MustHaveEmptyState, MustHaveItemDialog). Import from `../components/mustHave`. The Must-Have page uses `useMustHavePage()` for form state, stock counts (sufficient/low), and CRUD. Dialogs use `Category` from `stores/categoriesStore`. Low-stock logic (Dashboard and Must-Have page) uses `lib/mustHave.ts` (`getStockStatus`) for unit-aware comparison (weight→g, volume→ml, countable→same unit).
+- **Wishlist UI**: Components in `src/app/components/wishlist/` (WishlistItemDialog, WishlistItemCard, WishlistStats, WishlistPrioritySection, WishlistEmptyState, priorityUtils). Import from `../components/wishlist`. The Wishlist page uses `useWishlistPage()` for form state, grouped items, and CRUD. Dialogs use `Category` from `stores/categoriesStore`. The wishlist form has no type selector; name is required, category and brand are optional and always shown; priority is required. Items are grouped by priority on the page.
+- **Deals page**: Uses `useDealsPage()` for filter state (all/mustHave/wishList), match logic (must-have, wishlist), and filtered deals. No extracted components; UI is inline in `Deals.tsx`.
 
 ---
 

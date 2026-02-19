@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { RouteErrorBoundary } from "./components/RouteErrorBoundary";
 import { Dashboard } from "./pages/Dashboard";
 import { Inventory } from "./pages/Inventory";
 import { MustHaveList } from "./pages/MustHaveList";
@@ -17,10 +18,12 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     Component: Login,
+    errorElement: <RouteErrorBoundary />,
   },
   {
     path: "/signup",
     Component: Signup,
+    errorElement: <RouteErrorBoundary />,
   },
   {
     path: "/",
@@ -29,6 +32,7 @@ export const router = createBrowserRouter([
         <Layout />
       </ProtectedRoute>
     ),
+    errorElement: <RouteErrorBoundary />,
     children: [
       { index: true, Component: Dashboard },
       { path: "inventory", Component: Inventory },

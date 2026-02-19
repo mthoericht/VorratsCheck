@@ -185,15 +185,13 @@ async function main()
     return;
   }
 
-  let created = 0;
+  let totalDeleted = 0;
+  let totalCreated = 0;
   for (const user of users) 
   {
-    const existingNames = new Set(
-      (await prisma.recipe.findMany({ where: { userId: user.id }, select: { name: true } })).map((r) => r.name)
-    );
-    const toCreate = DEFAULT_RECIPES.filter((r) => !existingNames.has(r.name));
-
-    for (const recipe of toCreate) 
+    const deleted = await prisma.recipe.deleteMany({ where: { userId: user.id } });
+    totalDeleted += deleted.count;
+    for (const recipe of DEFAULT_RECIPES) 
     {
       await prisma.recipe.create({
         data: {
@@ -206,18 +204,11 @@ async function main()
           servings: recipe.servings,
         },
       });
-      created++;
+      totalCreated++;
     }
   }
 
-  if (created > 0) 
-  {
-    console.log(`Seed recipes: Created ${created} recipe(s) for ${users.length} user(s).`);
-  }
-  else 
-  {
-    console.log('Seed recipes: All users already have the default recipes.');
-  }
+  console.log(`Seed recipes: Pro User auf ${DEFAULT_RECIPES.length} Rezepte zurückgesetzt (${users.length} User(s), ${totalDeleted} alte gelöscht, ${totalCreated} neu angelegt).`);
 }
 
 main()

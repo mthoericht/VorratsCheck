@@ -11,10 +11,10 @@
     "start": "concurrently -n server,dev -c blue,green \"npm run server\" \"npm run dev\"",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
+    "db:studio": "prisma studio",
     "db:seed-deals": "tsx scripts/seed-deals.ts",
     "db:seed-categories": "tsx scripts/seed-categories.ts",
-    "db:seed-recipes": "tsx scripts/seed-recipes.ts",
-    "db:studio": "prisma studio",
+    "db:seed-recipes": "tsx scripts/seed-recipes.ts",    
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
   },

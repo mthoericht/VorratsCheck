@@ -1,59 +1,23 @@
-import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { StatCard } from '../components/ui/stat-card';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { MapPin, Tag, ShoppingCart, TrendingDown } from 'lucide-react';
-import { useMustHaveStore } from '../stores/mustHaveStore';
-import { useWishlistStore } from '../stores/wishlistStore';
-import { useDealsStore } from '../stores/dealsStore';
+import { useDealsPage } from '../hooks/useDealsPage';
 
-export function Deals() 
+export function Deals()
 {
-  const mustHaveList = useMustHaveStore((s) => s.items);
-  const wishList = useWishlistStore((s) => s.items);
-  const dealsFromApi = useDealsStore((s) => s.items);
-  const [filterType, setFilterType] = useState<'all' | 'mustHave' | 'wishList'>('all');
-
-  const getRelevantDeals = () => 
-  {
-    if (filterType === 'all') return dealsFromApi;
-    if (filterType === 'mustHave') 
-    {
-      return dealsFromApi.filter((deal) =>
-        mustHaveList.some((mustHave) =>
-          deal.product.toLowerCase().includes(mustHave.name.toLowerCase())
-        )
-      );
-    }
-    if (filterType === 'wishList') 
-    {
-      return dealsFromApi.filter(
-        (deal) =>
-          wishList.some(
-            (wish) =>
-              deal.product.toLowerCase().includes(wish.name.toLowerCase()) ||
-              (wish.category && deal.category.toLowerCase().includes(wish.category.toLowerCase()))
-          )
-      );
-    }
-    return dealsFromApi;
-  };
-
-  const deals = getRelevantDeals();
-  const mustHaveDealsCount = dealsFromApi.filter((deal) =>
-    mustHaveList.some((mustHave) =>
-      deal.product.toLowerCase().includes(mustHave.name.toLowerCase())
-    )
-  ).length;
-
-  const wishListDealsCount = dealsFromApi.filter(
-    (deal) =>
-      wishList.some(
-        (wish) =>
-          deal.product.toLowerCase().includes(wish.name.toLowerCase()) ||
-          (wish.category && deal.category.toLowerCase().includes(wish.category.toLowerCase()))
-      )
-  ).length;
+  const {
+    dealsFromApi,
+    deals,
+    filterType,
+    setFilterType,
+    mustHaveDealsCount,
+    wishListDealsCount,
+    avgDiscount,
+    isMustHaveDeal,
+    isWishListDeal,
+  } = useDealsPage();
 
   return (
     <div className="space-y-6">
@@ -64,48 +28,28 @@ export function Deals()
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Alle Angebote</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{dealsFromApi.length}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-emerald-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-emerald-800">Must-Have Angebote</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">{mustHaveDealsCount}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-pink-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-pink-800">Wunschliste Angebote</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-pink-600">{wishListDealsCount}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-blue-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-blue-800">Durchschnitt Ersparnis</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">
-              {dealsFromApi.length
-                ? Math.round(
-                  dealsFromApi.reduce((sum, deal) => sum + deal.discount, 0) / dealsFromApi.length
-                )
-                : 0}
-            %
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard title="Alle Angebote" value={dealsFromApi.length} />
+        <StatCard
+          title="Must-Have Angebote"
+          value={mustHaveDealsCount}
+          className="border-emerald-200"
+          titleClassName="text-sm font-medium text-emerald-800"
+          valueClassName="text-2xl font-bold text-emerald-600"
+        />
+        <StatCard
+          title="Wunschliste Angebote"
+          value={wishListDealsCount}
+          className="border-pink-200"
+          titleClassName="text-sm font-medium text-pink-800"
+          valueClassName="text-2xl font-bold text-pink-600"
+        />
+        <StatCard
+          title="Durchschnitt Ersparnis"
+          value={dealsFromApi.length ? `${avgDiscount}%` : '0%'}
+          className="border-blue-200"
+          titleClassName="text-sm font-medium text-blue-800"
+          valueClassName="text-2xl font-bold text-blue-600"
+        />
       </div>
 
       {/* Filter */}
@@ -143,15 +87,10 @@ export function Deals()
 
       {/* Deals Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {deals.map(deal => 
+        {deals.map(deal =>
         {
-          const isMustHave = mustHaveList.some((mustHave) =>
-            deal.product.toLowerCase().includes(mustHave.name.toLowerCase())
-          );
-          const isWishList = wishList.some(wish =>
-            deal.product.toLowerCase().includes(wish.name.toLowerCase()) ||
-            (wish.category && deal.category.toLowerCase().includes(wish.category.toLowerCase()))
-          );
+          const isMustHave = isMustHaveDeal(deal);
+          const isWishList = isWishListDeal(deal);
 
           return (
             <Card key={deal.id} className="relative overflow-hidden">
@@ -166,7 +105,7 @@ export function Deals()
                 <CardTitle className="text-lg pr-20">{deal.product}</CardTitle>
                 <CardDescription className="flex items-center gap-2">
                   <Tag className="w-4 h-4" />
-                  {deal.category}
+                  {deal.name}
                 </CardDescription>
               </CardHeader>
 

@@ -1,17 +1,15 @@
-import { useState } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
+import { StatCard } from '../components/ui/stat-card';
 import {
   RecipeEditDialog,
   RecipeListSection,
-  RecipeStatCard,
   RecipeViewDialog,
 } from '../components/recipe';
 import { ChefHat, CheckCircle2, XCircle, Plus, TrendingUp } from 'lucide-react';
-import type { RecipeWithMatch } from '../lib/recipe';
 import { useRecipesPage } from '../hooks/useRecipesPage';
 
-export function Recipes() 
+export function Recipes()
 {
   const {
     recipes,
@@ -22,9 +20,10 @@ export function Recipes()
     noMatchRecipes,
     inventory,
     form,
+    selectedRecipe,
+    setSelectedRecipe,
     handleDelete,
   } = useRecipesPage();
-  const [selectedRecipe, setSelectedRecipe] = useState<RecipeWithMatch | null>(null);
 
   return (
     <div className="space-y-6">
@@ -62,27 +61,27 @@ export function Recipes()
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <RecipeStatCard
+        <StatCard
           title="Sofort kochbar"
           value={fullMatchRecipes.length}
           subtitle="Alle Zutaten vorhanden"
-          borderClassName="border-green-200"
+          className="border-green-200"
           titleClassName="text-sm font-medium text-green-800"
           valueClassName="text-2xl font-bold text-green-600"
         />
-        <RecipeStatCard
+        <StatCard
           title="Teilweise möglich"
           value={partialMatchRecipes.length}
           subtitle="Einige Zutaten fehlen"
-          borderClassName="border-yellow-200"
+          className="border-yellow-200"
           titleClassName="text-sm font-medium text-yellow-800"
           valueClassName="text-2xl font-bold text-yellow-600"
         />
-        <RecipeStatCard
+        <StatCard
           title="Gesamt Rezepte"
           value={recipes.length}
           subtitle="In der Sammlung"
-          borderClassName="border-gray-200"
+          className="border-gray-200"
           titleClassName="text-sm font-medium text-gray-800"
           valueClassName="text-2xl font-bold text-gray-600"
         />
@@ -103,7 +102,7 @@ export function Recipes()
         icon={<CheckCircle2 className="w-6 h-6 text-green-600" />}
         recipes={fullMatchRecipes}
         onSelectRecipe={setSelectedRecipe}
-        onEdit={(recipe) => { setSelectedRecipe(null); form.openEdit(recipe); }}
+        onEdit={(recipe) => form.openEdit(recipe)}
         onDelete={handleDelete}
       />
 
@@ -112,7 +111,7 @@ export function Recipes()
         icon={<TrendingUp className="w-6 h-6 text-yellow-600" />}
         recipes={partialMatchRecipes}
         onSelectRecipe={setSelectedRecipe}
-        onEdit={(recipe) => { setSelectedRecipe(null); form.openEdit(recipe); }}
+        onEdit={(recipe) => form.openEdit(recipe)}
         onDelete={handleDelete}
       />
 
@@ -121,7 +120,7 @@ export function Recipes()
         icon={<XCircle className="w-6 h-6 text-gray-600" />}
         recipes={noMatchRecipes}
         onSelectRecipe={setSelectedRecipe}
-        onEdit={(recipe) => { setSelectedRecipe(null); form.openEdit(recipe); }}
+        onEdit={(recipe) => form.openEdit(recipe)}
         onDelete={handleDelete}
       />
 
@@ -129,7 +128,7 @@ export function Recipes()
         recipe={selectedRecipe}
         inventory={inventory}
         onClose={() => setSelectedRecipe(null)}
-        onEdit={(recipe) => { setSelectedRecipe(null); form.openEdit(recipe); }}
+        onEdit={(recipe) => form.openEdit(recipe)}
         onDelete={(e) => selectedRecipe && handleDelete(selectedRecipe.id, selectedRecipe.name, e)}
       />
     </div>

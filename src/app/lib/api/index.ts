@@ -16,7 +16,7 @@ export {
 export { getMustHave, createMustHaveItem, updateMustHaveItem, deleteMustHaveItem } from './mustHave';
 
 // Wishlist
-export { getWishlist, createWishlistItem, deleteWishlistItem } from './wishlist';
+export { getWishlist, createWishlistItem, updateWishlistItem, deleteWishlistItem } from './wishlist';
 
 // Categories
 export { getCategories, createCategory, deleteCategory } from './categories';

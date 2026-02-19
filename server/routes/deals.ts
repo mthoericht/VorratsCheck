@@ -8,7 +8,7 @@ dealsRouter.use(authMiddleware);
 function mapDeal(d: {
   id: string;
   product: string;
-  category: string;
+  name: string;
   store: string;
   originalPrice: number;
   discountPrice: number;
@@ -21,7 +21,7 @@ function mapDeal(d: {
   return {
     id: d.id,
     product: d.product,
-    category: d.category,
+    name: d.name,
     store: d.store,
     originalPrice: d.originalPrice,
     discountPrice: d.discountPrice,
@@ -55,17 +55,18 @@ dealsRouter.post('/', async (req: Request, res: Response) =>
   try 
   {
     const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const { product, category, store, originalPrice, discountPrice, discount, validUntil, distance, inStock } = req.body;
-    if (!product || !category || !store || originalPrice == null || discountPrice == null || discount == null || !validUntil || distance == null) 
+    const { product, name, store, originalPrice, discountPrice, discount, validUntil, distance, inStock } = req.body;
+    if (!product || !store || originalPrice == null || discountPrice == null || discount == null || !validUntil || distance == null) 
     {
-      res.status(400).json({ error: 'product, category, store, originalPrice, discountPrice, discount, validUntil, distance erforderlich' });
+      res.status(400).json({ error: 'product, store, originalPrice, discountPrice, discount, validUntil, distance erforderlich' });
       return;
     }
+    const dealName = name || 'Sonstiges';
     const deal = await prisma.deal.create({
       data: {
         userId,
         product,
-        category,
+        name: dealName,
         store,
         originalPrice: Number(originalPrice),
         discountPrice: Number(discountPrice),

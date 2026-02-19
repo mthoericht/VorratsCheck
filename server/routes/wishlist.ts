@@ -66,6 +66,45 @@ wishlistRouter.post('/', async (req: Request, res: Response) =>
   }
 });
 
+wishlistRouter.patch('/:id', async (req: Request, res: Response) =>
+{
+  try
+  {
+    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
+    const { id } = req.params;
+    const { name, type, category, brand, priority } = req.body;
+    const existing = await prisma.wishListItem.findFirst({ where: { id, userId } });
+    if (!existing)
+    {
+      res.status(404).json({ error: 'Eintrag nicht gefunden' });
+      return;
+    }
+    const item = await prisma.wishListItem.update({
+      where: { id },
+      data: {
+        ...(name != null && { name }),
+        ...(type != null && { type }),
+        ...(category !== undefined && { category: category || null }),
+        ...(brand !== undefined && { brand: brand || null }),
+        ...(priority != null && { priority }),
+      },
+    });
+    res.json({
+      id: item.id,
+      name: item.name,
+      type: item.type as 'category' | 'specific',
+      category: item.category ?? undefined,
+      brand: item.brand ?? undefined,
+      priority: item.priority as 'low' | 'medium' | 'high',
+    });
+  }
+  catch (e)
+  {
+    console.error(e);
+    res.status(500).json({ error: 'Serverfehler' });
+  }
+});
+
 wishlistRouter.delete('/:id', async (req: Request, res: Response) => 
 {
   try 

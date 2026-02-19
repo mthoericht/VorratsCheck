@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 /** Common category names for household/food storage (German). */
 const DEFAULT_CATEGORY_NAMES = [
   'Backwaren',
+  'Dosentomaten',
   'Eier',
   'Fisch',
   'Fleisch & Wurst',
@@ -16,6 +17,7 @@ const DEFAULT_CATEGORY_NAMES = [
   'Nudeln & Pasta',
   'Obst',
   'Reis & Getreide',
+  'Schokolade',
   'Snacks',
   'Sonstiges',
 ];
@@ -29,33 +31,19 @@ async function main()
     return;
   }
 
-  let created = 0;
+  let totalDeleted = 0;
+  let totalCreated = 0;
   for (const user of users) 
   {
-    const existing = await prisma.category.findMany({
-      where: { userId: user.id },
-      select: { name: true },
+    const deleted = await prisma.category.deleteMany({ where: { userId: user.id } });
+    totalDeleted += deleted.count;
+    await prisma.category.createMany({
+      data: DEFAULT_CATEGORY_NAMES.map((name) => ({ userId: user.id, name })),
     });
-    const existingNames = new Set(existing.map((c) => c.name));
-    const toCreate = DEFAULT_CATEGORY_NAMES.filter((name) => !existingNames.has(name));
-
-    if (toCreate.length > 0) 
-    {
-      await prisma.category.createMany({
-        data: toCreate.map((name) => ({ userId: user.id, name })),
-      });
-      created += toCreate.length;
-    }
+    totalCreated += DEFAULT_CATEGORY_NAMES.length;
   }
 
-  if (created > 0) 
-  {
-    console.log(`Seed categories: Created ${created} category entries for ${users.length} user(s).`);
-  }
-  else 
-  {
-    console.log('Seed categories: All users already have the default categories.');
-  }
+  console.log(`Seed categories: Pro User auf ${DEFAULT_CATEGORY_NAMES.length} Kategorien zurückgesetzt (${users.length} User(s), ${totalDeleted} alte gelöscht).`);
 }
 
 main()

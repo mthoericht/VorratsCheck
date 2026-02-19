@@ -85,7 +85,7 @@ model Deal {
   userId         String?
   user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   product        String
-  category       String
+  name           String   // category name for display (e.g. Milchprodukte, Schokolade)
   store          String
   originalPrice  Float
   discountPrice  Float

@@ -1,17 +1,16 @@
-import React from 'react';
-import { Button } from './ui/button';
-import { cn } from './ui/utils';
+import { Button } from '../ui/button';
+import { cn } from '../ui/utils';
 
-export interface FilterBarOption {
+export interface InventoryFilterBarOption {
   value: string;
   label: string;
 }
 
-interface FilterBarProps {
+interface InventoryFilterBarProps {
   /** Optional label shown before the chips (e.g. "Kategorie", "Lagerort") */
   label?: string;
   /** Options for the filter. Use value "all" for the "Alle" option or pass allLabel. */
-  options: FilterBarOption[];
+  options: InventoryFilterBarOption[];
   /** Currently selected value (e.g. "all" or one of options[].value) */
   value: string;
   /** Called when user selects an option */
@@ -22,17 +21,16 @@ interface FilterBarProps {
 }
 
 /**
- * Wiederverwendbare Filter-Leiste (z. B. für Lagerort).
- * Zeigt "Alle" (optional) und die übergebenen Optionen als klickbare Buttons.
+ * Filter bar for inventory (e.g. location). Shows "Alle" and options as clickable chips.
  */
-export function FilterBar({
+export function InventoryFilterBar({
   label,
   options,
   value,
   onChange,
   allLabel = 'Alle',
   className,
-}: FilterBarProps) 
+}: InventoryFilterBarProps)
 {
   const hasAll = allLabel != null;
   return (
@@ -51,7 +49,7 @@ export function FilterBar({
           {allLabel}
         </Button>
       )}
-      {options.map((opt) => (
+      {options.map(opt => (
         <Button
           key={opt.value}
           variant={value === opt.value ? 'default' : 'outline'}

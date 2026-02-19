@@ -6,7 +6,7 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 
 - **Inventory** – Items with name, category (selectable), quantity, expiry date, location; barcode scanner
 - **Must-Have** – Items that should always be in stock (matched by name, optional category)
-- **Wishlist** – Entries by priority, with category selection
+- **Wishlist** – Entries with name, optional category and brand, and priority (high/medium/low); grouped by priority
 - **Recipes** – Recipes with ingredients, instructions, matched against inventory
 - **Deals** – Deals filtered by must-have and wishlist
 - **Categories** – Central category management; in inventory, must-have, and wishlist only selectable (no free text)
@@ -60,7 +60,7 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
    npm run db:seed-recipes       # requires at least one user
    ```
 
-   Seeds live in `scripts/`. `db:seed-deals` creates initial deals if the table is empty. Categories and recipes are seeded per user (create a user first).
+   Seeds live in `scripts/`. Each seed **overwrites** its data (deletes existing, then inserts defaults). Run `db:seed-categories` and `db:seed-recipes` after at least one user exists (they run per user).
 
 ## Development
 
@@ -103,10 +103,15 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 
 - `src/app/` – React app (pages, components, stores, hooks, lib)
 - `src/app/pages/` – Dashboard, Inventory, Must-Have, Wishlist, Recipes, Deals, **Settings** (Categories, Appearance), Login, Signup
-- `src/app/components/recipe/` – Recipe page UI: RecipeCard, RecipeEditDialog, RecipeListSection, RecipeStatCard, RecipeViewDialog (import from `../components/recipe`)
+- `src/app/components/dashboard/` – Dashboard cards: ExpiredItemsCard, ExpiringSoonCard, LowStockCard, QuickActionsCard (import from `../components/dashboard`)
+- `src/app/components/inventory/` – Inventory page UI: InventoryItemFormDialog, InventoryItemCard, InventoryFilter, InventoryFilterBar, InventoryEmptyState (import from `../components/inventory`). Page logic in `useInventoryPage()`.
+- `src/app/components/recipe/` – Recipe page UI: RecipeCard, RecipeEditDialog, RecipeListSection, RecipeViewDialog (import from `../components/recipe`)
+- `src/app/components/mustHave/` – Must-Have page UI: MustHaveCard, MustHaveStats, MustHaveEmptyState, MustHaveItemDialog (import from `../components/mustHave`). Page logic in `useMustHavePage()`.
+- `src/app/components/wishlist/` – Wishlist page UI: WishlistItemDialog, WishlistItemCard, WishlistStats, WishlistPrioritySection, WishlistEmptyState (import from `../components/wishlist`). Page logic in `useWishlistPage()`.
 - `src/app/stores/` – Zustand stores (Auth, Inventory, MustHave, Wishlist, Recipes, Deals, Categories)
-- `src/app/hooks/` – Custom hooks (e.g. useRecipesPage for the Recipes page)
+- `src/app/hooks/` – Custom hooks (e.g. useRecipesPage for Recipes, useInventoryPage for Inventory, useMustHavePage for Must-Have, useWishlistPage for Wishlist, useDealsPage for Deals)
 - `src/app/lib/api/` – API client modules (resource functions per domain, error handling via `ApiError`; entry point `api/index.ts`)
+- `src/app/lib/` – Domain logic: `units.ts` (convertFromGivenToBaseUnit, convertFromBaseToGivenUnit, quantityCovers), `recipe.ts` (ingredients, difficulty, matching), `mustHave.ts` (getStockStatus), `inventory.ts` (INVENTORY_LOCATION_OPTIONS, getExpiryStatus for inventory cards)
 - `src/styles/theme.css` – **Central theme and colors**: light/dark mode, all CSS variables (`:root` and `.dark`). Edit only this file to change app-wide colors.
 - `server/` – Express API (routes, middleware, Prisma)
 - `prisma/schema.prisma` – Data model (User, Category, InventoryItem, MustHaveItem, WishListItem, Recipe, Deal)
@@ -117,8 +122,8 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 - `POST /api/auth/login` – Login (email, password)
 - `POST /api/auth/signup` – Sign up (username, email, password, inviteCode)
 - `GET/POST/PATCH/DELETE /api/inventory` – Inventory
-- `GET/POST/DELETE /api/must-have` – Must-have list
-- `GET/POST/DELETE /api/wishlist` – Wishlist
+- `GET/POST/PATCH/DELETE /api/must-have` – Must-have list
+- `GET/POST/PATCH/DELETE /api/wishlist` – Wishlist
 - `GET/POST/PATCH/DELETE /api/recipes` – Recipes
 - `GET /api/deals` – Deals (optional auth)
 - `GET/POST/DELETE /api/categories` – Categories

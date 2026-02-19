@@ -101,9 +101,11 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 
 ## Project Structure (overview)
 
-- `src/app/` – React app (pages, components, stores, lib)
+- `src/app/` – React app (pages, components, stores, hooks, lib)
 - `src/app/pages/` – Dashboard, Inventory, Must-Have, Wishlist, Recipes, Deals, **Settings** (Categories, Appearance), Login, Signup
+- `src/app/components/recipe/` – Recipe page UI: RecipeCard, RecipeEditDialog, RecipeListSection, RecipeStatCard, RecipeViewDialog (import from `../components/recipe`)
 - `src/app/stores/` – Zustand stores (Auth, Inventory, MustHave, Wishlist, Recipes, Deals, Categories)
+- `src/app/hooks/` – Custom hooks (e.g. useRecipeForm, useRecipesWithMatch)
 - `src/app/lib/api/` – API client modules (resource functions per domain, error handling via `ApiError`; entry point `api/index.ts`)
 - `src/styles/theme.css` – **Central theme and colors**: light/dark mode, all CSS variables (`:root` and `.dark`). Edit only this file to change app-wide colors.
 - `server/` – Express API (routes, middleware, Prisma)

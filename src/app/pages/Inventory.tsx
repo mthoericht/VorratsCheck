@@ -12,6 +12,8 @@ import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useCategoriesStore } from '../stores/categoriesStore';
 import { Link } from 'react-router';
+import { FilterBar } from '../components/FilterBar';
+import { Quantity } from '../components/Quantity';
 
 export function Inventory() 
 {
@@ -24,6 +26,7 @@ export function Inventory()
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingItem, setEditingItem] = useState<typeof inventory[0] | null>(null);
   const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [filterLocation, setFilterLocation] = useState<string>('all');
   
   const [formData, setFormData] = useState({
     name: '',
@@ -37,7 +40,10 @@ export function Inventory()
   });
 
   const filterCategories = Array.from(new Set(inventory.map((item) => item.category)));
-  const locations = Array.from(new Set(inventory.map((item) => item.location).filter(Boolean)));
+  const locations = Array.from(
+    new Set(inventory.map((item) => item.location).filter((x): x is string => x != null && x !== ''))
+  );
+  const locationOptions = locations.map((loc) => ({ value: loc, label: loc }));
 
   const handleBarcodeScanned = (barcode: string) => 
   {
@@ -50,11 +56,14 @@ export function Inventory()
   const handleSubmit = async (e: React.FormEvent) => 
   {
     e.preventDefault();
-    if (!formData.name || !formData.category || !formData.quantity) 
+    if (!formData.name || !formData.category) 
     {
       toast.error('Bitte füllen Sie alle Pflichtfelder aus');
       return;
     }
+    const parsedQty = formData.quantity.trim() ? parseFloat(formData.quantity) : NaN;
+    const quantityVal = Number.isFinite(parsedQty) ? parsedQty : 1;
+    const unitVal = formData.unit || 'Stück';
     try 
     {
       await addInventoryItem({
@@ -62,8 +71,8 @@ export function Inventory()
         category: formData.category,
         brand: formData.brand || undefined,
         barcode: formData.barcode || undefined,
-        quantity: parseFloat(formData.quantity),
-        unit: formData.unit,
+        quantity: quantityVal,
+        unit: unitVal,
         expiryDate: formData.expiryDate || undefined,
         location: formData.location || undefined,
       });
@@ -108,11 +117,14 @@ export function Inventory()
   const handleEditSubmit = async (e: React.FormEvent) => 
   {
     e.preventDefault();
-    if (!editingItem || !formData.name || !formData.category || !formData.quantity) 
+    if (!editingItem || !formData.name || !formData.category) 
     {
       toast.error('Bitte füllen Sie alle Pflichtfelder aus');
       return;
     }
+    const parsedQty = formData.quantity.trim() ? parseFloat(formData.quantity) : NaN;
+    const quantityVal = Number.isFinite(parsedQty) ? parsedQty : 1;
+    const unitVal = formData.unit || 'Stück';
     try 
     {
       await updateInventoryItem(editingItem.id, {
@@ -120,8 +132,8 @@ export function Inventory()
         category: formData.category,
         brand: formData.brand || undefined,
         barcode: formData.barcode || undefined,
-        quantity: parseFloat(formData.quantity),
-        unit: formData.unit,
+        quantity: quantityVal,
+        unit: unitVal,
         expiryDate: formData.expiryDate || undefined,
         location: formData.location || undefined,
       });
@@ -153,10 +165,12 @@ export function Inventory()
     return { status: 'ok', label: `${daysUntilExpiry} Tage`, variant: 'secondary' as const };
   };
 
-  const filteredInventory =
-    filterCategory === 'all'
-      ? inventory
-      : inventory.filter((item) => item.category === filterCategory);
+  const filteredInventory = inventory.filter((item) => 
+  {
+    const matchCategory = filterCategory === 'all' || item.category === filterCategory;
+    const matchLocation = filterLocation === 'all' || item.location === filterLocation;
+    return matchCategory && matchLocation;
+  });
 
   return (
     <div className="space-y-6">
@@ -253,36 +267,16 @@ export function Inventory()
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="quantity">Menge *</Label>
-                    <Input
-                      id="quantity"
-                      type="number"
-                      step="0.01"
-                      value={formData.quantity}
-                      onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="unit">Einheit</Label>
-                    <Select value={formData.unit} onValueChange={(value) => setFormData({ ...formData, unit: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Stück">Stück</SelectItem>
-                        <SelectItem value="g">Gramm</SelectItem>
-                        <SelectItem value="kg">Kilogramm</SelectItem>
-                        <SelectItem value="ml">Milliliter</SelectItem>
-                        <SelectItem value="Liter">Liter</SelectItem>
-                        <SelectItem value="Dose">Dose</SelectItem>
-                        <SelectItem value="Packung">Packung</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                <Quantity
+                  quantity={formData.quantity}
+                  unit={formData.unit}
+                  onQuantityChange={(value) => setFormData({ ...formData, quantity: value })}
+                  onUnitChange={(value) => setFormData({ ...formData, unit: value })}
+                  label="Menge"
+                  placeholder="Optional (Standard: 1 Stück)"
+                  optional
+                  idPrefix="add"
+                />
 
                 <div>
                   <Label htmlFor="expiryDate">Mindesthaltbarkeitsdatum</Label>
@@ -389,36 +383,16 @@ export function Inventory()
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="edit-quantity">Menge *</Label>
-                    <Input
-                      id="edit-quantity"
-                      type="number"
-                      step="0.01"
-                      value={formData.quantity}
-                      onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="edit-unit">Einheit</Label>
-                    <Select value={formData.unit} onValueChange={(value) => setFormData({ ...formData, unit: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Stück">Stück</SelectItem>
-                        <SelectItem value="g">Gramm</SelectItem>
-                        <SelectItem value="kg">Kilogramm</SelectItem>
-                        <SelectItem value="ml">Milliliter</SelectItem>
-                        <SelectItem value="Liter">Liter</SelectItem>
-                        <SelectItem value="Dose">Dose</SelectItem>
-                        <SelectItem value="Packung">Packung</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                <Quantity
+                  quantity={formData.quantity}
+                  unit={formData.unit}
+                  onQuantityChange={(value) => setFormData({ ...formData, quantity: value })}
+                  onUnitChange={(value) => setFormData({ ...formData, unit: value })}
+                  label="Menge"
+                  placeholder="Optional (Standard: 1 Stück)"
+                  optional
+                  idPrefix="edit"
+                />
 
                 <div>
                   <Label htmlFor="edit-expiryDate">Mindesthaltbarkeitsdatum</Label>
@@ -459,24 +433,32 @@ export function Inventory()
       </div>
 
       {/* Filter */}
-      <div className="flex gap-2 items-center overflow-x-auto pb-2">
-        <Button
-          variant={filterCategory === 'all' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setFilterCategory('all')}
-        >
-          Alle
-        </Button>
-        {filterCategories.map((cat) => (
-          <Button
-            key={cat}
-            variant={filterCategory === cat ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setFilterCategory(cat)}
-          >
-            {cat}
-          </Button>
-        ))}
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <FilterBar
+          label="Lagerort"
+          options={locationOptions}
+          value={filterLocation}
+          onChange={setFilterLocation}
+          allLabel="Alle"
+        />
+        <div className="flex items-center gap-2">
+          <Label htmlFor="filter-category" className="text-sm font-medium text-muted-foreground shrink-0">
+            Kategorie
+          </Label>
+          <Select value={filterCategory} onValueChange={setFilterCategory}>
+            <SelectTrigger id="filter-category" className="w-[180px]" size="sm">
+              <SelectValue placeholder="Alle" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Alle</SelectItem>
+              {filterCategories.map((cat) => (
+                <SelectItem key={cat} value={cat}>
+                  {cat}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Inventory Grid */}

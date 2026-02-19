@@ -1,0 +1,12 @@
+---
+description: Use AGENTS.md as the single source of project context
+alwaysApply: true
+---
+
+# Project context
+
+For this codebase, **all project context comes from AGENTS.md**.
+
+- Read **AGENTS.md** for: tech stack, repository layout, data model, conventions, API summary, and where to change things.
+- Do not duplicate that content in rules; refer to AGENTS.md and follow it.
+- When in doubt about structure, patterns, or language (e.g. comments in English, UI in German), check AGENTS.md.

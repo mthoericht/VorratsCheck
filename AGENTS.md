@@ -46,6 +46,9 @@ VorratsCheck/
 │       │   ├── recipesStore.ts
 │       │   ├── dealsStore.ts
 │       │   └── categoriesStore.ts
+│       ├── hooks/               # Custom hooks
+│       │   ├── useRecipeForm.ts
+│       │   └── useRecipesWithMatch.ts
 │       ├── pages/               # Route components
 │       │   ├── Dashboard.tsx
 │       │   ├── Inventory.tsx
@@ -62,8 +65,16 @@ VorratsCheck/
 │           ├── Layout.tsx       # Header, nav (Dashboard, Vorrat, Must-Have, Wunschliste, Angebote, Rezepte), user menu (Settings, Logout), Outlet
 │           ├── ProtectedRoute.tsx  # Redirects to /login if not authenticated; shows loading while auth resolves
 │           ├── BarcodeScanner.tsx
+│           ├── Quantity.tsx     # Quantity + unit input (used in recipe form, etc.)
 │           ├── figma/ImageWithFallback.tsx
-│           └── ui/               # Radix/shadcn-style primitives (button, dialog, select, etc.)
+│           ├── recipe/          # Recipe page UI (import from '../components/recipe')
+│           │   ├── index.ts     # Re-exports all recipe components
+│           │   ├── RecipeCard.tsx
+│           │   ├── RecipeEditDialog.tsx
+│           │   ├── RecipeListSection.tsx
+│           │   ├── RecipeStatCard.tsx
+│           │   └── RecipeViewDialog.tsx
+│           └── ui/              # Radix/shadcn-style primitives (button, dialog, select, etc.)
 ├── src/styles/
 │   ├── index.css                 # Imports theme.css, tailwind
 │   └── theme.css                 # Central theme: :root (light), .dark (dark), CSS variables
@@ -111,6 +122,8 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 ---
 
 ## Conventions and Patterns
+
+- **Comments**: Use English only for all source-code comments (TS/TSX, JS, Prisma, scripts). UI copy stays in German.
 
 ### Frontend
 
@@ -172,11 +185,12 @@ Protected routes require header: `Authorization: Bearer <token>`.
 - **Auth flow**: `server/routes/auth.ts`, `server/middleware/auth.ts`, `src/app/stores/authStore.ts`, `src/app/components/ProtectedRoute.tsx`.
 - **Data model**: `prisma/schema.prisma`, then `db:generate` and `db:push`; adjust routes and stores.
 - **UI/theme**: Tailwind + components in `src/app/components/ui/`; app shell and nav in `Layout.tsx`. **Colors**: edit only `src/styles/theme.css` – `:root` (light) and `.dark` (dark) with base and semantic variables. **Appearance**: user menu → Settings → Appearance (light/dark/system). **Categories**: user menu → Settings → Categories.
+- **Recipe UI**: All recipe-related components live in `src/app/components/recipe/` (RecipeCard, RecipeEditDialog, RecipeListSection, RecipeStatCard, RecipeViewDialog). Import from `../components/recipe` or `../components/recipe/RecipeCard` etc. Recipe page uses hooks `useRecipeForm`, `useRecipesWithMatch` and lib helpers in `src/app/lib/recipeMatching.ts`, `recipeIngredients.ts`, `units.ts`.
 
 ---
 
 ## Language and Locale
 
 - **UI language**: German (labels, buttons, placeholders, error messages).
-- **Code and comments**: Mix of German and English (e.g. route handlers and Prisma schema comments may be German).
+- **Comments**: Always in English (in source code, scripts, and schema). This keeps the codebase consistent for agents and international contributors.
 - **AGENTS.md and this file**: English for clarity for agents and international contributors.

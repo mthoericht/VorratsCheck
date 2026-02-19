@@ -5,6 +5,53 @@ import { authMiddleware } from '../middleware/auth.js';
 export const recipesRouter = Router();
 recipesRouter.use(authMiddleware);
 
+type RecipeIngredient = { name: string; quantity?: number; unit?: string };
+
+function parseIngredientsJson(json: string): RecipeIngredient[] 
+{
+  try 
+  {
+    const raw = JSON.parse(json);
+    if (!Array.isArray(raw)) return [];
+    return raw.map((item: unknown) => 
+    {
+      if (typeof item === 'object' && item !== null && 'name' in item) 
+      {
+        const o = item as { name: string; quantity?: number; unit?: string };
+        return { name: o.name, quantity: o.quantity, unit: o.unit };
+      }
+      if (typeof item === 'string') 
+      {
+        const trimmed = item.trim();
+        const startMatch = trimmed.match(/^(\d+(?:[.,]\d+)?)\s+(\S+)\s+(.+)$/);
+        if (startMatch) 
+        {
+          return {
+            name: startMatch[3].trim(),
+            quantity: parseFloat(startMatch[1].replace(',', '.')),
+            unit: startMatch[2].trim(),
+          };
+        }
+        const endMatch = trimmed.match(/^(.+?)\s+(\d+(?:[.,]\d+)?)\s+(\S+)$/);
+        if (endMatch) 
+        {
+          return {
+            name: endMatch[1].trim(),
+            quantity: parseFloat(endMatch[2].replace(',', '.')),
+            unit: endMatch[3].trim(),
+          };
+        }
+        return { name: trimmed };
+      }
+      return { name: String(item) };
+    });
+  }
+  catch 
+  {
+    return [];
+  }
+}
+
 function mapRecipe(recipe: {
   id: string;
   name: string;
@@ -18,7 +65,7 @@ function mapRecipe(recipe: {
   return {
     id: recipe.id,
     name: recipe.name,
-    ingredients: JSON.parse(recipe.ingredients) as string[],
+    ingredients: parseIngredientsJson(recipe.ingredients),
     instructions: JSON.parse(recipe.instructions) as string[],
     cookingTime: recipe.cookingTime,
     difficulty: recipe.difficulty as 'easy' | 'medium' | 'hard',
@@ -52,11 +99,29 @@ recipesRouter.post('/', async (req: Request, res: Response) =>
       res.status(400).json({ error: 'name, ingredients, instructions, cookingTime, difficulty, servings erforderlich' });
       return;
     }
+    const normalizedIngredients = ingredients.map((item: unknown) => 
+    {
+      if (typeof item === 'object' && item !== null && 'name' in item) 
+      {
+        const o = item as { name: string; quantity?: number; unit?: string };
+        return { name: o.name, quantity: o.quantity, unit: o.unit };
+      }
+      if (typeof item === 'string') 
+      {
+        const t = item.trim();
+        const m1 = t.match(/^(\d+(?:[.,]\d+)?)\s+(\S+)\s+(.+)$/);
+        if (m1) return { name: m1[3].trim(), quantity: parseFloat(m1[1].replace(',', '.')), unit: m1[2].trim() };
+        const m2 = t.match(/^(.+?)\s+(\d+(?:[.,]\d+)?)\s+(\S+)$/);
+        if (m2) return { name: m2[1].trim(), quantity: parseFloat(m2[2].replace(',', '.')), unit: m2[3].trim() };
+        return { name: t };
+      }
+      return { name: String(item) };
+    });
     const recipe = await prisma.recipe.create({
       data: {
         userId,
         name,
-        ingredients: JSON.stringify(ingredients),
+        ingredients: JSON.stringify(normalizedIngredients),
         instructions: JSON.stringify(instructions),
         cookingTime: Number(cookingTime),
         difficulty,
@@ -85,11 +150,32 @@ recipesRouter.patch('/:id', async (req: Request, res: Response) =>
       return;
     }
     const { name, ingredients, instructions, cookingTime, difficulty, servings } = req.body;
+    const normalizedIngredients =
+      ingredients != null && Array.isArray(ingredients)
+        ? ingredients.map((item: unknown) => 
+        {
+          if (typeof item === 'object' && item !== null && 'name' in item) 
+          {
+            const o = item as { name: string; quantity?: number; unit?: string };
+            return { name: o.name, quantity: o.quantity, unit: o.unit };
+          }
+          if (typeof item === 'string') 
+          {
+            const t = item.trim();
+            const m1 = t.match(/^(\d+(?:[.,]\d+)?)\s+(\S+)\s+(.+)$/);
+            if (m1) return { name: m1[3].trim(), quantity: parseFloat(m1[1].replace(',', '.')), unit: m1[2].trim() };
+            const m2 = t.match(/^(.+?)\s+(\d+(?:[.,]\d+)?)\s+(\S+)$/);
+            if (m2) return { name: m2[1].trim(), quantity: parseFloat(m2[2].replace(',', '.')), unit: m2[3].trim() };
+            return { name: t };
+          }
+          return { name: String(item) };
+        })
+        : undefined;
     const recipe = await prisma.recipe.update({
       where: { id },
       data: {
         ...(name != null && { name }),
-        ...(ingredients != null && { ingredients: JSON.stringify(ingredients) }),
+        ...(normalizedIngredients !== undefined && { ingredients: JSON.stringify(normalizedIngredients) }),
         ...(instructions != null && { instructions: JSON.stringify(instructions) }),
         ...(cookingTime != null && { cookingTime: Number(cookingTime) }),
         ...(difficulty != null && { difficulty }),

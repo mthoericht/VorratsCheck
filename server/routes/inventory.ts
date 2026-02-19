@@ -42,11 +42,13 @@ inventoryRouter.post('/', async (req: Request, res: Response) =>
   {
     const userId = (req as Request & { user?: { userId: string } }).user!.userId;
     const { name, category, brand, barcode, quantity, unit, expiryDate, location } = req.body;
-    if (!name || !category || quantity == null) 
+    if (!name || !category) 
     {
-      res.status(400).json({ error: 'name, category und quantity erforderlich' });
+      res.status(400).json({ error: 'name und category erforderlich' });
       return;
     }
+    const quantityNum = quantity != null && quantity !== '' ? Number(quantity) : 1;
+    const unitVal = unit || 'Stück';
     const item = await prisma.inventoryItem.create({
       data: {
         userId,
@@ -54,8 +56,8 @@ inventoryRouter.post('/', async (req: Request, res: Response) =>
         category,
         brand: brand || null,
         barcode: barcode || null,
-        quantity: Number(quantity),
-        unit: unit || 'Stück',
+        quantity: quantityNum,
+        unit: unitVal,
         expiryDate: expiryDate ? new Date(expiryDate) : null,
         location: location || null,
       },

@@ -6,17 +6,21 @@ import {
   deleteRecipe,
 } from '../lib/api';
 
-export interface Recipe {
+import type { RecipeIngredient } from '../lib/recipeIngredients';
+
+export interface Recipe 
+{
   id: string;
   name: string;
-  ingredients: string[];
+  ingredients: RecipeIngredient[];
   instructions: string[];
   cookingTime: number;
   difficulty: 'easy' | 'medium' | 'hard';
   servings: number;
 }
 
-interface RecipesState {
+interface RecipesState 
+{
   items: Recipe[];
   loaded: boolean;
   fetch: () => Promise<void>;

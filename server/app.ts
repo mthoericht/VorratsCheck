@@ -3,6 +3,22 @@
  * Import this in tests (e.g. with supertest); server/index.ts uses it and calls listen().
  */
 import 'dotenv/config';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Resolve relative file: URLs to absolute path (project root = parent of server/) so DB works regardless of cwd
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const projectRoot = path.resolve(__dirname, '..');
+if (!process.env.DATABASE_URL)
+{
+  process.env.DATABASE_URL = `file:${path.join(projectRoot, 'data', 'dev.db')}`;
+}
+else if (process.env.DATABASE_URL.startsWith('file:./'))
+{
+  const relative = process.env.DATABASE_URL.replace(/^file:/, '');
+  process.env.DATABASE_URL = `file:${path.join(projectRoot, relative)}`;
+}
+
 import express from 'express';
 import cors from 'cors';
 import { authRouter } from './routes/auth.js';

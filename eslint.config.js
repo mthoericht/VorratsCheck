@@ -7,7 +7,17 @@ import globals from 'globals';
 const reactRefresh = reactRefreshPlugin.default ?? reactRefreshPlugin;
 
 export default [
-  { ignores: ['node_modules/', 'dist/', 'build/', 'coverage/', '*.config.js', 'data/'] },
+  {
+    ignores: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/coverage/**',
+      '**/storybook-static/**',
+      '**/data/**',
+      '**/*.config.js',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

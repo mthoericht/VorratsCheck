@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { useCategoriesStore } from '../stores/categoriesStore';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '../components/ui/dialog';
+import { useCategoriesStore } from '../../stores/categoriesStore';
+import { Button } from '../ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '../ui/dialog';
 import { Plus, Trash2, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
 
-export function Categories() 
+export function SettingsCategories()
 {
   const categories = useCategoriesStore((s) => s.items);
   const addCategory = useCategoriesStore((s) => s.add);
@@ -16,36 +16,36 @@ export function Categories()
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newName, setNewName] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => 
+  const handleSubmit = async (e: React.FormEvent) =>
   {
     e.preventDefault();
     const trimmed = newName.trim();
-    if (!trimmed) 
+    if (!trimmed)
     {
       toast.error('Bitte einen Namen eingeben');
       return;
     }
-    try 
+    try
     {
       await addCategory(trimmed);
       toast.success('Kategorie hinzugefügt');
       setShowAddDialog(false);
       setNewName('');
     }
-    catch (err) 
+    catch (err)
     {
       toast.error((err as Error).message);
     }
   };
 
-  const handleDelete = async (id: string, name: string) => 
+  const handleDelete = async (id: string, name: string) =>
   {
-    try 
+    try
     {
       await removeCategory(id);
       toast.success(`${name} wurde entfernt`);
     }
-    catch (err) 
+    catch (err)
     {
       toast.error((err as Error).message);
     }

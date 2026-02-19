@@ -6,7 +6,8 @@ interface WishlistEmptyStateProps {
   onAddClick: () => void;
 }
 
-export function WishlistEmptyState({ onAddClick }: WishlistEmptyStateProps) {
+export function WishlistEmptyState({ onAddClick }: WishlistEmptyStateProps) 
+{
   return (
     <Card className="p-12 text-center">
       <Heart className="w-12 h-12 text-gray-300 mx-auto mb-4" />

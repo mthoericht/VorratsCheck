@@ -8,9 +8,9 @@ import { MustHaveList } from "./pages/MustHaveList";
 import { WishList } from "./pages/WishList";
 import { Deals } from "./pages/Deals";
 import { Recipes } from "./pages/Recipes";
-import { Categories } from "./pages/Categories";
+import { SettingsCategories } from "./components/settings/SettingsCategories";
 import { Settings } from "./pages/Settings";
-import { Appearance } from "./pages/Appearance";
+import { SettingsAppearance } from "./components/settings/SettingsAppearance";
 import { Login } from "./pages/Login";
 import { Signup } from "./pages/Signup";
 
@@ -45,11 +45,11 @@ export const router = createBrowserRouter([
         Component: Settings,
         children: [
           { index: true, element: <Navigate to="/settings/categories" replace /> },
-          { path: "categories", Component: Categories },
-          { path: "appearance", Component: Appearance },
+          { path: "categories", Component: SettingsCategories },
+          { path: "appearance", Component: SettingsAppearance },
         ],
       },
-      { path: "categories", Component: Categories },
+      { path: "categories", Component: SettingsCategories },
     ],
   },
 ]);

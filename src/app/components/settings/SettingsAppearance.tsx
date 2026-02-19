@@ -1,13 +1,13 @@
 import { useTheme } from 'next-themes';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Label } from '../components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Label } from '../ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select';
+} from '../ui/select';
 import { Sun, Moon, Palette, Monitor } from 'lucide-react';
 
 const options = [
@@ -16,7 +16,7 @@ const options = [
   { value: 'dark', label: 'Dunkel', icon: Moon },
 ] as const;
 
-export function Appearance() 
+export function SettingsAppearance()
 {
   const { theme, setTheme } = useTheme();
 
@@ -50,7 +50,7 @@ export function Appearance()
                 <SelectValue placeholder="Modus wählen" />
               </SelectTrigger>
               <SelectContent>
-                {options.map((opt) => 
+                {options.map((opt) =>
                 {
                   const Icon = opt.icon;
                   return (

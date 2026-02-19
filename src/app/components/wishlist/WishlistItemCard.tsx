@@ -9,7 +9,8 @@ interface WishlistItemCardProps {
   onDelete: (id: string, name: string) => void;
 }
 
-export function WishlistItemCard({ item, onEdit, onDelete }: WishlistItemCardProps) {
+export function WishlistItemCard({ item, onEdit, onDelete }: WishlistItemCardProps) 
+{
   return (
     <Card>
       <CardHeader>

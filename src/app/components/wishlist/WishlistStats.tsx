@@ -4,7 +4,8 @@ interface WishlistStatsProps {
   items: WishListItem[];
 }
 
-export function WishlistStats({ items }: WishlistStatsProps) {
+export function WishlistStats({ items }: WishlistStatsProps) 
+{
   const grouped = {
     high: items.filter((i) => i.priority === 'high'),
     medium: items.filter((i) => i.priority === 'medium'),

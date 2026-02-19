@@ -15,7 +15,8 @@ export function WishlistPrioritySection({
   items,
   onEdit,
   onDelete,
-}: WishlistPrioritySectionProps) {
+}: WishlistPrioritySectionProps) 
+{
   if (items.length === 0) return null;
 
   return (
@@ -24,7 +25,7 @@ export function WishlistPrioritySection({
         <Badge className={getPriorityColor(priority)}>{getPriorityLabel(priority)}</Badge>
         <span className="text-gray-600">({items.length})</span>
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,320px),1fr))] gap-4">
         {items.map((item) => (
           <WishlistItemCard
             key={item.id}

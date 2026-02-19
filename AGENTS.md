@@ -112,7 +112,8 @@ VorratsCheck/
 │   ├── index.css                 # Imports theme.css, tailwind
 │   └── theme.css                 # Central theme: :root (light), .dark (dark), CSS variables
 ├── server/
-│   ├── index.ts                 # Express app: CORS, JSON, mounts /api/* routes, /api/health
+│   ├── app.ts                   # Express app: CORS, JSON, mounts /api/* routes, /api/health (exported for tests)
+│   ├── index.ts                 # Runs app.listen(); use app from app.ts for programmatic/testing use
 │   ├── lib/prisma.ts            # Prisma client singleton
 │   ├── middleware/auth.ts       # authMiddleware (required), optionalAuth, signToken; JWT_SECRET
 │   └── routes/
@@ -130,7 +131,17 @@ VorratsCheck/
 │   ├── seed-categories.ts       # Default categories per user
 │   └── seed-recipes.ts          # Default recipes per user
 ├── data/
-│   └── dev.db                   # SQLite DB (gitignored; created by db:push)
+│   ├── dev.db                   # SQLite dev DB (gitignored; created by db:push)
+│   └── test.db                  # SQLite test DB for API integration tests (gitignored)
+├── test/
+│   ├── setup.ts                 # Shared Vitest setup
+│   └── integration/
+│       ├── api/                 # API integration tests (real API client, test DB)
+│       │   ├── auth.api.test.ts # signup, login, getInventory, createInventoryItem, health
+│       │   ├── setup-db.ts      # Sets DATABASE_URL to test.db, runs prisma db push
+│       │   └── setup-server.ts  # Starts Express app on random port, sets VITE_API_URL, localStorage polyfill
+│       └── *.integration.test.tsx # UI integration tests (e.g. Login, ProtectedRoute, Dashboard)
+├── vitest.integration-api.config.ts  # Vitest config for test/integration/api/** (Node, test DB)
 ├── public/
 ├── index.html
 ├── vite.config.ts               # React + Tailwind; alias @ → src; proxy /api → localhost:3001
@@ -179,6 +190,11 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 
 - **Prisma**: `prisma generate`, `prisma db push`. Seeds in `scripts/`: `npm run db:seed-deals`, `db:seed-categories`, `db:seed-recipes`. Each seed **overwrites** its data (deletes existing, then inserts defaults). SQLite for dev; production can switch to PostgreSQL via `DATABASE_URL` and `provider` in `schema.prisma`.
 
+### Testing
+
+- **Unit/component tests**: Vitest; `npm run test` (watch) or `npm run test:run` (single run). Config in `vitest.config.ts`; includes `src/**/*.test.{ts,tsx}`, excludes `test/integration/api/**` so the default run does not use the test DB.
+- **API integration tests**: In `test/integration/api/`. Use the **real API client** from `src/app/lib/api` (e.g. `login`, `signup`, `getInventory`, `createInventoryItem`); do not use raw HTTP/supertest. Run with `npm run test:integration:api` (sets `DATABASE_URL=file:./data/test.db`). Setup: `setup-db.ts` pushes schema to test DB; `setup-server.ts` starts the Express app on a random port, sets `process.env.VITE_API_URL`, and provides a `localStorage` polyfill so `getAuthHeader()` works. Tests clean the DB in `beforeEach` and set `localStorage.setItem('vorratscheck_token', token)` after login/signup for protected calls. Config: `vitest.integration-api.config.ts`.
+
 ---
 
 ## Scripts (package.json)
@@ -190,6 +206,8 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 - `npm run build` – Vite production build.
 - `npm run db:generate` / `db:push` – Prisma generate, push schema. `db:seed-deals` / `db:seed-categories` / `db:seed-recipes` – run scripts in `scripts/`.
 - `npm run lint` / `lint:fix` – ESLint.
+- `npm run test` / `test:run` – Vitest: component/unit tests (main config; excludes `test/integration/api/**`).
+- `npm run test:integration:api` – API integration tests: uses **real API client** (e.g. `login`, `signup`, `getInventory`, `createInventoryItem` from `src/app/lib/api`) against test DB; `vitest.integration-api.config.ts` runs `setup-db.ts` (test DB push) and `setup-server.ts` (start app, set `VITE_API_URL`, `localStorage` polyfill), then `test/integration/api/**/*.test.ts`.
 
 ---
 
@@ -213,7 +231,7 @@ Protected routes require header: `Authorization: Bearer <token>`.
 
 ## Where to Change Things
 
-- **New API route**: Add router in `server/routes/`, mount in `server/index.ts`. On the frontend add a module under `src/app/lib/api/` (e.g. `api/foo.ts`) with resource functions that use `api()` from `./client` or `createCrud()` from `./crud`; re-export from `src/app/lib/api/index.ts`. Add corresponding Zustand actions and (if needed) types in `src/app/stores/`; call from pages or components.
+- **New API route**: Add router in `server/routes/`, mount in `server/app.ts`. On the frontend add a module under `src/app/lib/api/` (e.g. `api/foo.ts`) with resource functions that use `api()` from `./client` or `createCrud()` from `./crud`; re-export from `src/app/lib/api/index.ts`. Add corresponding Zustand actions and (if needed) types in `src/app/stores/`; call from pages or components.
 - **New page**: Add component in `src/app/pages/`, add route in `src/app/routes.tsx`, add nav entry in `Layout.tsx` if needed.
 - **Auth flow**: `server/routes/auth.ts`, `server/middleware/auth.ts`, `src/app/stores/authStore.ts`, `src/app/components/ProtectedRoute.tsx`.
 - **Data model**: `prisma/schema.prisma`, then `db:generate` and `db:push`; adjust routes and stores.

@@ -6,14 +6,16 @@ import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 interface BarcodeScannerProps {
   onScan: (barcode: string) => void;
   onClose: () => void;
+  /** If true, start the camera automatically when mounted. Default true. */
+  autoStart?: boolean;
 }
 
-export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps)
+export function BarcodeScanner({ onScan, onClose, autoStart = true }: BarcodeScannerProps)
 {
   const { isScanning, error, startScanning, stopScanning, close, elementId } = useBarcodeScanner({
     onScan,
     onClose,
-    autoStart: true,
+    autoStart,
   });
 
   return (

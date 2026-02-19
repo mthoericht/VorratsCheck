@@ -4,18 +4,21 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 
 ## Features
 
-- **Inventory** – Items with name, category (selectable), quantity, expiry date, location; barcode scanner
+- **Inventory** – Items with name, category (selectable), quantity, expiry date, location; barcode scanner with optional product lookup (Open Food Facts)
 - **Must-Have** – Items that should always be in stock (matched by name, optional category)
 - **Wishlist** – Entries with name, optional category and brand, and priority (high/medium/low); grouped by priority
 - **Recipes** – Recipes with ingredients, instructions, matched against inventory
 - **Deals** – Deals filtered by must-have and wishlist
 - **Categories** – Central category management; in inventory, must-have, and wishlist only selectable (no free text)
+- **Layout** – Responsive: burger menu (Sheet) on small viewports, horizontal nav from configurable breakpoint (see `src/app/lib/layoutNav.ts`: `LAYOUT_NAV_BREAKPOINT` = sm/md/lg)
 
 ## Tech Stack
 
-- **Frontend:** React, Vite, React Router, Tailwind, Zustand
-- **Backend:** Express, JWT auth
-- **Database:** Prisma with SQLite
+- **Frontend:** React 18, Vite 6, React Router 7, Tailwind CSS 4, Zustand
+- **UI:** Radix UI primitives, Lucide icons, shadcn-style components in `src/app/components/ui/`
+- **Backend:** Express 4, TypeScript (tsx)
+- **Database:** Prisma 6, SQLite (dev); PostgreSQL supported for production
+- **Auth:** JWT, bcryptjs; token in `Authorization: Bearer <token>` and `localStorage` key `vorratscheck_token`
 
 ## Requirements
 
@@ -83,6 +86,20 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 - **Lint:**  
   `npm run lint` / `npm run lint:fix`
 
+- **Storybook:**  
+  `npm run storybook`  
+  (UI component and page stories at http://localhost:6006)  
+  `npm run build-storybook`  
+  (static build in `storybook-static/`)
+
+- **Tests (Vitest):**  
+  `npm run test`  
+  (watch mode)  
+  `npm run test:run`  
+  (single run; component/unit tests in `src/**/*.test.{ts,tsx}`; excludes API integration tests)  
+  `npm run test:integration:api`  
+  (API integration tests: real API client against test DB; server started automatically; uses `data/test.db`)
+
 - **Prisma Studio (DB UI):**  
   `npm run db:studio`  
   (opens database browser at http://localhost:5555)
@@ -103,17 +120,19 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 
 - `src/app/` – React app (pages, components, stores, hooks, lib)
 - `src/app/pages/` – Dashboard, Inventory, Must-Have, Wishlist, Recipes, Deals, **Settings** (Categories, Appearance), Login, Signup
+- `src/app/components/Layout.tsx` – Header, desktop nav (from breakpoint), mobile burger menu (Sheet), user menu. Uses `useLayout()` and `src/app/lib/layoutNav.ts` (NAV_ITEMS, LAYOUT_NAV_BREAKPOINT, getNavBreakpointClasses).
 - `src/app/components/dashboard/` – Dashboard cards: ExpiredItemsCard, ExpiringSoonCard, LowStockCard, QuickActionsCard (import from `../components/dashboard`)
-- `src/app/components/inventory/` – Inventory page UI: InventoryItemFormDialog, InventoryItemCard, InventoryFilter, InventoryFilterBar, InventoryEmptyState (import from `../components/inventory`). Page logic in `useInventoryPage()`.
+- `src/app/components/inventory/` – Inventory page UI: InventoryItemFormDialog, InventoryItemCard, InventoryFilterBar, InventoryEmptyState (import from `../components/inventory`). Page logic in `useInventoryPage()`.
 - `src/app/components/recipe/` – Recipe page UI: RecipeCard, RecipeEditDialog, RecipeListSection, RecipeViewDialog (import from `../components/recipe`)
 - `src/app/components/mustHave/` – Must-Have page UI: MustHaveCard, MustHaveStats, MustHaveEmptyState, MustHaveItemDialog (import from `../components/mustHave`). Page logic in `useMustHavePage()`.
 - `src/app/components/wishlist/` – Wishlist page UI: WishlistItemDialog, WishlistItemCard, WishlistStats, WishlistPrioritySection, WishlistEmptyState (import from `../components/wishlist`). Page logic in `useWishlistPage()`.
+- `src/app/components/BarcodeScanner.tsx` – Modal scanner; uses `useBarcodeScanner` (start/stop/close, onClose).
 - `src/app/stores/` – Zustand stores (Auth, Inventory, MustHave, Wishlist, Recipes, Deals, Categories)
-- `src/app/hooks/` – Custom hooks (e.g. useRecipesPage for Recipes, useInventoryPage for Inventory, useMustHavePage for Must-Have, useWishlistPage for Wishlist, useDealsPage for Deals)
+- `src/app/hooks/` – useLayout (header/nav state, logout), useRecipesPage, useInventoryPage, useMustHavePage, useWishlistPage, useDealsPage, useBarcodeScanner (start/stop/close, onClose, elementId)
 - `src/app/lib/api/` – API client modules (resource functions per domain, error handling via `ApiError`; entry point `api/index.ts`)
-- `src/app/lib/` – Domain logic: `units.ts` (convertFromGivenToBaseUnit, convertFromBaseToGivenUnit, quantityCovers), `recipe.ts` (ingredients, difficulty, matching), `mustHave.ts` (getStockStatus), `inventory.ts` (INVENTORY_LOCATION_OPTIONS, getExpiryStatus for inventory cards)
+- `src/app/lib/` – Domain/logic: `layoutNav.ts` (NAV_ITEMS, LAYOUT_NAV_BREAKPOINT, getNavBreakpointClasses), `units.ts`, `recipe.ts`, `mustHave.ts`, `inventory.ts` (INVENTORY_LOCATION_OPTIONS, getExpiryStatus), `productLookup.ts` (barcode → product info, e.g. Open Food Facts)
 - `src/styles/theme.css` – **Central theme and colors**: light/dark mode, all CSS variables (`:root` and `.dark`). Edit only this file to change app-wide colors.
-- `server/` – Express API (routes, middleware, Prisma)
+- `server/` – Express API: `app.ts` exports the app (used by tests); `index.ts` runs `app.listen()`. Routes, middleware, Prisma under `server/`.
 - `prisma/schema.prisma` – Data model (User, Category, InventoryItem, MustHaveItem, WishListItem, Recipe, Deal)
 
 ## API (examples)

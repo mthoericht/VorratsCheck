@@ -65,8 +65,8 @@ export function useDealsPage()
     () =>
       dealsFromApi.length
         ? Math.round(
-            dealsFromApi.reduce((sum, deal) => sum + deal.discount, 0) / dealsFromApi.length
-          )
+          dealsFromApi.reduce((sum, deal) => sum + deal.discount, 0) / dealsFromApi.length
+        )
         : 0,
     [dealsFromApi]
   );

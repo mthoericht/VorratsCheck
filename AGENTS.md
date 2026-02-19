@@ -26,7 +26,18 @@ VorratsCheck/
 │       ├── App.tsx              # RouterProvider, DataLoader, Toaster
 │       ├── routes.tsx           # createBrowserRouter: public /login, /signup; protected / with Layout
 │       ├── lib/
-│       │   └── api.ts           # getAuthHeader(), api<T>(path, options) – base API client
+│       │   └── api/            # API client (modular; do not call api() directly)
+│       │       ├── index.ts    # Re-exports: errors, getAuthHeader, resource functions
+│       │       ├── errors.ts   # ApiError, isApiError(), getErrorMessage()
+│       │       ├── client.ts   # getAuthHeader(), internal api() – base HTTP client
+│       │       ├── crud.ts     # createCrud(basePath) – shared get/create/update/delete
+│       │       ├── inventory.ts # getInventory, create/update/deleteInventoryItem
+│       │       ├── mustHave.ts  # getMustHave, createMustHaveItem, deleteMustHaveItem
+│       │       ├── wishlist.ts  # getWishlist, createWishlistItem, deleteWishlistItem
+│       │       ├── categories.ts# getCategories, createCategory, deleteCategory
+│       │       ├── recipes.ts   # getRecipes, create/update/deleteRecipe
+│       │       ├── deals.ts     # getDeals
+│       │       └── auth.ts      # login, signup
 │       ├── stores/              # Zustand stores (auth persisted; others fetch on login)
 │       │   ├── authStore.ts
 │       │   ├── inventoryStore.ts
@@ -43,14 +54,19 @@ VorratsCheck/
 │       │   ├── Deals.tsx
 │       │   ├── Recipes.tsx
 │       │   ├── Categories.tsx
+│       │   ├── Settings.tsx     # Settings layout (nav: Categories, Appearance)
+│       │   ├── Appearance.tsx    # Theme: light / dark / system
 │       │   ├── Login.tsx
 │       │   └── Signup.tsx
 │       └── components/
-│           ├── Layout.tsx       # Header, nav (Dashboard, Vorrat, Must-Have, Wunschliste, Angebote, Rezepte, Kategorien), user menu, Outlet
+│           ├── Layout.tsx       # Header, nav (Dashboard, Vorrat, Must-Have, Wunschliste, Angebote, Rezepte), user menu (Settings, Logout), Outlet
 │           ├── ProtectedRoute.tsx  # Redirects to /login if not authenticated; shows loading while auth resolves
 │           ├── BarcodeScanner.tsx
 │           ├── figma/ImageWithFallback.tsx
 │           └── ui/               # Radix/shadcn-style primitives (button, dialog, select, etc.)
+├── src/styles/
+│   ├── index.css                 # Imports theme.css, tailwind
+│   └── theme.css                 # Central theme: :root (light), .dark (dark), CSS variables
 ├── server/
 │   ├── index.ts                 # Express app: CORS, JSON, mounts /api/* routes, /api/health
 │   ├── lib/prisma.ts            # Prisma client singleton
@@ -64,8 +80,11 @@ VorratsCheck/
 │       ├── deals.ts             # GET /api/deals (optionalAuth: user-scoped or all)
 │       └── categories.ts        # GET/POST/DELETE /api/categories
 ├── prisma/
-│   ├── schema.prisma            # Data model (see below)
-│   └── seed-deals.ts            # Initial deals if empty
+│   └── schema.prisma            # Data model (see below)
+├── scripts/                     # Seed scripts (run via npm run db:seed-*)
+│   ├── seed-deals.ts            # Initial deals if empty
+│   ├── seed-categories.ts       # Default categories per user
+│   └── seed-recipes.ts          # Default recipes per user
 ├── data/
 │   └── dev.db                   # SQLite DB (gitignored; created by db:push)
 ├── public/
@@ -98,9 +117,10 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 - **Routing**: React Router 7 `createBrowserRouter`. Public: `/login`, `/signup`. Protected: `/` with `Layout` and children (index = Dashboard, then inventory, must-have, wishlist, deals, recipes, categories).
 - **Auth**: `useAuthStore` (Zustand + persist). Token in `localStorage` key `vorratscheck_token`. `ProtectedRoute` checks `user` and `isLoading`; redirects to `/login` when not authenticated.
 - **Data loading**: When `user` is set, `App.tsx`’s `DataLoader` calls `fetch()` on inventory, mustHave, wishlist, categories, recipes, and deals stores once.
-- **API**: All requests go through `api()` in `src/app/lib/api.ts`: base URL from `VITE_API_URL`, `Content-Type: application/json`, and `Authorization: Bearer <token>` from `getAuthHeader()`. Non-2xx responses throw with `data.error` or `res.statusText`.
-- **Stores**: Zustand. Each domain store (inventory, mustHave, wishlist, recipes, deals, categories) has `fetch` and CRUD-style methods that call the API and update local state. Auth store also has `login`, `signup`, `logout`, `setUserFromToken`, `setLoading`.
-- **UI**: Tailwind + Radix-based components under `src/app/components/ui/`. Layout and copy use German (e.g. “Vorrat”, “Wunschliste”, “Kategorien”, “Abmelden”).
+- **API**: Use resource functions from `src/app/lib/api` (e.g. `getInventory`, `createCategory`, `login`). Do not call the internal `api()` directly. Base URL from `VITE_API_URL`; `Content-Type: application/json` and `Authorization: Bearer <token>` (via `getAuthHeader()`) are set in the client. On non-2xx or network errors the client throws `ApiError` (with `status`, `message`, optional `details`; helpers: `isApiError(e)`, `getErrorMessage(e)`; getters: `isUnauthorized`, `isNotFound`, `isServerError`).
+- **Stores**: Zustand. Each domain store (inventory, mustHave, wishlist, recipes, deals, categories) has `fetch` and CRUD-style methods that call the API layer (e.g. `getInventory`, `createRecipe`) and update local state. Auth store has `login`, `signup`, `logout`, `setUserFromToken`, `setLoading`.
+- **UI**: Tailwind + Radix-based components under `src/app/components/ui/`. User menu: Settings → sub-nav for Categories and Appearance (light/dark/system). Categories are under Settings, not main nav.
+- **Theming**: `next-themes` in `main.tsx`; theme in `localStorage` key `vorratscheck-theme`. All colors in `src/styles/theme.css`: `:root` (light), `.dark` (dark). Edit only that file for app-wide colors; base vars (e.g. `--background`, `--card`) and semantic (`--color-success`, `--color-warning`, `--color-danger`, `--color-brand` + `*_bg`, `*_border`). Layout and copy use German (e.g. “Vorrat”, “Wunschliste”, “Kategorien”, “Abmelden”).
 
 ### Backend
 
@@ -111,7 +131,7 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 
 ### Database
 
-- **Prisma**: `prisma generate`, `prisma db push`, `tsx prisma/seed-deals.ts`. SQLite for dev; production can switch to PostgreSQL via `DATABASE_URL` and `provider` in `schema.prisma`.
+- **Prisma**: `prisma generate`, `prisma db push`. Seeds live in `scripts/`: `npm run db:seed-deals`, `db:seed-categories`, `db:seed-recipes`. SQLite for dev; production can switch to PostgreSQL via `DATABASE_URL` and `provider` in `schema.prisma`.
 
 ---
 
@@ -122,7 +142,7 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 - `npm run server` – Backend only (tsx server/index.ts, port 3001).
 - `npm run dev:all` – `db:push` then `npm start`.
 - `npm run build` – Vite production build.
-- `npm run db:generate` / `db:push` / `db:seed` – Prisma generate, push schema, seed.
+- `npm run db:generate` / `db:push` – Prisma generate, push schema. `db:seed-deals` / `db:seed-categories` / `db:seed-recipes` – run scripts in `scripts/`.
 - `npm run lint` / `lint:fix` – ESLint.
 
 ---
@@ -147,11 +167,11 @@ Protected routes require header: `Authorization: Bearer <token>`.
 
 ## Where to Change Things
 
-- **New API route**: Add router in `server/routes/`, mount in `server/index.ts`, add corresponding Zustand actions and (if needed) types in `src/app/stores/`, call from pages or components.
+- **New API route**: Add router in `server/routes/`, mount in `server/index.ts`. On the frontend add a module under `src/app/lib/api/` (e.g. `api/foo.ts`) with resource functions that use `api()` from `./client` or `createCrud()` from `./crud`; re-export from `src/app/lib/api/index.ts`. Add corresponding Zustand actions and (if needed) types in `src/app/stores/`; call from pages or components.
 - **New page**: Add component in `src/app/pages/`, add route in `src/app/routes.tsx`, add nav entry in `Layout.tsx` if needed.
 - **Auth flow**: `server/routes/auth.ts`, `server/middleware/auth.ts`, `src/app/stores/authStore.ts`, `src/app/components/ProtectedRoute.tsx`.
 - **Data model**: `prisma/schema.prisma`, then `db:generate` and `db:push`; adjust routes and stores.
-- **UI/theme**: Tailwind + components in `src/app/components/ui/`; app shell and nav in `Layout.tsx`.
+- **UI/theme**: Tailwind + components in `src/app/components/ui/`; app shell and nav in `Layout.tsx`. **Colors**: edit only `src/styles/theme.css` – `:root` (light) and `.dark` (dark) with base and semantic variables. **Appearance**: user menu → Settings → Appearance (light/dark/system). **Categories**: user menu → Settings → Categories.
 
 ---
 

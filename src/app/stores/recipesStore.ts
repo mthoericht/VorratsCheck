@@ -1,5 +1,10 @@
 import { create } from 'zustand';
-import { api } from '../lib/api';
+import {
+  getRecipes,
+  createRecipe,
+  updateRecipe,
+  deleteRecipe,
+} from '../lib/api';
 
 export interface Recipe {
   id: string;
@@ -28,7 +33,7 @@ export const useRecipesStore = create<RecipesState>((set, get) => ({
   {
     try 
     {
-      const items = await api<Recipe[]>('/api/recipes');
+      const items = await getRecipes<Recipe[]>();
       set({ items, loaded: true });
     }
     catch 
@@ -39,25 +44,19 @@ export const useRecipesStore = create<RecipesState>((set, get) => ({
 
   add: async (recipe) => 
   {
-    const created = await api<Recipe>('/api/recipes', {
-      method: 'POST',
-      body: JSON.stringify(recipe),
-    });
+    const created = await createRecipe<Recipe>(recipe);
     set({ items: [...get().items, created] });
   },
 
   update: async (id, updates) => 
   {
-    const updated = await api<Recipe>(`/api/recipes/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(updates),
-    });
+    const updated = await updateRecipe<Recipe>(id, updates);
     set({ items: get().items.map((r) => (r.id === id ? updated : r)) });
   },
 
   remove: async (id) => 
   {
-    await api(`/api/recipes/${id}`, { method: 'DELETE' });
+    await deleteRecipe(id);
     set({ items: get().items.filter((r) => r.id !== id) });
   },
 }));

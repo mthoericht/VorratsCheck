@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { api } from '../lib/api';
+import { login as apiLogin, signup as apiSignup } from '../lib/api';
 
 export interface User {
   id: string;
@@ -38,10 +38,7 @@ export const useAuthStore = create<AuthState>()(
       {
         try 
         {
-          const { token, user } = await api<{ token: string; user: User }>('/api/auth/login', {
-            method: 'POST',
-            body: JSON.stringify({ email, password }),
-          });
+          const { token, user } = await apiLogin<{ token: string; user: User }>(email, password);
           localStorage.setItem('vorratscheck_token', token);
           set({ user, token });
           return { success: true };
@@ -56,10 +53,12 @@ export const useAuthStore = create<AuthState>()(
       {
         try 
         {
-          const { token, user } = await api<{ token: string; user: User }>('/api/auth/signup', {
-            method: 'POST',
-            body: JSON.stringify({ username, email, password, inviteCode }),
-          });
+          const { token, user } = await apiSignup<{ token: string; user: User }>(
+            username,
+            email,
+            password,
+            inviteCode
+          );
           localStorage.setItem('vorratscheck_token', token);
           set({ user, token });
           return { success: true };

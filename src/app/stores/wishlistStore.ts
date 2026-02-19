@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { api } from '../lib/api';
+import { getWishlist, createWishlistItem, deleteWishlistItem } from '../lib/api';
 
 export interface WishListItem {
   id: string;
@@ -26,7 +26,7 @@ export const useWishlistStore = create<WishListState>((set, get) => ({
   {
     try 
     {
-      const items = await api<WishListItem[]>('/api/wishlist');
+      const items = await getWishlist<WishListItem[]>();
       set({ items, loaded: true });
     }
     catch 
@@ -37,16 +37,13 @@ export const useWishlistStore = create<WishListState>((set, get) => ({
 
   add: async (item) => 
   {
-    const created = await api<WishListItem>('/api/wishlist', {
-      method: 'POST',
-      body: JSON.stringify(item),
-    });
+    const created = await createWishlistItem<WishListItem>(item);
     set({ items: [...get().items, created] });
   },
 
   remove: async (id) => 
   {
-    await api(`/api/wishlist/${id}`, { method: 'DELETE' });
+    await deleteWishlistItem(id);
     set({ items: get().items.filter((i) => i.id !== id) });
   },
 }));

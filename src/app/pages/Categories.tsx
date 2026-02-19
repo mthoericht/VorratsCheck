@@ -55,7 +55,7 @@ export function Categories()
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Kategorien</h2>
+          <h3 className="text-xl font-semibold text-gray-900">Kategorien</h3>
           <p className="text-gray-600 mt-1">
             Kategorien verwalten – werden in Vorrat, Must-Have und Wunschliste zur Auswahl genutzt
           </p>

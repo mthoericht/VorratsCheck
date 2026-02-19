@@ -55,10 +55,12 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
    ```bash
    npm run db:generate
    npm run db:push
-   npm run db:seed
+   npm run db:seed-deals
+   npm run db:seed-categories   # requires at least one user
+   npm run db:seed-recipes       # requires at least one user
    ```
 
-   `db:seed` creates initial deals if the table is empty.
+   Seeds live in `scripts/`. `db:seed-deals` creates initial deals if the table is empty. Categories and recipes are seeded per user (create a user first).
 
 ## Development
 
@@ -81,6 +83,15 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 - **Lint:**  
   `npm run lint` / `npm run lint:fix`
 
+- **Prisma Studio (DB UI):**  
+  `npm run db:studio`  
+  (opens database browser at http://localhost:5555)
+
+## Theming
+
+- **Appearance**: User menu (top right) → **Settings** → **Appearance**. Choose light, dark, or system.
+- **Colors**: All theme colors are defined in `src/styles/theme.css`. Edit `:root` for light mode and `.dark` for dark mode; base variables (e.g. `--background`, `--card`) and semantic ones (`--color-success`, `--color-warning`, `--color-danger`, `--color-brand`) are managed there.
+
 ## Production
 
 - **Build frontend:** `npm run build`
@@ -91,9 +102,10 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 ## Project Structure (overview)
 
 - `src/app/` – React app (pages, components, stores, lib)
-- `src/app/pages/` – Dashboard, Inventory, Must-Have, Wishlist, Recipes, Deals, **Categories**
-- `src/app/stores/` – Zustand stores (Auth, Inventory, MustHave, Wishlist, Recipes, Deals, **Categories**)
-- `src/app/lib/api.ts` – API client (base URL, auth header)
+- `src/app/pages/` – Dashboard, Inventory, Must-Have, Wishlist, Recipes, Deals, **Settings** (Categories, Appearance), Login, Signup
+- `src/app/stores/` – Zustand stores (Auth, Inventory, MustHave, Wishlist, Recipes, Deals, Categories)
+- `src/app/lib/api/` – API client modules (resource functions per domain, error handling via `ApiError`; entry point `api/index.ts`)
+- `src/styles/theme.css` – **Central theme and colors**: light/dark mode, all CSS variables (`:root` and `.dark`). Edit only this file to change app-wide colors.
 - `server/` – Express API (routes, middleware, Prisma)
 - `prisma/schema.prisma` – Data model (User, Category, InventoryItem, MustHaveItem, WishListItem, Recipe, Deal)
 

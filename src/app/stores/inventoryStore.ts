@@ -1,5 +1,10 @@
 import { create } from 'zustand';
-import { api } from '../lib/api';
+import {
+  getInventory,
+  createInventoryItem,
+  updateInventoryItem,
+  deleteInventoryItem,
+} from '../lib/api';
 
 export interface InventoryItem {
   id: string;
@@ -14,7 +19,8 @@ export interface InventoryItem {
   addedDate: string;
 }
 
-interface InventoryState {
+interface InventoryState 
+{
   items: InventoryItem[];
   loaded: boolean;
   fetch: () => Promise<void>;
@@ -23,15 +29,12 @@ interface InventoryState {
   remove: (id: string) => Promise<void>;
 }
 
-export const useInventoryStore = create<InventoryState>((set, get) => ({
-  items: [],
-  loaded: false,
-
+export const useInventoryStore = create<InventoryState>((set, get) => ({items: [],loaded: false,  
   fetch: async () => 
   {
     try 
     {
-      const items = await api<InventoryItem[]>('/api/inventory');
+      const items = await getInventory<InventoryItem[]>();
       set({ items, loaded: true });
     }
     catch 
@@ -42,25 +45,19 @@ export const useInventoryStore = create<InventoryState>((set, get) => ({
 
   add: async (item) => 
   {
-    const created = await api<InventoryItem>('/api/inventory', {
-      method: 'POST',
-      body: JSON.stringify(item),
-    });
+    const created = await createInventoryItem<InventoryItem>(item);
     set({ items: [created, ...get().items] });
   },
 
   update: async (id, updates) => 
   {
-    const updated = await api<InventoryItem>(`/api/inventory/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(updates),
-    });
+    const updated = await updateInventoryItem<InventoryItem>(id, updates);
     set({ items: get().items.map((i) => (i.id === id ? updated : i)) });
   },
 
   remove: async (id) => 
   {
-    await api(`/api/inventory/${id}`, { method: 'DELETE' });
+    await deleteInventoryItem(id);
     set({ items: get().items.filter((i) => i.id !== id) });
   },
 }));

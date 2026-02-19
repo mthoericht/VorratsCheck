@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { api } from '../lib/api';
+import { getCategories, createCategory, deleteCategory } from '../lib/api';
 
 export interface Category {
   id: string;
@@ -22,7 +22,7 @@ export const useCategoriesStore = create<CategoriesState>((set, get) => ({
   {
     try 
     {
-      const items = await api<Category[]>('/api/categories');
+      const items = await getCategories<Category[]>();
       set({ items, loaded: true });
     }
     catch 
@@ -33,16 +33,13 @@ export const useCategoriesStore = create<CategoriesState>((set, get) => ({
 
   add: async (name) => 
   {
-    const created = await api<Category>('/api/categories', {
-      method: 'POST',
-      body: JSON.stringify({ name: name.trim() }),
-    });
+    const created = await createCategory<Category>(name);
     set({ items: [...get().items, created].sort((a, b) => a.name.localeCompare(b.name)) });
   },
 
   remove: async (id) => 
   {
-    await api(`/api/categories/${id}`, { method: 'DELETE' });
+    await deleteCategory(id);
     set({ items: get().items.filter((i) => i.id !== id) });
   },
 }));

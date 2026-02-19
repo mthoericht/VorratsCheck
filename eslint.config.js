@@ -21,6 +21,7 @@ export default [
       globals: globals.browser,
     },
     rules: {
+      semi: ['error', 'always'],
       'brace-style': ['error', 'allman', { allowSingleLine: true }],
       indent: [
         'error',

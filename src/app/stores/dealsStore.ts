@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { api } from '../lib/api';
+import { getDeals } from '../lib/api';
 
 export interface Deal {
   id: string;
@@ -28,7 +28,7 @@ export const useDealsStore = create<DealsState>((set) => ({
   {
     try 
     {
-      const items = await api<Deal[]>('/api/deals');
+      const items = await getDeals<Deal[]>();
       set({ items, loaded: true });
     }
     catch 

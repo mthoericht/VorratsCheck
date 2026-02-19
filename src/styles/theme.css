@@ -1,5 +1,19 @@
+/**
+ * VorratsCheck – central theme and color settings
+ * All theme colors are defined here. Change only in :root (light) and .dark (dark).
+ *
+ * Base: --background, --foreground, --card, --border, --muted, --accent, --primary, --destructive
+ * Semantic (mainly dark mode): --color-success, --color-warning, --color-danger, --color-brand
+ *   plus *_bg and *_border for backgrounds and borders.
+ */
+
 @custom-variant dark (&:is(.dark *));
 
+html {
+  background: var(--background);
+}
+
+/* ========== Light mode ========== */
 :root {
   --font-size: 16px;
   --background: #ffffff;
@@ -25,12 +39,13 @@
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --ring: oklch(0.708 0 0);
+  --radius: 0.625rem;
+  /* Chart / sidebar (optional) */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: #030213;
@@ -41,7 +56,10 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+/* ========== Dark mode – all colors defined here ========== */
 .dark {
+  color: var(--foreground);
+  /* Base */
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.145 0 0);
@@ -76,6 +94,118 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+
+  /* Semantic colors (green / orange / yellow / red / brand) – adjust here for app-wide changes */
+  --color-success: oklch(0.75 0.18 160);
+  --color-success-bg: oklch(0.28 0.08 160 / 0.4);
+  --color-success-border: oklch(0.4 0.1 160);
+  --color-success-strong: oklch(0.55 0.2 160);
+  --color-warning: oklch(0.82 0.16 55);
+  --color-warning-bg: oklch(0.35 0.1 55 / 0.4);
+  --color-warning-border: oklch(0.45 0.12 55);
+  --color-warning-strong: oklch(0.7 0.16 55);
+  --color-warning-alt: oklch(0.88 0.18 95);
+  --color-warning-alt-bg: oklch(0.35 0.12 95 / 0.4);
+  --color-warning-alt-border: oklch(0.45 0.12 95);
+  --color-warning-alt-strong: oklch(0.75 0.18 85);
+  --color-danger: oklch(0.72 0.2 25);
+  --color-danger-bg: oklch(0.35 0.12 25 / 0.4);
+  --color-danger-border: oklch(0.45 0.12 25);
+  --color-brand: oklch(0.75 0.18 165);
+  --color-brand-strong: oklch(0.55 0.18 165);
+  --color-brand-border: oklch(0.6 0.18 160);
+  --color-warning-border-strong: oklch(0.7 0.16 75);
+}
+
+/* Dark mode: previously gray/black text → light foreground */
+.dark [class*="text-gray-900"],
+.dark [class*="text-gray-800"],
+.dark [class*="text-gray-700"],
+.dark [class*="text-gray-600"] {
+  color: var(--foreground) !important;
+}
+.dark [class*="text-gray-500"],
+.dark [class*="text-gray-400"],
+.dark [class*="text-gray-300"] {
+  color: var(--muted-foreground) !important;
+}
+
+/* Dark mode: semantic colors (use variables from .dark above) */
+.dark [class*="text-green-"],
+.dark [class*="text-emerald-"] {
+  color: var(--color-success) !important;
+}
+.dark [class*="text-orange-"],
+.dark [class*="text-amber-"] {
+  color: var(--color-warning) !important;
+}
+.dark [class*="text-yellow-"] {
+  color: var(--color-warning-alt) !important;
+}
+.dark [class*="text-red-"] {
+  color: var(--color-danger) !important;
+}
+.dark [class*="bg-green-50"],
+.dark [class*="bg-green-100"] {
+  background-color: var(--color-success-bg) !important;
+}
+.dark [class*="bg-orange-50"],
+.dark [class*="bg-orange-100"] {
+  background-color: var(--color-warning-bg) !important;
+}
+.dark [class*="bg-yellow-50"],
+.dark [class*="bg-yellow-100"] {
+  background-color: var(--color-warning-alt-bg) !important;
+}
+.dark [class*="bg-red-50"],
+.dark [class*="bg-red-100"] {
+  background-color: var(--color-danger-bg) !important;
+}
+.dark [class*="border-green-200"],
+.dark [class*="border-emerald-200"] {
+  border-color: var(--color-success-border) !important;
+}
+.dark [class*="border-orange-200"] {
+  border-color: var(--color-warning-border) !important;
+}
+.dark [class*="border-yellow-200"] {
+  border-color: var(--color-warning-alt-border) !important;
+}
+.dark [class*="border-red-200"] {
+  border-color: var(--color-danger-border) !important;
+}
+.dark [class*="bg-green-600"],
+.dark [class*="bg-green-500"] {
+  background-color: var(--color-success-strong) !important;
+}
+.dark [class*="bg-emerald-600"],
+.dark [class*="bg-emerald-500"] {
+  background-color: var(--color-brand-strong) !important;
+}
+.dark [class*="bg-yellow-600"],
+.dark [class*="bg-amber-600"] {
+  background-color: var(--color-warning-alt-strong) !important;
+}
+.dark [class*="bg-orange-600"] {
+  background-color: var(--color-warning-strong) !important;
+}
+.dark [class*="border-green-600"],
+.dark [class*="border-emerald-600"] {
+  border-color: var(--color-brand-border) !important;
+}
+.dark [class*="border-orange-600"],
+.dark [class*="border-yellow-600"] {
+  border-color: var(--color-warning-border-strong) !important;
+}
+
+/* Dark mode: card inner content (e.g. bg-white) → use theme muted background */
+.dark [data-slot="card"] [class*="bg-white"],
+.dark [data-slot="card-content"] [class*="bg-white"] {
+  background-color: var(--muted) !important;
+}
+.dark [data-slot="card"] .bg-white,
+.dark [data-slot="card-content"] .bg-white {
+  background-color: var(--muted) !important;
 }
 
 @theme inline {
@@ -96,6 +226,11 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
+  /* Semantic (defined in .dark; fallback for light mode) */
+  --color-success: var(--color-success, oklch(0.45 0.2 160));
+  --color-warning: var(--color-warning, oklch(0.65 0.18 55));
+  --color-danger: var(--color-danger, oklch(0.55 0.2 25));
+  --color-brand: var(--color-brand, oklch(0.55 0.18 165));
   --color-input: var(--input);
   --color-input-background: var(--input-background);
   --color-switch-background: var(--switch-background);

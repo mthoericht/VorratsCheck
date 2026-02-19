@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { api } from '../lib/api';
+import { getMustHave, createMustHaveItem, deleteMustHaveItem } from '../lib/api';
 
 export interface MustHaveItem {
   id: string;
@@ -24,7 +24,7 @@ export const useMustHaveStore = create<MustHaveState>((set, get) => ({
   {
     try 
     {
-      const items = await api<MustHaveItem[]>('/api/must-have');
+      const items = await getMustHave<MustHaveItem[]>();
       set({ items, loaded: true });
     }
     catch 
@@ -35,16 +35,13 @@ export const useMustHaveStore = create<MustHaveState>((set, get) => ({
 
   add: async (item) => 
   {
-    const created = await api<MustHaveItem>('/api/must-have', {
-      method: 'POST',
-      body: JSON.stringify(item),
-    });
+    const created = await createMustHaveItem<MustHaveItem>(item);
     set({ items: [...get().items, created] });
   },
 
   remove: async (id) => 
   {
-    await api(`/api/must-have/${id}`, { method: 'DELETE' });
+    await deleteMustHaveItem(id);
     set({ items: get().items.filter((i) => i.id !== id) });
   },
 }));

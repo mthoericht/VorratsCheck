@@ -20,7 +20,9 @@ else if (process.env.DATABASE_URL.startsWith('file:./'))
 }
 
 import express from 'express';
+import helmet from 'helmet';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import { authRouter } from './routes/auth.js';
 import { inventoryRouter } from './routes/inventory.js';
 import { mustHaveRouter } from './routes/mustHave.js';
@@ -31,10 +33,19 @@ import { categoriesRouter } from './routes/categories.js';
 
 export const app = express();
 
-app.use(cors({ origin: process.env.VITE_ORIGIN ?? 'http://localhost:5173', credentials: true }));
-app.use(express.json());
+app.use(helmet());
+app.use(cors({ origin: process.env.VITE_ORIGIN ?? 'http://localhost:5173' }));
+app.use(express.json({ limit: '100kb' }));
 
-app.use('/api/auth', authRouter);
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Zu viele Anfragen, bitte versuchen Sie es später erneut' },
+});
+
+app.use('/api/auth', authLimiter, authRouter);
 app.use('/api/inventory', inventoryRouter);
 app.use('/api/must-have', mustHaveRouter);
 app.use('/api/wishlist', wishlistRouter);

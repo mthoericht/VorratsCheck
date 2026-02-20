@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { isValidPriority, isValidWishlistType } from '../../shared/validation.js';
 
 export const wishlistRouter = Router();
 wishlistRouter.use(authMiddleware);
@@ -38,6 +39,16 @@ wishlistRouter.post('/', async (req: Request, res: Response) =>
     if (!name || !type || !priority) 
     {
       res.status(400).json({ error: 'name, type und priority erforderlich' });
+      return;
+    }
+    if (!isValidWishlistType(type))
+    {
+      res.status(400).json({ error: 'type muss "category" oder "specific" sein' });
+      return;
+    }
+    if (!isValidPriority(priority))
+    {
+      res.status(400).json({ error: 'priority muss "low", "medium" oder "high" sein' });
       return;
     }
     const item = await prisma.wishListItem.create({
@@ -79,8 +90,18 @@ wishlistRouter.patch('/:id', async (req: Request, res: Response) =>
       res.status(404).json({ error: 'Eintrag nicht gefunden' });
       return;
     }
+    if (priority != null && !isValidPriority(priority))
+    {
+      res.status(400).json({ error: 'priority muss "low", "medium" oder "high" sein' });
+      return;
+    }
+    if (type != null && !isValidWishlistType(type))
+    {
+      res.status(400).json({ error: 'type muss "category" oder "specific" sein' });
+      return;
+    }
     const item = await prisma.wishListItem.update({
-      where: { id },
+      where: { id, userId },
       data: {
         ...(name != null && { name }),
         ...(type != null && { type }),
@@ -117,7 +138,7 @@ wishlistRouter.delete('/:id', async (req: Request, res: Response) =>
       res.status(404).json({ error: 'Eintrag nicht gefunden' });
       return;
     }
-    await prisma.wishListItem.delete({ where: { id } });
+    await prisma.wishListItem.delete({ where: { id, userId } });
     res.status(204).send();
   }
   catch (e) 

@@ -107,7 +107,7 @@ categoriesRouter.delete('/:id', async (req: Request, res: Response) =>
       return;
     }
 
-    await category.delete({ where: { id } });
+    await category.delete({ where: { id, userId } });
     res.status(204).send();
   }
   catch (e) 

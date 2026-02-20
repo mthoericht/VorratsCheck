@@ -44,8 +44,8 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
    Main variables:
 
    - `DATABASE_URL` – e.g. `file:./data/dev.db`
-   - `JWT_SECRET` – secret for JWT (use a strong value in production)
-   - `INVITE_CODE` – invite code for registration (e.g. `VORRATSCHECK2026`)
+   - `JWT_SECRET` – secret for JWT (**required** in production; the app warns on startup if the default is used)
+   - `INVITE_CODE` – invite code for registration (**required** in production; the app warns if the default is used)
 
    Optional:
 
@@ -116,12 +116,23 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 - **Database:** For production use e.g. PostgreSQL and set `DATABASE_URL` and `provider` in `prisma/schema.prisma`.
 - **Environment:** Set `VITE_API_URL` to the public API URL when the frontend is served from another origin so the client can reach the API.
 
+### Security Hardening
+
+- **JWT_SECRET**: Always set a strong, unique `JWT_SECRET` in production. The app warns on startup if the default dev secret is used.
+- **INVITE_CODE**: Set a strong `INVITE_CODE` or disable signup. The app warns on startup if the default code is used.
+- **HTTPS**: Always run behind HTTPS in production (e.g. via a reverse proxy like nginx or Caddy).
+- **Rate Limiting**: Auth routes (`/api/auth/*`) are rate-limited to 20 requests per 15 minutes. Adjust in `server/app.ts` if needed.
+- **Security Headers**: `helmet` is enabled by default for HTTP security headers (HSTS, CSP, etc.).
+- **CORS**: Configure `VITE_ORIGIN` to your exact production frontend URL. Do not leave it as `localhost`.
+
 ## Project Structure (overview)
 
+- `shared/constants.ts` – Shared constants and types (units, priorities, difficulties, wishlist types, locations); `shared/validation.ts` – Shared validation helpers. Both used by frontend (`@shared/…`) and backend (`../../shared/….js`)
 - `src/app/` – React app (pages, components, stores, hooks, lib)
 - `src/app/pages/` – Dashboard, Inventory, Must-Have, Wishlist, Recipes, Deals, **Settings** (Categories, Appearance), Login, Signup
 - `src/app/components/Layout.tsx` – Header, desktop nav (from breakpoint), mobile burger menu (Sheet), user menu. Uses `useLayout()` and `src/app/lib/layoutNav.ts` (NAV_ITEMS, LAYOUT_NAV_BREAKPOINT, getNavBreakpointClasses).
 - `src/app/components/dashboard/` – Dashboard cards: ExpiredItemsCard, ExpiringSoonCard, LowStockCard, QuickActionsCard (import from `../components/dashboard`)
+- `src/app/components/deals/` – Deals page UI: DealCard, DealsStats, DealsFilterBar, DealsEmptyState (import from `../components/deals`). Page logic in `useDealsPage()`.
 - `src/app/components/inventory/` – Inventory page UI: InventoryItemFormDialog, InventoryItemCard, InventoryFilterBar, InventoryEmptyState (import from `../components/inventory`). Page logic in `useInventoryPage()`.
 - `src/app/components/recipe/` – Recipe page UI: RecipeCard, RecipeEditDialog, RecipeListSection, RecipeViewDialog (import from `../components/recipe`)
 - `src/app/components/mustHave/` – Must-Have page UI: MustHaveCard, MustHaveStats, MustHaveEmptyState, MustHaveItemDialog (import from `../components/mustHave`). Page logic in `useMustHavePage()`.
@@ -144,7 +155,9 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 - `GET/POST/PATCH/DELETE /api/must-have` – Must-have list
 - `GET/POST/PATCH/DELETE /api/wishlist` – Wishlist
 - `GET/POST/PATCH/DELETE /api/recipes` – Recipes
-- `GET /api/deals` – Deals (optional auth)
+- `GET /api/deals` – Deals (optional auth: authenticated users see own + seeded deals, unauthenticated see only seeded)
+- `POST /api/deals` – Create deal (auth required)
+- `DELETE /api/deals/:id` – Delete own deal (auth required)
 - `GET/POST/DELETE /api/categories` – Categories
 
 Protected routes require header: `Authorization: Bearer <token>`.

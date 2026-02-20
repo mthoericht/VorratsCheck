@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { toPositiveNumber } from '../../shared/validation.js';
 
 export const mustHaveRouter = Router();
 mustHaveRouter.use(authMiddleware);
@@ -32,7 +33,7 @@ mustHaveRouter.post('/', async (req: Request, res: Response) =>
       return;
     }
     const item = await prisma.mustHaveItem.create({
-      data: { userId, name, category: category || null, minQuantity: minQuantity ?? 1, unit: unit || null },
+      data: { userId, name, category: category || null, minQuantity: toPositiveNumber(minQuantity, 1), unit: unit || null },
     });
     res.status(201).json({ id: item.id, name: item.name, category: item.category ?? undefined, minQuantity: item.minQuantity, unit: item.unit ?? undefined });
   }
@@ -57,11 +58,11 @@ async function handleUpdateMustHave(req: Request, res: Response)
       return;
     }
     const item = await prisma.mustHaveItem.update({
-      where: { id },
+      where: { id, userId },
       data: {
         ...(name !== undefined && { name }),
         ...(category !== undefined && { category: category || null }),
-        ...(minQuantity !== undefined && { minQuantity }),
+        ...(minQuantity !== undefined && { minQuantity: toPositiveNumber(minQuantity, existing.minQuantity) }),
         ...(unit !== undefined && { unit: unit || null }),
       },
     });
@@ -89,7 +90,7 @@ mustHaveRouter.delete('/:id', async (req: Request, res: Response) =>
       res.status(404).json({ error: 'Eintrag nicht gefunden' });
       return;
     }
-    await prisma.mustHaveItem.delete({ where: { id } });
+    await prisma.mustHaveItem.delete({ where: { id, userId } });
     res.status(204).send();
   }
   catch (e) 

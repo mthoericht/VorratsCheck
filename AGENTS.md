@@ -20,6 +20,9 @@ This document describes the **VorratsCheck** codebase for AI agents and develope
 
 ```
 VorratsCheck/
+├── shared/
+│   ├── constants.ts             # Shared constants & types (units, priorities, difficulties, etc.) — used by both frontend (@shared/constants) and backend (../../shared/constants.js)
+│   └── validation.ts            # Shared validation helpers (isValidNumber, isValidDate, etc.) — used by both frontend (@shared/validation) and backend (../../shared/validation.js)
 ├── src/
 │   ├── main.tsx                 # Entry: React root, mounts App
 │   └── app/
@@ -222,7 +225,9 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 | GET/POST/PATCH/DELETE | /api/must-have | Must-have list. |
 | GET/POST/PATCH/DELETE | /api/wishlist | Wishlist. |
 | GET/POST/PATCH/DELETE | /api/recipes | Recipes. |
-| GET | /api/deals | Optional auth; user-scoped or all deals. |
+| GET | /api/deals | Optional auth; authenticated users see own + seeded deals, unauthenticated see only seeded. |
+| POST | /api/deals | Create deal (auth required). |
+| DELETE | /api/deals/:id | Delete own deal (auth required). |
 | GET/POST/DELETE | /api/categories | Categories. |
 
 Protected routes require header: `Authorization: Bearer <token>`.
@@ -241,7 +246,7 @@ Protected routes require header: `Authorization: Bearer <token>`.
 - **Inventory UI**: Components in `src/app/components/inventory/` (InventoryItemFormDialog, InventoryItemCard, InventoryFilter, InventoryFilterBar, InventoryEmptyState). Import from `../components/inventory`. The Inventory page uses `useInventoryPage()` for form state, filters, filtered list, and CRUD. Location options (form and filter) and expiry display come from `lib/inventory.ts` (`INVENTORY_LOCATION_OPTIONS`, `getExpiryStatus`). Dialogs use `Category` from `stores/categoriesStore`.
 - **Must-Have UI**: Components in `src/app/components/mustHave/` (MustHaveCard, MustHaveStats, MustHaveEmptyState, MustHaveItemDialog). Import from `../components/mustHave`. The Must-Have page uses `useMustHavePage()` for form state, stock counts (sufficient/low), and CRUD. Dialogs use `Category` from `stores/categoriesStore`. Low-stock logic (Dashboard and Must-Have page) uses `lib/mustHave.ts` (`getStockStatus`) for unit-aware comparison (weight→g, volume→ml, countable→same unit).
 - **Wishlist UI**: Components in `src/app/components/wishlist/` (WishlistItemDialog, WishlistItemCard, WishlistStats, WishlistPrioritySection, WishlistEmptyState, priorityUtils). Import from `../components/wishlist`. The Wishlist page uses `useWishlistPage()` for form state, grouped items, and CRUD. Dialogs use `Category` from `stores/categoriesStore`. The wishlist form has no type selector; name is required, category and brand are optional and always shown; priority is required. Items are grouped by priority on the page.
-- **Deals page**: Uses `useDealsPage()` for filter state (all/mustHave/wishList), match logic (must-have, wishlist), and filtered deals. No extracted components; UI is inline in `Deals.tsx`.
+- **Deals page**: Uses `useDealsPage()` for filter state (all/mustHave/wishList), match logic (must-have, wishlist), and filtered deals. Components in `src/app/components/deals/` (DealCard, DealsStats, DealsFilterBar, DealsEmptyState). Import from `../components/deals`.
 
 ---
 

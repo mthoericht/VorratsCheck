@@ -1,9 +1,7 @@
+import { INVENTORY_LOCATIONS } from '@shared/constants';
+
 /** Options for inventory item location (storage place). Used in form and filter. */
-export const INVENTORY_LOCATION_OPTIONS: { value: string; label: string }[] = [
-  { value: 'Kühlschrank', label: 'Kühlschrank' },
-  { value: 'Gefrierschrank', label: 'Gefrierschrank' },
-  { value: 'Vorratsschrank', label: 'Vorratsschrank' },
-];
+export const INVENTORY_LOCATION_OPTIONS = INVENTORY_LOCATIONS as readonly { value: string; label: string }[];
 
 /**
  * Returns expiry status for display (badge label and variant).

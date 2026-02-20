@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { toPositiveNumber, isValidDate } from '../../shared/validation.js';
 
 export const inventoryRouter = Router();
 inventoryRouter.use(authMiddleware);
@@ -47,7 +48,7 @@ inventoryRouter.post('/', async (req: Request, res: Response) =>
       res.status(400).json({ error: 'name und category erforderlich' });
       return;
     }
-    const quantityNum = quantity != null && quantity !== '' ? Number(quantity) : 1;
+    const quantityNum = quantity != null && quantity !== '' ? toPositiveNumber(quantity, 1) : 1;
     const unitVal = unit || 'Stück';
     const item = await prisma.inventoryItem.create({
       data: {
@@ -58,7 +59,7 @@ inventoryRouter.post('/', async (req: Request, res: Response) =>
         barcode: barcode || null,
         quantity: quantityNum,
         unit: unitVal,
-        expiryDate: expiryDate ? new Date(expiryDate) : null,
+        expiryDate: expiryDate && isValidDate(expiryDate) ? new Date(expiryDate) : null,
         location: location || null,
       },
     });
@@ -96,15 +97,15 @@ inventoryRouter.patch('/:id', async (req: Request, res: Response) =>
     }
     const { name, category, brand, barcode, quantity, unit, expiryDate, location } = req.body;
     const item = await prisma.inventoryItem.update({
-      where: { id },
+      where: { id, userId },
       data: {
         ...(name != null && { name }),
         ...(category != null && { category }),
         ...(brand !== undefined && { brand: brand || null }),
         ...(barcode !== undefined && { barcode: barcode || null }),
-        ...(quantity != null && { quantity: Number(quantity) }),
+        ...(quantity != null && { quantity: toPositiveNumber(quantity, existing.quantity) }),
         ...(unit != null && { unit }),
-        ...(expiryDate !== undefined && { expiryDate: expiryDate ? new Date(expiryDate) : null }),
+        ...(expiryDate !== undefined && { expiryDate: expiryDate && isValidDate(expiryDate) ? new Date(expiryDate) : null }),
         ...(location !== undefined && { location: location || null }),
       },
     });
@@ -140,7 +141,7 @@ inventoryRouter.delete('/:id', async (req: Request, res: Response) =>
       res.status(404).json({ error: 'Eintrag nicht gefunden' });
       return;
     }
-    await prisma.inventoryItem.delete({ where: { id } });
+    await prisma.inventoryItem.delete({ where: { id, userId } });
     res.status(204).send();
   }
   catch (e) 

@@ -4,23 +4,8 @@
  * Countable units (Stück, Zehen, etc.) are compared only when the same unit is used.
  */
 
-/** Units for dropdowns (value → label). */
-export const UNITS = [
-  { value: 'Stück', label: 'Stück' },
-  { value: 'g', label: 'Gramm' },
-  { value: 'kg', label: 'Kilogramm' },
-  { value: 'ml', label: 'Milliliter' },
-  { value: 'Liter', label: 'Liter' },
-  { value: 'Dose', label: 'Dose' },
-  { value: 'Packung', label: 'Packung' },
-  { value: 'EL', label: 'EL' },
-  { value: 'TL', label: 'TL' },
-  { value: 'Zehen', label: 'Zehen' },
-  { value: 'Prise', label: 'Prise' },
-  { value: 'Kugeln', label: 'Kugeln' },
-] as const;
-
-export type UnitValue = (typeof UNITS)[number]['value'];
+import { UNITS, type UnitValue } from '@shared/constants';
+export { UNITS, type UnitValue };
 
 // --- Conversion for inventory–recipe matching ---
 

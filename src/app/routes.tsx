@@ -49,7 +49,6 @@ export const router = createBrowserRouter([
           { path: "appearance", Component: SettingsAppearance },
         ],
       },
-      { path: "categories", Component: SettingsCategories },
     ],
   },
 ]);

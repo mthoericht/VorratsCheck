@@ -7,6 +7,7 @@ import {
 } from '../lib/api';
 
 import type { RecipeIngredient } from '../lib/recipe';
+import type { Difficulty } from '@shared/constants';
 
 export interface Recipe 
 {
@@ -15,7 +16,7 @@ export interface Recipe
   ingredients: RecipeIngredient[];
   instructions: string[];
   cookingTime: number;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: Difficulty;
   servings: number;
 }
 

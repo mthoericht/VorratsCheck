@@ -5,6 +5,11 @@ import { signToken } from '../middleware/auth.js';
 
 const INVITE_CODE = process.env.INVITE_CODE ?? 'VORRATSCHECK2026';
 
+if (INVITE_CODE === 'VORRATSCHECK2026')
+{
+  console.warn('[auth] WARNING: Using default INVITE_CODE – set INVITE_CODE in .env for production');
+}
+
 export const authRouter = Router();
 
 authRouter.post('/login', async (req: Request, res: Response) => 
@@ -20,13 +25,13 @@ authRouter.post('/login', async (req: Request, res: Response) =>
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) 
     {
-      res.status(401).json({ error: 'Benutzer nicht gefunden' });
+      res.status(401).json({ error: 'Ungültige Anmeldedaten' });
       return;
     }
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) 
     {
-      res.status(401).json({ error: 'Falsches Passwort' });
+      res.status(401).json({ error: 'Ungültige Anmeldedaten' });
       return;
     }
     const token = signToken({ userId: user.id, email: user.email });

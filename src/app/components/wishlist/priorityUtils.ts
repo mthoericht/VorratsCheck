@@ -1,4 +1,6 @@
-export type WishlistPriority = 'low' | 'medium' | 'high';
+import { PRIORITIES, type Priority } from '@shared/constants';
+
+export type WishlistPriority = Priority;
 
 export function getPriorityColor(priority: WishlistPriority): string 
 {
@@ -15,13 +17,5 @@ export function getPriorityColor(priority: WishlistPriority): string
 
 export function getPriorityLabel(priority: WishlistPriority): string 
 {
-  switch (priority) 
-  {
-    case 'high':
-      return 'Hoch';
-    case 'medium':
-      return 'Mittel';
-    case 'low':
-      return 'Niedrig';
-  }
+  return PRIORITIES.find(p => p.value === priority)?.label ?? priority;
 }

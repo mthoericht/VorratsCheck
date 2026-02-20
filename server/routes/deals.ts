@@ -1,9 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma.js';
-import { authMiddleware } from '../middleware/auth.js';
+import { authMiddleware, optionalAuth } from '../middleware/auth.js';
+import { isValidNumber, isValidDate } from '../../shared/validation.js';
 
 export const dealsRouter = Router();
-dealsRouter.use(authMiddleware);
 
 function mapDeal(d: {
   id: string;
@@ -32,13 +32,13 @@ function mapDeal(d: {
   };
 }
 
-dealsRouter.get('/', async (req: Request, res: Response) => 
+dealsRouter.get('/', optionalAuth, async (req: Request, res: Response) => 
 {
   try 
   {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
+    const userId = (req as Request & { user?: { userId: string } }).user?.userId;
     const deals = await prisma.deal.findMany({
-      where: { OR: [{ userId: null }, { userId }] },
+      where: userId ? { OR: [{ userId: null }, { userId }] } : { userId: null },
       orderBy: { validUntil: 'asc' },
     });
     res.json(deals.map(mapDeal));
@@ -50,7 +50,7 @@ dealsRouter.get('/', async (req: Request, res: Response) =>
   }
 });
 
-dealsRouter.post('/', async (req: Request, res: Response) => 
+dealsRouter.post('/', authMiddleware, async (req: Request, res: Response) => 
 {
   try 
   {
@@ -59,6 +59,16 @@ dealsRouter.post('/', async (req: Request, res: Response) =>
     if (!product || !store || originalPrice == null || discountPrice == null || discount == null || !validUntil || distance == null) 
     {
       res.status(400).json({ error: 'product, store, originalPrice, discountPrice, discount, validUntil, distance erforderlich' });
+      return;
+    }
+    if (!isValidNumber(originalPrice) || !isValidNumber(discountPrice) || !isValidNumber(discount) || !isValidNumber(distance))
+    {
+      res.status(400).json({ error: 'Preise, Rabatt und Entfernung müssen gültige Zahlen sein' });
+      return;
+    }
+    if (!isValidDate(validUntil))
+    {
+      res.status(400).json({ error: 'validUntil muss ein gültiges Datum sein' });
       return;
     }
     const dealName = name || 'Sonstiges';
@@ -85,7 +95,7 @@ dealsRouter.post('/', async (req: Request, res: Response) =>
   }
 });
 
-dealsRouter.delete('/:id', async (req: Request, res: Response) => 
+dealsRouter.delete('/:id', authMiddleware, async (req: Request, res: Response) => 
 {
   try 
   {
@@ -97,7 +107,7 @@ dealsRouter.delete('/:id', async (req: Request, res: Response) =>
       res.status(404).json({ error: 'Angebot nicht gefunden' });
       return;
     }
-    await prisma.deal.delete({ where: { id } });
+    await prisma.deal.delete({ where: { id, userId: userId } });
     res.status(204).send();
   }
   catch (e) 

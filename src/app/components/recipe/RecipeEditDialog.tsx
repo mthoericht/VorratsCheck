@@ -8,6 +8,7 @@ import { Textarea } from '../ui/textarea';
 import { Quantity } from '../Quantity';
 import { Plus, Trash2 } from 'lucide-react';
 import type { RecipeFormApi } from '../../hooks/useRecipesPage';
+import { DIFFICULTIES, type Difficulty } from '@shared/constants';
 
 interface RecipeEditDialogProps {
   form: RecipeFormApi;
@@ -70,15 +71,15 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
               <Select
                 value={form.formData.difficulty}
                 onValueChange={(value: string) =>
-                  form.setFormData({ ...form.formData, difficulty: value as 'easy' | 'medium' | 'hard' })}
+                  form.setFormData({ ...form.formData, difficulty: value as Difficulty })}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="easy">Einfach</SelectItem>
-                  <SelectItem value="medium">Mittel</SelectItem>
-                  <SelectItem value="hard">Schwer</SelectItem>
+                  {DIFFICULTIES.map(d => (
+                    <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

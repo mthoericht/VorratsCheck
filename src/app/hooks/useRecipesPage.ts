@@ -4,13 +4,14 @@ import { useRecipesStore } from '../stores/recipesStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import type { Recipe } from '../stores/recipesStore';
 import { computeRecipesWithMatch, type RecipeIngredient, type RecipeWithMatch } from '../lib/recipe';
+import type { Difficulty } from '@shared/constants';
 
 const initialFormData = {
   name: '',
   ingredients: [{ name: '', unit: 'Stück' }] as RecipeIngredient[],
   instructions: '',
   cookingTime: '',
-  difficulty: 'easy' as 'easy' | 'medium' | 'hard',
+  difficulty: 'easy' as Difficulty,
   servings: '',
 };
 

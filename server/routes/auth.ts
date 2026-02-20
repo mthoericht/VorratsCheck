@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '../lib/prisma.js';
 import { signToken } from '../middleware/auth.js';
 
+// Security: invite code restricts signup (e.g. private beta); set a strong value in production
 const INVITE_CODE = process.env.INVITE_CODE ?? 'VORRATSCHECK2026';
 
 if (INVITE_CODE === 'VORRATSCHECK2026')
@@ -25,9 +26,11 @@ authRouter.post('/login', async (req: Request, res: Response) =>
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) 
     {
+      // Security: same message as wrong password to avoid user enumeration
       res.status(401).json({ error: 'Ungültige Anmeldedaten' });
       return;
     }
+    // Security: constant-time comparison via bcrypt; passwords are stored hashed (see signup)
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) 
     {
@@ -57,6 +60,7 @@ authRouter.post('/signup', async (req: Request, res: Response) =>
       res.status(400).json({ error: 'Alle Felder erforderlich' });
       return;
     }
+    // Security: enforce invite code before creating user
     if (inviteCode !== INVITE_CODE) 
     {
       res.status(400).json({ error: 'Ungültiges Einladungspasswort' });
@@ -71,6 +75,7 @@ authRouter.post('/signup', async (req: Request, res: Response) =>
       res.status(409).json({ error: `${field} bereits vergeben` });
       return;
     }
+    // Security: hash password with bcrypt (cost 10) before storing; never store plaintext
     const passwordHash = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: { username, email, passwordHash },

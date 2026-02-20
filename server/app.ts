@@ -33,10 +33,14 @@ import { categoriesRouter } from './routes/categories.js';
 
 export const app = express();
 
+// Security: helmet sets safe HTTP headers (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection, etc.)
 app.use(helmet());
+// Security: restrict allowed origins to avoid cross-site requests from untrusted sites
 app.use(cors({ origin: process.env.VITE_ORIGIN ?? 'http://localhost:5173' }));
+// Security: limit JSON body size to mitigate large-payload DoS
 app.use(express.json({ limit: '100kb' }));
 
+// Security: rate limit auth routes to mitigate brute-force and credential stuffing (20 req / 15 min)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,

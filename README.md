@@ -116,14 +116,22 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 - **Database:** For production use e.g. PostgreSQL and set `DATABASE_URL` and `provider` in `prisma/schema.prisma`.
 - **Environment:** Set `VITE_API_URL` to the public API URL when the frontend is served from another origin so the client can reach the API.
 
-### Security Hardening
+### Security
 
-- **JWT_SECRET**: Always set a strong, unique `JWT_SECRET` in production. The app warns on startup if the default dev secret is used.
-- **INVITE_CODE**: Set a strong `INVITE_CODE` or disable signup. The app warns on startup if the default code is used.
-- **HTTPS**: Always run behind HTTPS in production (e.g. via a reverse proxy like nginx or Caddy).
-- **Rate Limiting**: Auth routes (`/api/auth/*`) are rate-limited to 20 requests per 15 minutes. Adjust in `server/app.ts` if needed.
-- **Security Headers**: `helmet` is enabled by default for HTTP security headers (HSTS, CSP, etc.).
-- **CORS**: Configure `VITE_ORIGIN` to your exact production frontend URL. Do not leave it as `localhost`.
+The server implements the following security measures. Relevant code is commented in the codebase.
+
+| Area | Implementation | Where |
+|------|----------------|-------|
+| **Authentication** | JWT in `Authorization: Bearer <token>`; algorithm restricted to `HS256`; tokens expire after 7 days. | `server/middleware/auth.ts` (`authMiddleware`, `optionalAuth`, `signToken`) |
+| **Secrets** | `JWT_SECRET` for signing/verifying tokens; must be set in production (startup warning if default is used). | `server/middleware/auth.ts` |
+| **Passwords** | Bcrypt hashing (cost 10) on signup; constant-time comparison on login. Same error message for unknown user / wrong password to avoid user enumeration. | `server/routes/auth.ts` (login, signup) |
+| **Signup restriction** | `INVITE_CODE` required for registration; set a strong value in production (startup warning if default is used). | `server/routes/auth.ts` |
+| **Security headers** | `helmet` sets safe HTTP headers (e.g. `X-Content-Type-Options`, `X-Frame-Options`, `X-XSS-Protection`). | `server/app.ts` |
+| **CORS** | Allowed origin from `VITE_ORIGIN` (default `http://localhost:5173`). Configure to your exact frontend URL in production. | `server/app.ts` |
+| **Body size** | JSON body limit 100 KB to mitigate large-payload DoS. | `server/app.ts` |
+| **Rate limiting** | Auth routes (`/api/auth/*`) limited to 20 requests per 15 minutes (express-rate-limit) to mitigate brute-force and credential stuffing. | `server/app.ts` |
+
+**Production checklist:** Set strong `JWT_SECRET` and `INVITE_CODE`; run behind HTTPS (e.g. reverse proxy); set `VITE_ORIGIN` to your frontend origin.
 
 ## Project Structure (overview)
 

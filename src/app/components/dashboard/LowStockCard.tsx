@@ -8,6 +8,7 @@ export interface LowStockItem {
   id: string;
   name: string;
   minQuantity: number;
+  unit?: string;
 }
 
 interface LowStockCardProps {
@@ -33,7 +34,7 @@ export function LowStockCard({ items }: LowStockCardProps)
             <div key={item.id} className="flex items-center justify-between p-2 bg-white rounded-lg">
               <div>
                 <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-gray-600">Min. Menge: {item.minQuantity}</p>
+                <p className="text-sm text-gray-600">Min. Menge: {item.minQuantity} {item.unit ?? 'Stück'}</p>
               </div>
               <Badge variant="outline" className="border-yellow-600 text-yellow-600">
                 Nachkaufen

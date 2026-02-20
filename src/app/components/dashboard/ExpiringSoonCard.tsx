@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Clock } from 'lucide-react';
+import { formatDateDE } from '../../lib/format';
 
 export interface ExpiringSoonItem {
   id: string;
@@ -35,7 +36,7 @@ export function ExpiringSoonCard({ items, maxItems = 5 }: ExpiringSoonCardProps)
             <div key={item.id} className="flex items-center justify-between p-2 bg-white rounded-lg">
               <div>
                 <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-gray-600">MHD: {item.expiryDate}</p>
+                <p className="text-sm text-gray-600">MHD: {item.expiryDate ? formatDateDE(item.expiryDate) : ''}</p>
               </div>
               <Badge variant="outline" className="border-orange-600 text-orange-600">
                 Bald fällig

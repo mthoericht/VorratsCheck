@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { AlertTriangle } from 'lucide-react';
+import { formatDateDE } from '../../lib/format';
 
 export interface ExpiredItem {
   id: string;
@@ -31,7 +32,7 @@ export function ExpiredItemsCard({ items }: ExpiredItemsCardProps)
             <div key={item.id} className="flex items-center justify-between p-2 bg-white rounded-lg">
               <div>
                 <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-gray-600">Abgelaufen: {item.expiryDate}</p>
+                <p className="text-sm text-gray-600">Abgelaufen: {item.expiryDate ? formatDateDE(item.expiryDate) : ''}</p>
               </div>
               <Badge variant="destructive">Abgelaufen</Badge>
             </div>

@@ -3,6 +3,7 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { MapPin, Tag, ShoppingCart } from 'lucide-react';
 import type { Deal } from '../../stores/dealsStore';
+import { formatDateDE } from '../../lib/format';
 
 interface DealCardProps {
   deal: Deal;
@@ -56,7 +57,7 @@ export function DealCard({ deal, isMustHave, isWishList }: DealCardProps)
 
         <div className="flex items-center justify-between text-sm">
           <span className="text-gray-600">Gültig bis:</span>
-          <span className="font-medium">{new Date(deal.validUntil).toLocaleDateString('de-DE')}</span>
+          <span className="font-medium">{formatDateDE(deal.validUntil)}</span>
         </div>
 
         <div className="flex gap-2">

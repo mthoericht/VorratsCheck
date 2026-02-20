@@ -13,7 +13,8 @@ export default meta;
 
 type Story = StoryObj<typeof DealsFilterBar>;
 
-function FilterBarWrapper() {
+function FilterBarWrapper() 
+{
   const [filterType, setFilterType] = useState<DealsFilterType>('all');
   return (
     <DealsFilterBar

@@ -141,7 +141,7 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 - `src/app/stores/` – Zustand stores (Auth, Inventory, MustHave, Wishlist, Recipes, Deals, Categories)
 - `src/app/hooks/` – useLayout (header/nav state, logout), useRecipesPage, useInventoryPage, useMustHavePage, useWishlistPage, useDealsPage, useBarcodeScanner (start/stop/close, onClose, elementId)
 - `src/app/lib/api/` – API client modules (resource functions per domain, error handling via `ApiError`; entry point `api/index.ts`)
-- `src/app/lib/` – Domain/logic: `layoutNav.ts` (NAV_ITEMS, LAYOUT_NAV_BREAKPOINT, getNavBreakpointClasses), `units.ts`, `recipe.ts`, `mustHave.ts`, `inventory.ts` (INVENTORY_LOCATION_OPTIONS, getExpiryStatus), `productLookup.ts` (barcode → product info, e.g. Open Food Facts)
+- `src/app/lib/` – Domain/logic: `layoutNav.ts` (NAV_ITEMS, LAYOUT_NAV_BREAKPOINT, getNavBreakpointClasses), `units.ts`, `recipe.ts`, `mustHave.ts`, `inventory.ts` (INVENTORY_LOCATION_OPTIONS, getExpiryStatus), `format.ts` (formatDateDE for German date display, Tag.Monat.Jahr), `productLookup.ts` (barcode → product info, e.g. Open Food Facts)
 - `src/styles/theme.css` – **Central theme and colors**: light/dark mode, all CSS variables (`:root` and `.dark`). Edit only this file to change app-wide colors.
 - `server/` – Express API: `app.ts` exports the app (used by tests); `index.ts` runs `app.listen()`. Routes, middleware, Prisma under `server/`.
 - `prisma/schema.prisma` – Data model (User, Category, InventoryItem, MustHaveItem, WishListItem, Recipe, Deal)

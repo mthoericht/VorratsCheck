@@ -69,7 +69,11 @@ function mapRecipe(recipe: {
     id: recipe.id,
     name: recipe.name,
     ingredients: parseIngredientsJson(recipe.ingredients),
-    instructions: (() => { try { return JSON.parse(recipe.instructions) as string[]; } catch { return []; } })(),
+    instructions: (() => 
+    {
+      try { return JSON.parse(recipe.instructions) as string[]; }
+      catch { return []; } 
+    })(),
     cookingTime: recipe.cookingTime,
     difficulty: recipe.difficulty as 'easy' | 'medium' | 'hard',
     servings: recipe.servings,

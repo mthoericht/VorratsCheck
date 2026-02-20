@@ -3,6 +3,7 @@ import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Pencil, Trash2, AlertTriangle, MapPin } from 'lucide-react';
 import { getExpiryStatus } from '../../lib/inventory';
+import { formatDateDE } from '../../lib/format';
 import type { InventoryItem } from '../../stores/inventoryStore';
 
 interface InventoryItemCardProps {
@@ -53,7 +54,7 @@ export function InventoryItemCard({ item, onEdit, onDelete }: InventoryItemCardP
 
         {item.expiryDate && (
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">MHD:</span>
+            <span className="text-sm text-gray-600">MHD: {formatDateDE(item.expiryDate)}</span>
             <div className="flex items-center gap-2">
               {expiryStatus?.status === 'expired' && (
                 <AlertTriangle className="w-4 h-4 text-red-600" />

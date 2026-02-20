@@ -6,7 +6,7 @@ import type { RecipeWithMatch } from '@/app/lib/recipe';
 
 const meta: Meta<typeof RecipeListSection> = {
   component: RecipeListSection,
-  title: 'Recipe/RecipeListSection',
+  title: 'Components/Recipe/RecipeListSection',
   tags: ['autodocs'],
 };
 

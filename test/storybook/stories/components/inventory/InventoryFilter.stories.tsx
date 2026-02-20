@@ -5,7 +5,7 @@ import { INVENTORY_LOCATION_OPTIONS } from '@/app/lib/inventory';
 
 const meta: Meta<typeof InventoryFilter> = {
   component: InventoryFilter,
-  title: 'Inventory/InventoryFilter',
+  title: 'Components/Inventory/InventoryFilter',
   tags: ['autodocs'],
 };
 

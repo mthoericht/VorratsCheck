@@ -5,7 +5,7 @@ import type { MustHaveItem } from '@/app/stores/mustHaveStore';
 
 const meta: Meta<typeof MustHaveCard> = {
   component: MustHaveCard,
-  title: 'MustHave/MustHaveCard',
+  title: 'Components/MustHave/MustHaveCard',
   tags: ['autodocs'],
 };
 

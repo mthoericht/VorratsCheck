@@ -4,7 +4,7 @@ import type { WishListItem } from '@/app/stores/wishlistStore';
 
 const meta: Meta<typeof WishlistStats> = {
   component: WishlistStats,
-  title: 'Wishlist/WishlistStats',
+  title: 'Components/Wishlist/WishlistStats',
   tags: ['autodocs'],
   decorators: [
     (Story) => (

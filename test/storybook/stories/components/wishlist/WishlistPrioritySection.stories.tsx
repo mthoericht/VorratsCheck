@@ -5,7 +5,7 @@ import type { WishListItem } from '@/app/stores/wishlistStore';
 
 const meta: Meta<typeof WishlistPrioritySection> = {
   component: WishlistPrioritySection,
-  title: 'Wishlist/WishlistPrioritySection',
+  title: 'Components/Wishlist/WishlistPrioritySection',
   tags: ['autodocs'],
   decorators: [
     (Story) => (

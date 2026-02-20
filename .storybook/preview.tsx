@@ -13,6 +13,29 @@ const preview: Preview = {
       },
     },
     layout: 'centered',
+    options: {
+      storySort: {
+        order: [
+          'Pages',
+          ['Dashboard', 'Inventory', 'MustHaveList', 'WishList', 'Deals', 'Recipes', 'Settings', 'Login', 'Signup'],
+          'Components',
+          [
+            'Dashboard',
+            'Inventory',
+            'MustHave',
+            'Wishlist',
+            'Deals',
+            'Recipe',
+            'settings',
+            'BarcodeScanner',
+            'Layout',
+            'Quantity',
+            'RouteErrorBoundary',
+          ],
+          'UI',
+        ],
+      },
+    },
   },
   decorators: [
     (Story, context) =>

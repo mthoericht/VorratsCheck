@@ -3,7 +3,7 @@ import { ExpiringSoonCard } from '@/app/components/dashboard/ExpiringSoonCard';
 
 const meta: Meta<typeof ExpiringSoonCard> = {
   component: ExpiringSoonCard,
-  title: 'Dashboard/ExpiringSoonCard',
+  title: 'Components/Dashboard/ExpiringSoonCard',
   tags: ['autodocs'],
   argTypes: { maxItems: { control: 'number' } },
 };

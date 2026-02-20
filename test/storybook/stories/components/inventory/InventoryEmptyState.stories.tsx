@@ -4,7 +4,7 @@ import { InventoryEmptyState } from '@/app/components/inventory/InventoryEmptySt
 
 const meta: Meta<typeof InventoryEmptyState> = {
   component: InventoryEmptyState,
-  title: 'Inventory/InventoryEmptyState',
+  title: 'Components/Inventory/InventoryEmptyState',
   tags: ['autodocs'],
 };
 

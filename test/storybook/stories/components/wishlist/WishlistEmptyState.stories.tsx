@@ -4,7 +4,7 @@ import { WishlistEmptyState } from '@/app/components/wishlist/WishlistEmptyState
 
 const meta: Meta<typeof WishlistEmptyState> = {
   component: WishlistEmptyState,
-  title: 'Wishlist/WishlistEmptyState',
+  title: 'Components/Wishlist/WishlistEmptyState',
   tags: ['autodocs'],
 };
 

@@ -4,7 +4,7 @@ import { InventoryFilterBar } from '@/app/components/inventory/InventoryFilterBa
 
 const meta: Meta<typeof InventoryFilterBar> = {
   component: InventoryFilterBar,
-  title: 'Inventory/InventoryFilterBar',
+  title: 'Components/Inventory/InventoryFilterBar',
   tags: ['autodocs'],
 };
 

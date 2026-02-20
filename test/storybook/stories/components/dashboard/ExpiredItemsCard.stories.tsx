@@ -3,7 +3,7 @@ import { ExpiredItemsCard } from '@/app/components/dashboard/ExpiredItemsCard';
 
 const meta: Meta<typeof ExpiredItemsCard> = {
   component: ExpiredItemsCard,
-  title: 'Dashboard/ExpiredItemsCard',
+  title: 'Components/Dashboard/ExpiredItemsCard',
   tags: ['autodocs'],
 };
 

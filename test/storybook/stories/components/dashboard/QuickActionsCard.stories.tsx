@@ -3,7 +3,7 @@ import { QuickActionsCard } from '@/app/components/dashboard/QuickActionsCard';
 
 const meta: Meta<typeof QuickActionsCard> = {
   component: QuickActionsCard,
-  title: 'Dashboard/QuickActionsCard',
+  title: 'Components/Dashboard/QuickActionsCard',
   tags: ['autodocs'],
 };
 

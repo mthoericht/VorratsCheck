@@ -116,6 +116,29 @@ export const mockDeals: Deal[] = [
     validUntil: '2025-02-25',
     distance: 1.2,
   },
+  {
+    id: 'deal-3',
+    product: 'Olivenöl nativ',
+    name: 'Öle',
+    store: 'Rewe',
+    originalPrice: 5.99,
+    discountPrice: 4.49,
+    discount: 25,
+    validUntil: '2025-03-01',
+    distance: 0.5,
+    inStock: true,
+  },
+  {
+    id: 'deal-4',
+    product: 'Pasta Spaghetti',
+    name: 'Nudeln',
+    store: 'Edeka',
+    originalPrice: 1.29,
+    discountPrice: 0.99,
+    discount: 23,
+    validUntil: '2025-02-20',
+    distance: 1.2,
+  },
 ];
 
 /** Empty arrays for "empty state" stories and tests. */

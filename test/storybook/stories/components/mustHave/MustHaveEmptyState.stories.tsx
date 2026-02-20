@@ -4,7 +4,7 @@ import { MustHaveEmptyState } from '@/app/components/mustHave/MustHaveEmptyState
 
 const meta: Meta<typeof MustHaveEmptyState> = {
   component: MustHaveEmptyState,
-  title: 'MustHave/MustHaveEmptyState',
+  title: 'Components/MustHave/MustHaveEmptyState',
   tags: ['autodocs'],
 };
 

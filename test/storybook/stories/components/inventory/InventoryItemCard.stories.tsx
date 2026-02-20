@@ -5,7 +5,7 @@ import type { InventoryItem } from '@/app/stores/inventoryStore';
 
 const meta: Meta<typeof InventoryItemCard> = {
   component: InventoryItemCard,
-  title: 'Inventory/InventoryItemCard',
+  title: 'Components/Inventory/InventoryItemCard',
   tags: ['autodocs'],
 };
 

@@ -17,6 +17,13 @@ const emptyValues: StoreValues = {
 const meta: Meta<typeof Deals> = {
   component: Deals,
   title: 'Pages/Deals',
+  parameters: {
+    docs: {
+      description: {
+        component: 'Angebote-Seite: Deals mit Filter (Alle / Must-Have / Wunschliste), Stats und Karten.',
+      },
+    },
+  },
   decorators: [
     (Story, context) =>
     {
@@ -33,7 +40,11 @@ type Story = StoryObj<typeof Deals>;
 
 export const MitBeispieldaten: Story = {
   parameters: {
-    docs: { description: { story: 'Angebote mit Deals, Must-Have- und Wunschlisten-Treffern.' } },
+    docs: {
+      description: {
+        story: 'Angebote mit mehreren Deals. Einige treffen die Must-Have-Liste (z. B. Milch, Butter), andere die Wunschliste (z. B. Olivenöl, Pasta). Filter in der Toolbar umschaltbar.',
+      },
+    },
     storeVariant: 'mock',
   },
   loaders: [storeLoader(mockValues)],
@@ -41,7 +52,11 @@ export const MitBeispieldaten: Story = {
 
 export const Leer: Story = {
   parameters: {
-    docs: { description: { story: 'Angebote ohne Deals.' } },
+    docs: {
+      description: {
+        story: 'Angebote ohne Deals – leere Liste und Empty-State.',
+      },
+    },
     storeVariant: 'empty',
   },
   loaders: [storeLoader(emptyValues)],

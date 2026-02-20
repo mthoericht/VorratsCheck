@@ -5,7 +5,7 @@ import type { RecipeWithMatch } from '@/app/lib/recipe';
 
 const meta: Meta<typeof RecipeCard> = {
   component: RecipeCard,
-  title: 'Recipe/RecipeCard',
+  title: 'Components/Recipe/RecipeCard',
   tags: ['autodocs'],
 };
 

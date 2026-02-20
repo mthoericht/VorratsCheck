@@ -3,7 +3,7 @@ import { LowStockCard } from '@/app/components/dashboard/LowStockCard';
 
 const meta: Meta<typeof LowStockCard> = {
   component: LowStockCard,
-  title: 'Dashboard/LowStockCard',
+  title: 'Components/Dashboard/LowStockCard',
   tags: ['autodocs'],
 };
 

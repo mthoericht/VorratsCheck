@@ -3,7 +3,7 @@ import { MustHaveStats } from '@/app/components/mustHave/MustHaveStats';
 
 const meta: Meta<typeof MustHaveStats> = {
   component: MustHaveStats,
-  title: 'MustHave/MustHaveStats',
+  title: 'Components/MustHave/MustHaveStats',
   tags: ['autodocs'],
 };
 

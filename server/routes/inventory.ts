@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
-import { toPositiveNumber, isValidDate } from '../../shared/validation.js';
+import { toPositiveNumber, isValidDate, isValidUnit } from '../../shared/validation.js';
 
 export const inventoryRouter = Router();
 inventoryRouter.use(authMiddleware);
@@ -49,7 +49,12 @@ inventoryRouter.post('/', async (req: Request, res: Response) =>
       return;
     }
     const quantityNum = quantity != null && quantity !== '' ? toPositiveNumber(quantity, 1) : 1;
-    const unitVal = unit || 'Stück';
+    const unitVal = unit || 'stk';
+    if (!isValidUnit(unitVal))
+    {
+      res.status(400).json({ error: 'Ungültige Einheit' });
+      return;
+    }
     const item = await prisma.inventoryItem.create({
       data: {
         userId,
@@ -96,6 +101,11 @@ inventoryRouter.patch('/:id', async (req: Request, res: Response) =>
       return;
     }
     const { name, category, brand, barcode, quantity, unit, expiryDate, location } = req.body;
+    if (unit != null && unit !== '' && !isValidUnit(unit))
+    {
+      res.status(400).json({ error: 'Ungültige Einheit' });
+      return;
+    }
     const item = await prisma.inventoryItem.update({
       where: { id, userId },
       data: {
@@ -104,7 +114,7 @@ inventoryRouter.patch('/:id', async (req: Request, res: Response) =>
         ...(brand !== undefined && { brand: brand || null }),
         ...(barcode !== undefined && { barcode: barcode || null }),
         ...(quantity != null && { quantity: toPositiveNumber(quantity, existing.quantity) }),
-        ...(unit != null && { unit }),
+        ...(unit != null && { unit: unit || 'stk' }),
         ...(expiryDate !== undefined && { expiryDate: expiryDate && isValidDate(expiryDate) ? new Date(expiryDate) : null }),
         ...(location !== undefined && { location: location || null }),
       },

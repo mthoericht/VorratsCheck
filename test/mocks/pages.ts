@@ -26,7 +26,7 @@ export const mockInventory: InventoryItem[] = [
     name: 'Joghurt',
     category: 'Milchprodukte',
     quantity: 4,
-    unit: 'Stück',
+    unit: 'stk',
     expiryDate: '2025-01-25',
     location: 'Kühlschrank',
     addedDate: '2025-01-10',
@@ -47,7 +47,7 @@ export const mockInventory: InventoryItem[] = [
 export const mockMustHave: MustHaveItem[] = [
   { id: 'mh-1', name: 'Milch', category: 'Milchprodukte', minQuantity: 2 },
   { id: 'mh-2', name: 'Butter', category: 'Milchprodukte', minQuantity: 1 },
-  { id: 'mh-3', name: 'Eier', category: 'Eier', minQuantity: 6, unit: 'Stück' },
+  { id: 'mh-3', name: 'Eier', category: 'Eier', minQuantity: 6, unit: 'stk' },
 ];
 
 export const mockWishlist: WishListItem[] = [

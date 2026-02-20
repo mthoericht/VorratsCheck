@@ -3,33 +3,7 @@
  * This file must remain environment-agnostic (no Node or Browser APIs).
  */
 
-// --- Units ---
-
-export const UNITS = [
-  { value: 'Stück', label: 'Stück' },
-  { value: 'g', label: 'Gramm' },
-  { value: 'kg', label: 'Kilogramm' },
-  { value: 'ml', label: 'Milliliter' },
-  { value: 'Liter', label: 'Liter' },
-  { value: 'Dose', label: 'Dose' },
-  { value: 'Packung', label: 'Packung' },
-  { value: 'Flasche', label: 'Flasche' },
-  { value: 'Beutel', label: 'Beutel' },
-  { value: 'Becher', label: 'Becher' },
-  { value: 'Glas', label: 'Glas' },
-  { value: 'Tube', label: 'Tube' },
-  { value: 'Bund', label: 'Bund' },
-  { value: 'EL', label: 'EL' },
-  { value: 'TL', label: 'TL' },
-  { value: 'Prise', label: 'Prise' },
-  { value: 'Scheibe', label: 'Scheibe' },
-  { value: 'Zehen', label: 'Zehen' },
-  { value: 'Kugeln', label: 'Kugeln' },
-] as const;
-
-export type UnitValue = (typeof UNITS)[number]['value'];
-
-export const VALID_UNIT_VALUES = UNITS.map(u => u.value) as string[];
+export { UNITS, type UnitValue, VALID_UNIT_VALUES } from './units.js';
 
 // --- Priorities ---
 
@@ -62,13 +36,3 @@ export const DIFFICULTIES = [
 export type Difficulty = (typeof DIFFICULTIES)[number]['value'];
 
 export const VALID_DIFFICULTY_VALUES = DIFFICULTIES.map(d => d.value) as string[];
-
-// --- Inventory locations ---
-
-export const INVENTORY_LOCATIONS = [
-  { value: 'Kühlschrank', label: 'Kühlschrank' },
-  { value: 'Gefrierschrank', label: 'Gefrierschrank' },
-  { value: 'Vorratsschrank', label: 'Vorratsschrank' },
-] as const;
-
-export type InventoryLocation = (typeof INVENTORY_LOCATIONS)[number]['value'];

@@ -11,7 +11,7 @@ export const initialMustHaveFormData: MustHaveFormData = {
   name: '',
   category: '',
   minQuantity: '',
-  unit: 'Stück',
+  unit: 'stk',
 };
 
 /**
@@ -54,7 +54,7 @@ export function useMustHavePage()
       name: item.name,
       category: item.category || '',
       minQuantity: String(item.minQuantity),
-      unit: item.unit || 'Stück',
+      unit: item.unit || 'stk',
     });
     setShowAddDialog(true);
   };

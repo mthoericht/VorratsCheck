@@ -4,7 +4,7 @@
 
 import type { Recipe } from '../stores/recipesStore';
 import type { InventoryItem } from '../stores/inventoryStore';
-import { quantityCovers } from './units';
+import { quantityCovers, isPresenceOnlyUnit } from './units';
 
 // --- Ingredients ---
 
@@ -76,10 +76,12 @@ export function ingredientMatches(ing: RecipeIngredient, inventory: InventoryIte
   if (candidates.length === 0) return false;
   if (ing.quantity != null && ing.unit && Number.isFinite(Number(ing.quantity))) 
   {
+    // For presence-only units (e.g. Kugeln, Zehen) just require the ingredient to be in inventory.
+    if (isPresenceOnlyUnit(ing.unit)) return true;
     const needQty = Number(ing.quantity);
     const needUnit = ing.unit;
     return candidates.some((item) =>
-      quantityCovers(item.quantity, item.unit || 'Stück', needQty, needUnit)
+      quantityCovers(item.quantity, item.unit || 'stk', needQty, needUnit)
     );
   }
   return true;

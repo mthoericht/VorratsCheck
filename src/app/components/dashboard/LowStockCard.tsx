@@ -1,3 +1,4 @@
+import { getUnitLabel } from '../../lib/units';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -34,7 +35,7 @@ export function LowStockCard({ items }: LowStockCardProps)
             <div key={item.id} className="flex items-center justify-between p-2 bg-white rounded-lg">
               <div>
                 <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-gray-600">Min. Menge: {item.minQuantity} {item.unit ?? 'Stück'}</p>
+                <p className="text-sm text-gray-600">Min. Menge: {item.minQuantity} {getUnitLabel(item.unit)}</p>
               </div>
               <Badge variant="outline" className="border-yellow-600 text-yellow-600">
                 Nachkaufen

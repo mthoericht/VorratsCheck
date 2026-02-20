@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 type SeedIngredient = { name: string; quantity?: number; unit?: string };
 
 /**
- * Zählbare Zutaten (z. B. Möhre, Zwiebel, Tomaten, Ei) immer mit quantity und unit: 'Stück' angeben,
+ * Zählbare Zutaten (z. B. Möhre, Zwiebel, Tomaten, Ei) immer mit quantity und unit: 'stk' angeben,
  * damit das Rezept-Matching mit dem Vorrat funktioniert.
  */
 /** Common recipes to seed per user. Ingredients as array of { name, quantity?, unit? }. */
@@ -38,7 +38,7 @@ const DEFAULT_RECIPES = [
   {
     name: 'Rührei',
     ingredients: [
-      { name: 'Eier', quantity: 4, unit: 'Stück' },
+      { name: 'Eier', quantity: 4, unit: 'stk' },
       { name: 'Butter', quantity: 20, unit: 'g' },
       { name: 'Salz' },
       { name: 'Pfeffer' },
@@ -56,7 +56,7 @@ const DEFAULT_RECIPES = [
   {
     name: 'Tomaten-Mozzarella-Salat',
     ingredients: [
-      { name: 'Tomaten', quantity: 4, unit: 'Stück' },
+      { name: 'Tomaten', quantity: 4, unit: 'stk' },
       { name: 'Mozzarella', quantity: 2, unit: 'Kugeln' },
       { name: 'Basilikum' },
       { name: 'Olivenöl' },
@@ -76,9 +76,9 @@ const DEFAULT_RECIPES = [
   {
     name: 'Gemüsepfanne',
     ingredients: [
-      { name: 'Zucchini', quantity: 1, unit: 'Stück' },
-      { name: 'Paprika', quantity: 2, unit: 'Stück' },
-      { name: 'Zwiebel', quantity: 1, unit: 'Stück' },
+      { name: 'Zucchini', quantity: 1, unit: 'stk' },
+      { name: 'Paprika', quantity: 2, unit: 'stk' },
+      { name: 'Zwiebel', quantity: 1, unit: 'stk' },
       { name: 'Knoblauch', quantity: 2, unit: 'Zehen' },
       { name: 'Olivenöl' },
       { name: 'Salz' },
@@ -100,7 +100,7 @@ const DEFAULT_RECIPES = [
     ingredients: [
       { name: 'Reis', quantity: 200, unit: 'g' },
       { name: 'Brokkoli', quantity: 200, unit: 'g' },
-      { name: 'Möhre', quantity: 1, unit: 'Stück' },
+      { name: 'Möhre', quantity: 1, unit: 'stk' },
       { name: 'Sojasoße' },
       { name: 'Öl' },
       { name: 'Salz' },
@@ -120,9 +120,9 @@ const DEFAULT_RECIPES = [
     ingredients: [
       { name: 'Mehl', quantity: 200, unit: 'g' },
       { name: 'Milch', quantity: 300, unit: 'ml' },
-      { name: 'Ei', quantity: 1, unit: 'Stück' },
+      { name: 'Ei', quantity: 1, unit: 'stk' },
       { name: 'Backpulver', quantity: 1, unit: 'TL' },
-      { name: 'Salz', quantity: 1, unit: 'Prise' },
+      { name: 'Salz', quantity: 1, unit: 'pr' },
       { name: 'Butter zum Braten' },
     ] as SeedIngredient[],
     instructions: [
@@ -137,7 +137,7 @@ const DEFAULT_RECIPES = [
     name: 'Bolognese (einfach)',
     ingredients: [
       { name: 'Hackfleisch', quantity: 400, unit: 'g' },
-      { name: 'Zwiebel', quantity: 1, unit: 'Stück' },
+      { name: 'Zwiebel', quantity: 1, unit: 'stk' },
       { name: 'Knoblauch', quantity: 2, unit: 'Zehen' },
       { name: 'Tomatenpassata', quantity: 500, unit: 'g' },
       { name: 'Spaghetti', quantity: 400, unit: 'g' },

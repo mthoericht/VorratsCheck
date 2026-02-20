@@ -18,6 +18,6 @@ describe('ExpiredItemsCard', () =>
     render(<ExpiredItemsCard items={items} />);
     expect(screen.getByText('Abgelaufene Artikel')).toBeInTheDocument();
     expect(screen.getByText('Joghurt')).toBeInTheDocument();
-    expect(screen.getByText(/2025-01-15/)).toBeInTheDocument();
+    expect(screen.getByText(/15\.01\.2025/)).toBeInTheDocument();
   });
 });

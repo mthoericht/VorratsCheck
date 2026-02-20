@@ -19,7 +19,7 @@ const sampleRecipe: RecipeWithMatch = {
   ingredients: [
     { name: 'Spaghetti', quantity: 400, unit: 'g' },
     { name: 'Speck', quantity: 150, unit: 'g' },
-    { name: 'Eier', quantity: 2, unit: 'Stück' },
+    { name: 'Eier', quantity: 2, unit: 'stk' },
   ],
   instructions: ['Nudeln kochen', 'Speck anbraten', 'Mit Eiern vermengen'],
   cookingTime: 25,
@@ -27,7 +27,7 @@ const sampleRecipe: RecipeWithMatch = {
   servings: 2,
   availableIngredients: [
     { name: 'Spaghetti', quantity: 400, unit: 'g' },
-    { name: 'Eier', quantity: 2, unit: 'Stück' },
+    { name: 'Eier', quantity: 2, unit: 'stk' },
   ],
   missingIngredients: [{ name: 'Speck', quantity: 150, unit: 'g' }],
   matchPercentage: 66,

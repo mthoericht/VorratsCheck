@@ -3,6 +3,7 @@ import {
   convertFromGivenToBaseUnit,
   convertFromBaseToGivenUnit,
   quantityCovers,
+  isPresenceOnlyUnit,
   UNITS,
 } from '@/app/lib/units';
 
@@ -16,7 +17,7 @@ describe('units', () =>
       expect(values).toContain('g');
       expect(values).toContain('kg');
       expect(values).toContain('ml');
-      expect(values).toContain('Stück');
+      expect(values).toContain('stk');
     });
   });
 
@@ -46,9 +47,9 @@ describe('units', () =>
       expect(result).toEqual({ kind: 'volume', value: 1000 });
     });
 
-    it('returns countable for Stück', () => 
+    it('returns countable for stk', () => 
     {
-      const result = convertFromGivenToBaseUnit(3, 'Stück');
+      const result = convertFromGivenToBaseUnit(3, 'stk');
       expect(result).toEqual({ kind: 'countable', value: 3 });
     });
 
@@ -108,18 +109,38 @@ describe('units', () =>
 
     it('compares countable same unit', () => 
     {
-      expect(quantityCovers(3, 'Stück', 2, 'Stück')).toBe(true);
-      expect(quantityCovers(2, 'Stück', 3, 'Stück')).toBe(false);
+      expect(quantityCovers(3, 'stk', 2, 'stk')).toBe(true);
+      expect(quantityCovers(2, 'stk', 3, 'stk')).toBe(false);
     });
 
     it('countable different units do not cover', () => 
     {
-      expect(quantityCovers(5, 'Stück', 2, 'Dose')).toBe(false);
+      expect(quantityCovers(5, 'stk', 2, 'Dose')).toBe(false);
     });
 
     it('returns false when types differ', () => 
     {
       expect(quantityCovers(100, 'g', 100, 'ml')).toBe(false);
+    });
+  });
+
+  describe('isPresenceOnlyUnit', () => 
+  {
+    it('returns true for units not in UNITS (e.g. removed or legacy)', () => 
+    {
+      expect(isPresenceOnlyUnit('Kugeln')).toBe(true);
+      expect(isPresenceOnlyUnit('Zehen')).toBe(true);
+      expect(isPresenceOnlyUnit('Becher')).toBe(true);
+      expect(isPresenceOnlyUnit('unknown')).toBe(true);
+    });
+
+    it('returns false for units that are in UNITS', () => 
+    {
+      expect(isPresenceOnlyUnit('g')).toBe(false);
+      expect(isPresenceOnlyUnit('stk')).toBe(false);
+      expect(isPresenceOnlyUnit('ml')).toBe(false);
+      expect(isPresenceOnlyUnit('EL')).toBe(false);
+      expect(isPresenceOnlyUnit('')).toBe(false);
     });
   });
 });

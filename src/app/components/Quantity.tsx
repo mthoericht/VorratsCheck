@@ -66,7 +66,7 @@ export function Quantity({
           placeholder="–"
           className="w-20"
         />
-        <Select value={unit || 'Stück'} onValueChange={onUnitChange}>
+        <Select value={unit || 'stk'} onValueChange={onUnitChange}>
           <SelectTrigger id={idUnit} className="w-28" size="sm">
             <SelectValue />
           </SelectTrigger>
@@ -95,7 +95,7 @@ export function Quantity({
       </div>
       <div>
         <Label htmlFor={idUnit}>Einheit</Label>
-        <Select value={unit || 'Stück'} onValueChange={onUnitChange}>
+        <Select value={unit || 'stk'} onValueChange={onUnitChange}>
           <SelectTrigger id={idUnit}>
             <SelectValue />
           </SelectTrigger>

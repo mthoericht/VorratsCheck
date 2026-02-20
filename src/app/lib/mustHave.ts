@@ -1,4 +1,4 @@
-import { convertFromGivenToBaseUnit, convertFromBaseToGivenUnit } from './units';
+import { convertFromGivenToBaseUnit, convertFromBaseToGivenUnit, isPresenceOnlyUnit } from './units';
 
 export interface MustHaveItemLike {
   name: string;
@@ -34,11 +34,29 @@ export function getStockStatus(
     item.name.toLowerCase().includes(mustHave.name.toLowerCase())
   );
   const needQty = mustHave.minQuantity;
-  const needUnit = mustHave.unit || 'Stück';
-  const need = convertFromGivenToBaseUnit(needQty, needUnit);
+  const needUnit = mustHave.unit || 'stk';
+  const preferKind = inventoryItems.length > 0
+    ? convertFromGivenToBaseUnit(inventoryItems[0].quantity, inventoryItems[0].unit || 'stk')?.kind
+    : undefined;
+  const need = (preferKind === 'weight' || preferKind === 'volume')
+    ? convertFromGivenToBaseUnit(needQty, needUnit, preferKind)
+    : convertFromGivenToBaseUnit(needQty, needUnit);
 
   if (!need) 
   {
+    // Removed/unknown unit: treat as presence-only (match by name only), consistent with recipe matching.
+    if (isPresenceOnlyUnit(needUnit))
+    {
+      const present = inventoryItems.length > 0 ? 1 : 0;
+      return {
+        current: present,
+        needed: 1,
+        displayCurrent: present,
+        displayNeeded: 1,
+        displayUnit: needUnit,
+        isLow: inventoryItems.length === 0,
+      };
+    }
     const total = inventoryItems.reduce((sum, item) => sum + item.quantity, 0);
     return {
       current: total,
@@ -55,7 +73,7 @@ export function getStockStatus(
     let totalValue = 0;
     for (const item of inventoryItems) 
     {
-      const have = convertFromGivenToBaseUnit(item.quantity, item.unit || 'Stück');
+      const have = convertFromGivenToBaseUnit(item.quantity, item.unit || 'stk');
       if (have && have.kind === need.kind) totalValue += have.value;
     }
     const displayCurrent = convertFromBaseToGivenUnit(totalValue, needUnit, need.kind) ?? totalValue;
@@ -72,7 +90,7 @@ export function getStockStatus(
 
   const sameUnit = (u: string) => (u || '').toLowerCase().trim() === (needUnit || '').toLowerCase().trim();
   const totalCountable = inventoryItems
-    .filter((item) => sameUnit(item.unit || 'Stück'))
+    .filter((item) => sameUnit(item.unit || 'stk'))
     .reduce((sum, item) => sum + item.quantity, 0);
   return {
     current: totalCountable,

@@ -3,8 +3,8 @@
  * This file must remain environment-agnostic (no Node or Browser APIs).
  */
 
+import { VALID_UNIT_VALUES } from './units.js';
 import {
-  VALID_UNIT_VALUES,
   VALID_PRIORITY_VALUES,
   VALID_WISHLIST_TYPE_VALUES,
   VALID_DIFFICULTY_VALUES,

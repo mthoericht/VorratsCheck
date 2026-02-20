@@ -8,7 +8,7 @@ const meta: Meta<typeof Quantity> = {
   tags: ['autodocs'],
   argTypes: {
     quantity: { control: 'text' },
-    unit: { control: 'select', options: ['g', 'kg', 'ml', 'l', 'Stück'] },
+    unit: { control: 'select', options: ['g', 'kg', 'ml', 'l', 'stk'] },
   },
 };
 
@@ -38,7 +38,7 @@ export const Compact: Story = {
 export const WithLabel: Story = {
   args: {
     quantity: '1',
-    unit: 'Stück',
+    unit: 'stk',
     label: 'Menge',
     onQuantityChange: fn(),
     onUnitChange: fn(),

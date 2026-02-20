@@ -12,7 +12,7 @@ export const initialInventoryFormData = {
   brand: '',
   barcode: '',
   quantity: '',
-  unit: 'Stück',
+  unit: 'stk',
   expiryDate: '',
   location: '',
 };
@@ -149,7 +149,7 @@ export function useInventoryPage()
     }
     const parsedQty = formData.quantity.trim() ? parseFloat(formData.quantity) : NaN;
     const quantityVal = Number.isFinite(parsedQty) ? parsedQty : 1;
-    const unitVal = formData.unit || 'Stück';
+    const unitVal = formData.unit || 'stk';
     try
     {
       await addInventoryItem({
@@ -181,7 +181,7 @@ export function useInventoryPage()
     }
     const parsedQty = formData.quantity.trim() ? parseFloat(formData.quantity) : NaN;
     const quantityVal = Number.isFinite(parsedQty) ? parsedQty : 1;
-    const unitVal = formData.unit || 'Stück';
+    const unitVal = formData.unit || 'stk';
     try
     {
       await updateInventoryItem(editingItem.id, {

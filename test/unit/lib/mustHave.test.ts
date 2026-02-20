@@ -43,8 +43,8 @@ describe('mustHave', () =>
     it('handles countable same unit', () => 
     {
       const status = getStockStatus(
-        { name: 'Eier', minQuantity: 6, unit: 'Stück' },
-        [{ name: 'Eier', quantity: 10, unit: 'Stück' }]
+        { name: 'Eier', minQuantity: 6, unit: 'stk' },
+        [{ name: 'Eier', quantity: 10, unit: 'stk' }]
       );
       expect(status.isLow).toBe(false);
       expect(status.displayCurrent).toBe(10);
@@ -54,10 +54,30 @@ describe('mustHave', () =>
     it('handles countable low', () => 
     {
       const status = getStockStatus(
-        { name: 'Joghurt', minQuantity: 4, unit: 'Stück' },
-        [{ name: 'Joghurt', quantity: 2, unit: 'Stück' }]
+        { name: 'Joghurt', minQuantity: 4, unit: 'stk' },
+        [{ name: 'Joghurt', quantity: 2, unit: 'stk' }]
       );
       expect(status.isLow).toBe(true);
+    });
+
+    it('treats removed/unknown units as presence-only (match by name only)', () => 
+    {
+      const statusPresent = getStockStatus(
+        { name: 'Milch', minQuantity: 2, unit: 'Becher' },
+        [{ name: 'Milch', quantity: 500, unit: 'ml' }]
+      );
+      expect(statusPresent.isLow).toBe(false);
+      expect(statusPresent.displayCurrent).toBe(1);
+      expect(statusPresent.displayNeeded).toBe(1);
+      expect(statusPresent.displayUnit).toBe('Becher');
+
+      const statusAbsent = getStockStatus(
+        { name: 'Sahne', minQuantity: 1, unit: 'Glas' },
+        []
+      );
+      expect(statusAbsent.isLow).toBe(true);
+      expect(statusAbsent.displayCurrent).toBe(0);
+      expect(statusAbsent.displayNeeded).toBe(1);
     });
   });
 });

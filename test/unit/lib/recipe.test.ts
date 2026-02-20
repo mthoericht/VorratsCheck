@@ -64,7 +64,7 @@ describe('recipe', () =>
         name: 'Vollmilch',
         category: 'Milchprodukte',
         quantity: 2,
-        unit: 'l',
+        unit: 'l', // Liter
         addedDate: '2025-01-01',
       },
       {
@@ -100,6 +100,17 @@ describe('recipe', () =>
     it('returns false when no inventory match', () => 
     {
       expect(ingredientMatches({ name: 'Parmesan' }, inventory)).toBe(false);
+    });
+
+    it('matches by presence only for Zehen/Kugeln (ignores quantity)', () => 
+    {
+      const inv = [
+        { id: '1', name: 'Knoblauch', category: 'Gemüse', quantity: 1, unit: 'Zehen', addedDate: '2025-01-01' },
+        { id: '2', name: 'Mozzarella', category: 'Milchprodukte', quantity: 1, unit: 'Kugeln', addedDate: '2025-01-01' },
+      ] as InventoryItem[];
+      expect(ingredientMatches({ name: 'Knoblauch', quantity: 4, unit: 'Zehen' }, inv)).toBe(true);
+      expect(ingredientMatches({ name: 'Mozzarella', quantity: 2, unit: 'Kugeln' }, inv)).toBe(true);
+      expect(ingredientMatches({ name: 'Knoblauch', quantity: 4, unit: 'Zehen' }, [])).toBe(false);
     });
   });
 

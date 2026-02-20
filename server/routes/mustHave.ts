@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
-import { toPositiveNumber } from '../../shared/validation.js';
+import { toPositiveNumber, isValidUnit } from '../../shared/validation.js';
 
 export const mustHaveRouter = Router();
 mustHaveRouter.use(authMiddleware);
@@ -32,6 +32,11 @@ mustHaveRouter.post('/', async (req: Request, res: Response) =>
       res.status(400).json({ error: 'name erforderlich' });
       return;
     }
+    if (unit != null && unit !== '' && !isValidUnit(unit))
+    {
+      res.status(400).json({ error: 'Ungültige Einheit' });
+      return;
+    }
     const item = await prisma.mustHaveItem.create({
       data: { userId, name, category: category || null, minQuantity: toPositiveNumber(minQuantity, 1), unit: unit || null },
     });
@@ -55,6 +60,11 @@ async function handleUpdateMustHave(req: Request, res: Response)
     if (!existing) 
     {
       res.status(404).json({ error: 'Eintrag nicht gefunden' });
+      return;
+    }
+    if (unit !== undefined && unit != null && unit !== '' && !isValidUnit(unit))
+    {
+      res.status(400).json({ error: 'Ungültige Einheit' });
       return;
     }
     const item = await prisma.mustHaveItem.update({

@@ -8,7 +8,7 @@ import type { Difficulty } from '@shared/constants';
 
 const initialFormData = {
   name: '',
-  ingredients: [{ name: '', unit: 'Stück' }] as RecipeIngredient[],
+  ingredients: [{ name: '', unit: 'stk' }] as RecipeIngredient[],
   instructions: '',
   cookingTime: '',
   difficulty: 'easy' as Difficulty,
@@ -86,9 +86,9 @@ export function useRecipesPage()
           ? recipe.ingredients.map((ing) => ({
             name: ing.name,
             quantity: ing.quantity,
-            unit: ing.unit || 'Stück',
+            unit: ing.unit || 'stk',
           }))
-          : [{ name: '', unit: 'Stück' }],
+          : [{ name: '', unit: 'stk' }],
       instructions: recipe.instructions.join('\n'),
       cookingTime: recipe.cookingTime.toString(),
       difficulty: recipe.difficulty,
@@ -111,7 +111,7 @@ export function useRecipesPage()
       .map((ing) => ({
         name: ing.name.trim(),
         quantity: ing.quantity != null && Number.isFinite(Number(ing.quantity)) ? Number(ing.quantity) : undefined,
-        unit: ing.unit && ing.unit !== 'Stück' ? ing.unit : undefined,
+        unit: ing.unit && ing.unit !== 'stk' ? ing.unit : undefined,
       }))
       .filter((ing) => ing.name.length > 0);
 

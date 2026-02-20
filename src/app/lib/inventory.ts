@@ -1,4 +1,11 @@
-import { INVENTORY_LOCATIONS } from '@shared/constants';
+/** Storage locations for inventory items. Client-only (form and filter); server accepts any string. */
+export const INVENTORY_LOCATIONS = [
+  { value: 'Kühlschrank', label: 'Kühlschrank' },
+  { value: 'Gefrierschrank', label: 'Gefrierschrank' },
+  { value: 'Vorratsschrank', label: 'Vorratsschrank' },
+] as const;
+
+export type InventoryLocation = (typeof INVENTORY_LOCATIONS)[number]['value'];
 
 /** Options for inventory item location (storage place). Used in form and filter. */
 export const INVENTORY_LOCATION_OPTIONS = INVENTORY_LOCATIONS as readonly { value: string; label: string }[];

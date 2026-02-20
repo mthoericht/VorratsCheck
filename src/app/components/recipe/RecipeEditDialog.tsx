@@ -95,7 +95,7 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
                 onClick={() =>
                   form.setFormData({
                     ...form.formData,
-                    ingredients: [...form.formData.ingredients, { name: '', unit: 'Stück' }],
+                    ingredients: [...form.formData.ingredients, { name: '', unit: 'stk' }],
                   })}
               >
                 <Plus className="w-4 h-4 mr-1" />
@@ -118,7 +118,7 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
                   />
                   <Quantity
                     quantity={ing.quantity ?? ''}
-                    unit={ing.unit || 'Stück'}
+                    unit={ing.unit || 'stk'}
                     onQuantityChange={(value) => 
                     {
                       const next = [...form.formData.ingredients];
@@ -149,7 +149,7 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
                       const next = form.formData.ingredients.filter((_, i) => i !== index);
                       form.setFormData({
                         ...form.formData,
-                        ingredients: next.length > 0 ? next : [{ name: '', unit: 'Stück' }],
+                        ingredients: next.length > 0 ? next : [{ name: '', unit: 'stk' }],
                       });
                     }}
                   >

@@ -1,111 +1,80 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { toPositiveNumber, isValidUnit } from '../../shared/validation.js';
+import { getUserId, asyncHandler } from '../lib/routeHelpers.js';
 
 export const mustHaveRouter = Router();
 mustHaveRouter.use(authMiddleware);
 
-mustHaveRouter.get('/', async (req: Request, res: Response) => 
+mustHaveRouter.get('/', asyncHandler(async (req, res) => 
 {
-  try 
-  {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const items = await prisma.mustHaveItem.findMany({ where: { userId } });
-    res.json(items.map((i) => ({ id: i.id, name: i.name, category: i.category ?? undefined, minQuantity: i.minQuantity, unit: i.unit ?? undefined })));
-  }
-  catch (e) 
-  {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
-  }
-});
+  const userId = getUserId(req);
+  const items = await prisma.mustHaveItem.findMany({ where: { userId } });
+  res.json(items.map((i) => ({ id: i.id, name: i.name, category: i.category ?? undefined, minQuantity: i.minQuantity, unit: i.unit ?? undefined })));
+}));
 
-mustHaveRouter.post('/', async (req: Request, res: Response) => 
+mustHaveRouter.post('/', asyncHandler(async (req, res) => 
 {
-  try 
+  const userId = getUserId(req);
+  const { name, category, minQuantity, unit } = req.body;
+  if (!name) 
   {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const { name, category, minQuantity, unit } = req.body;
-    if (!name) 
-    {
-      res.status(400).json({ error: 'name erforderlich' });
-      return;
-    }
-    if (unit != null && unit !== '' && !isValidUnit(unit))
-    {
-      res.status(400).json({ error: 'Ungültige Einheit' });
-      return;
-    }
-    const item = await prisma.mustHaveItem.create({
-      data: { userId, name, category: category || null, minQuantity: toPositiveNumber(minQuantity, 1), unit: unit || null },
-    });
-    res.status(201).json({ id: item.id, name: item.name, category: item.category ?? undefined, minQuantity: item.minQuantity, unit: item.unit ?? undefined });
+    res.status(400).json({ error: 'name erforderlich' });
+    return;
   }
-  catch (e) 
+  if (unit != null && unit !== '' && !isValidUnit(unit))
   {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
+    res.status(400).json({ error: 'Ungültige Einheit' });
+    return;
   }
-});
+  const item = await prisma.mustHaveItem.create({
+    data: { userId, name, category: category || null, minQuantity: toPositiveNumber(minQuantity, 1), unit: unit || null },
+  });
+  res.status(201).json({ id: item.id, name: item.name, category: item.category ?? undefined, minQuantity: item.minQuantity, unit: item.unit ?? undefined });
+}));
 
-async function handleUpdateMustHave(req: Request, res: Response) 
+const handleUpdateMustHave = asyncHandler(async (req, res) => 
 {
-  try 
+  const userId = getUserId(req);
+  const { id } = req.params;
+  const { name, category, minQuantity, unit } = req.body;
+  const existing = await prisma.mustHaveItem.findFirst({ where: { id, userId } });
+  if (!existing) 
   {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const { id } = req.params;
-    const { name, category, minQuantity, unit } = req.body;
-    const existing = await prisma.mustHaveItem.findFirst({ where: { id, userId } });
-    if (!existing) 
-    {
-      res.status(404).json({ error: 'Eintrag nicht gefunden' });
-      return;
-    }
-    if (unit !== undefined && unit != null && unit !== '' && !isValidUnit(unit))
-    {
-      res.status(400).json({ error: 'Ungültige Einheit' });
-      return;
-    }
-    const item = await prisma.mustHaveItem.update({
-      where: { id, userId },
-      data: {
-        ...(name !== undefined && { name }),
-        ...(category !== undefined && { category: category || null }),
-        ...(minQuantity !== undefined && { minQuantity: toPositiveNumber(minQuantity, existing.minQuantity) }),
-        ...(unit !== undefined && { unit: unit || null }),
-      },
-    });
-    res.json({ id: item.id, name: item.name, category: item.category ?? undefined, minQuantity: item.minQuantity, unit: item.unit ?? undefined });
+    res.status(404).json({ error: 'Eintrag nicht gefunden' });
+    return;
   }
-  catch (e) 
+  if (unit !== undefined && unit != null && unit !== '' && !isValidUnit(unit))
   {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
+    res.status(400).json({ error: 'Ungültige Einheit' });
+    return;
   }
-}
+  const item = await prisma.mustHaveItem.update({
+    where: { id, userId },
+    data: {
+      ...(name !== undefined && { name }),
+      ...(category !== undefined && { category: category || null }),
+      ...(minQuantity !== undefined && { minQuantity: toPositiveNumber(minQuantity, existing.minQuantity) }),
+      ...(unit !== undefined && { unit: unit || null }),
+    },
+  });
+  res.json({ id: item.id, name: item.name, category: item.category ?? undefined, minQuantity: item.minQuantity, unit: item.unit ?? undefined });
+});
 
 mustHaveRouter.patch('/:id', handleUpdateMustHave);
 mustHaveRouter.put('/:id', handleUpdateMustHave);
 
-mustHaveRouter.delete('/:id', async (req: Request, res: Response) => 
+mustHaveRouter.delete('/:id', asyncHandler(async (req, res) => 
 {
-  try 
+  const userId = getUserId(req);
+  const { id } = req.params;
+  const existing = await prisma.mustHaveItem.findFirst({ where: { id, userId } });
+  if (!existing) 
   {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const { id } = req.params;
-    const existing = await prisma.mustHaveItem.findFirst({ where: { id, userId } });
-    if (!existing) 
-    {
-      res.status(404).json({ error: 'Eintrag nicht gefunden' });
-      return;
-    }
-    await prisma.mustHaveItem.delete({ where: { id, userId } });
-    res.status(204).send();
+    res.status(404).json({ error: 'Eintrag nicht gefunden' });
+    return;
   }
-  catch (e) 
-  {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
-  }
-});
+  await prisma.mustHaveItem.delete({ where: { id, userId } });
+  res.status(204).send();
+}));

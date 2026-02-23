@@ -1,7 +1,8 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authMiddleware, optionalAuth } from '../middleware/auth.js';
 import { isValidNumber, isValidDate } from '../../shared/validation.js';
+import { getUserId, getOptionalUserId, toISODate, asyncHandler } from '../lib/routeHelpers.js';
 
 export const dealsRouter = Router();
 
@@ -26,93 +27,69 @@ function mapDeal(d: {
     originalPrice: d.originalPrice,
     discountPrice: d.discountPrice,
     discount: d.discount,
-    validUntil: d.validUntil.toISOString().split('T')[0],
+    validUntil: toISODate(d.validUntil),
     distance: d.distance,
     inStock: d.inStock ?? true,
   };
 }
 
-dealsRouter.get('/', optionalAuth, async (req: Request, res: Response) => 
+dealsRouter.get('/', optionalAuth, asyncHandler(async (req, res) => 
 {
-  try 
-  {
-    const userId = (req as Request & { user?: { userId: string } }).user?.userId;
-    const deals = await prisma.deal.findMany({
-      where: userId ? { OR: [{ userId: null }, { userId }] } : { userId: null },
-      orderBy: { validUntil: 'asc' },
-    });
-    res.json(deals.map(mapDeal));
-  }
-  catch (e) 
-  {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
-  }
-});
+  const userId = getOptionalUserId(req);
+  const deals = await prisma.deal.findMany({
+    where: userId ? { OR: [{ userId: null }, { userId }] } : { userId: null },
+    orderBy: { validUntil: 'asc' },
+  });
+  res.json(deals.map(mapDeal));
+}));
 
-dealsRouter.post('/', authMiddleware, async (req: Request, res: Response) => 
+dealsRouter.post('/', authMiddleware, asyncHandler(async (req, res) => 
 {
-  try 
+  const userId = getUserId(req);
+  const { product, name, store, originalPrice, discountPrice, discount, validUntil, distance, inStock } = req.body;
+  if (!product || !store || originalPrice == null || discountPrice == null || discount == null || !validUntil || distance == null) 
   {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const { product, name, store, originalPrice, discountPrice, discount, validUntil, distance, inStock } = req.body;
-    if (!product || !store || originalPrice == null || discountPrice == null || discount == null || !validUntil || distance == null) 
-    {
-      res.status(400).json({ error: 'product, store, originalPrice, discountPrice, discount, validUntil, distance erforderlich' });
-      return;
-    }
-    if (!isValidNumber(originalPrice) || !isValidNumber(discountPrice) || !isValidNumber(discount) || !isValidNumber(distance))
-    {
-      res.status(400).json({ error: 'Preise, Rabatt und Entfernung müssen gültige Zahlen sein' });
-      return;
-    }
-    if (!isValidDate(validUntil))
-    {
-      res.status(400).json({ error: 'validUntil muss ein gültiges Datum sein' });
-      return;
-    }
-    const dealName = name || 'Sonstiges';
-    const deal = await prisma.deal.create({
-      data: {
-        userId,
-        product,
-        name: dealName,
-        store,
-        originalPrice: Number(originalPrice),
-        discountPrice: Number(discountPrice),
-        discount: Number(discount),
-        validUntil: new Date(validUntil),
-        distance: Number(distance),
-        inStock: inStock !== undefined ? !!inStock : null,
-      },
-    });
-    res.status(201).json(mapDeal(deal));
+    res.status(400).json({ error: 'product, store, originalPrice, discountPrice, discount, validUntil, distance erforderlich' });
+    return;
   }
-  catch (e) 
+  if (!isValidNumber(originalPrice) || !isValidNumber(discountPrice) || !isValidNumber(discount) || !isValidNumber(distance))
   {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
+    res.status(400).json({ error: 'Preise, Rabatt und Entfernung müssen gültige Zahlen sein' });
+    return;
   }
-});
+  if (!isValidDate(validUntil))
+  {
+    res.status(400).json({ error: 'validUntil muss ein gültiges Datum sein' });
+    return;
+  }
+  const dealName = name || 'Sonstiges';
+  const deal = await prisma.deal.create({
+    data: {
+      userId,
+      product,
+      name: dealName,
+      store,
+      originalPrice: Number(originalPrice),
+      discountPrice: Number(discountPrice),
+      discount: Number(discount),
+      validUntil: new Date(validUntil),
+      distance: Number(distance),
+      inStock: inStock !== undefined ? !!inStock : null,
+    },
+  });
+  res.status(201).json(mapDeal(deal));
+}));
 
-dealsRouter.delete('/:id', authMiddleware, async (req: Request, res: Response) => 
+dealsRouter.delete('/:id', authMiddleware, asyncHandler(async (req, res) => 
 {
-  try 
+  const userId = getUserId(req);
+  const { id } = req.params;
+  const existing = await prisma.deal.findFirst({ where: { id, userId } });
+  if (!existing) 
   {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const { id } = req.params;
-    const existing = await prisma.deal.findFirst({ where: { id, userId: userId } });
-    if (!existing) 
-    {
-      res.status(404).json({ error: 'Angebot nicht gefunden' });
-      return;
-    }
-    await prisma.deal.delete({ where: { id, userId: userId } });
-    res.status(204).send();
+    res.status(404).json({ error: 'Angebot nicht gefunden' });
+    return;
   }
-  catch (e) 
-  {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
-  }
-});
+  await prisma.deal.delete({ where: { id, userId } });
+  res.status(204).send();
+}));

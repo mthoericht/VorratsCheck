@@ -1,162 +1,131 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { toPositiveNumber, isValidDate, isValidUnit } from '../../shared/validation.js';
+import { getUserId, toISODate, asyncHandler } from '../lib/routeHelpers.js';
 
 export const inventoryRouter = Router();
 inventoryRouter.use(authMiddleware);
 
-inventoryRouter.get('/', async (req: Request, res: Response) => 
+inventoryRouter.get('/', asyncHandler(async (req, res) => 
 {
-  try 
-  {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const items = await prisma.inventoryItem.findMany({
-      where: { userId },
-      orderBy: { addedDate: 'desc' },
-    });
-    res.json(
-      items.map((i) => ({
-        id: i.id,
-        name: i.name,
-        category: i.category,
-        brand: i.brand ?? undefined,
-        barcode: i.barcode ?? undefined,
-        quantity: i.quantity,
-        unit: i.unit,
-        expiryDate: i.expiryDate?.toISOString().split('T')[0],
-        location: i.location ?? undefined,
-        addedDate: i.addedDate.toISOString().split('T')[0],
-      }))
-    );
-  }
-  catch (e) 
-  {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
-  }
-});
+  const userId = getUserId(req);
+  const items = await prisma.inventoryItem.findMany({
+    where: { userId },
+    orderBy: { addedDate: 'desc' },
+  });
+  res.json(
+    items.map((i) => ({
+      id: i.id,
+      name: i.name,
+      category: i.category,
+      brand: i.brand ?? undefined,
+      barcode: i.barcode ?? undefined,
+      quantity: i.quantity,
+      unit: i.unit,
+      expiryDate: i.expiryDate ? toISODate(i.expiryDate) : undefined,
+      location: i.location ?? undefined,
+      addedDate: toISODate(i.addedDate),
+    }))
+  );
+}));
 
-inventoryRouter.post('/', async (req: Request, res: Response) => 
+inventoryRouter.post('/', asyncHandler(async (req, res) => 
 {
-  try 
+  const userId = getUserId(req);
+  const { name, category, brand, barcode, quantity, unit, expiryDate, location } = req.body;
+  if (!name || !category) 
   {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const { name, category, brand, barcode, quantity, unit, expiryDate, location } = req.body;
-    if (!name || !category) 
-    {
-      res.status(400).json({ error: 'name und category erforderlich' });
-      return;
-    }
-    const quantityNum = quantity != null && quantity !== '' ? toPositiveNumber(quantity, 1) : 1;
-    const unitVal = unit || 'stk';
-    if (!isValidUnit(unitVal))
-    {
-      res.status(400).json({ error: 'Ungültige Einheit' });
-      return;
-    }
-    const item = await prisma.inventoryItem.create({
-      data: {
-        userId,
-        name,
-        category,
-        brand: brand || null,
-        barcode: barcode || null,
-        quantity: quantityNum,
-        unit: unitVal,
-        expiryDate: expiryDate && isValidDate(expiryDate) ? new Date(expiryDate) : null,
-        location: location || null,
-      },
-    });
-    res.status(201).json({
-      id: item.id,
-      name: item.name,
-      category: item.category,
-      brand: item.brand ?? undefined,
-      barcode: item.barcode ?? undefined,
-      quantity: item.quantity,
-      unit: item.unit,
-      expiryDate: item.expiryDate?.toISOString().split('T')[0],
-      location: item.location ?? undefined,
-      addedDate: item.addedDate.toISOString().split('T')[0],
-    });
+    res.status(400).json({ error: 'name und category erforderlich' });
+    return;
   }
-  catch (e) 
+  const quantityNum = quantity != null && quantity !== '' ? toPositiveNumber(quantity, 1) : 1;
+  const unitVal = unit || 'stk';
+  if (!isValidUnit(unitVal))
   {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
+    res.status(400).json({ error: 'Ungültige Einheit' });
+    return;
   }
-});
+  const item = await prisma.inventoryItem.create({
+    data: {
+      userId,
+      name,
+      category,
+      brand: brand || null,
+      barcode: barcode || null,
+      quantity: quantityNum,
+      unit: unitVal,
+      expiryDate: expiryDate && isValidDate(expiryDate) ? new Date(expiryDate) : null,
+      location: location || null,
+    },
+  });
+  res.status(201).json({
+    id: item.id,
+    name: item.name,
+    category: item.category,
+    brand: item.brand ?? undefined,
+    barcode: item.barcode ?? undefined,
+    quantity: item.quantity,
+    unit: item.unit,
+    expiryDate: item.expiryDate ? toISODate(item.expiryDate) : undefined,
+    location: item.location ?? undefined,
+    addedDate: toISODate(item.addedDate),
+  });
+}));
 
-inventoryRouter.patch('/:id', async (req: Request, res: Response) => 
+inventoryRouter.patch('/:id', asyncHandler(async (req, res) => 
 {
-  try 
+  const userId = getUserId(req);
+  const { id } = req.params;
+  const existing = await prisma.inventoryItem.findFirst({ where: { id, userId } });
+  if (!existing) 
   {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const { id } = req.params;
-    const existing = await prisma.inventoryItem.findFirst({ where: { id, userId } });
-    if (!existing) 
-    {
-      res.status(404).json({ error: 'Eintrag nicht gefunden' });
-      return;
-    }
-    const { name, category, brand, barcode, quantity, unit, expiryDate, location } = req.body;
-    if (unit != null && unit !== '' && !isValidUnit(unit))
-    {
-      res.status(400).json({ error: 'Ungültige Einheit' });
-      return;
-    }
-    const item = await prisma.inventoryItem.update({
-      where: { id, userId },
-      data: {
-        ...(name != null && { name }),
-        ...(category != null && { category }),
-        ...(brand !== undefined && { brand: brand || null }),
-        ...(barcode !== undefined && { barcode: barcode || null }),
-        ...(quantity != null && { quantity: toPositiveNumber(quantity, existing.quantity) }),
-        ...(unit != null && { unit: unit || 'stk' }),
-        ...(expiryDate !== undefined && { expiryDate: expiryDate && isValidDate(expiryDate) ? new Date(expiryDate) : null }),
-        ...(location !== undefined && { location: location || null }),
-      },
-    });
-    res.json({
-      id: item.id,
-      name: item.name,
-      category: item.category,
-      brand: item.brand ?? undefined,
-      barcode: item.barcode ?? undefined,
-      quantity: item.quantity,
-      unit: item.unit,
-      expiryDate: item.expiryDate?.toISOString().split('T')[0],
-      location: item.location ?? undefined,
-      addedDate: item.addedDate.toISOString().split('T')[0],
-    });
+    res.status(404).json({ error: 'Eintrag nicht gefunden' });
+    return;
   }
-  catch (e) 
+  const { name, category, brand, barcode, quantity, unit, expiryDate, location } = req.body;
+  if (unit != null && unit !== '' && !isValidUnit(unit))
   {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
+    res.status(400).json({ error: 'Ungültige Einheit' });
+    return;
   }
-});
+  const item = await prisma.inventoryItem.update({
+    where: { id, userId },
+    data: {
+      ...(name != null && { name }),
+      ...(category != null && { category }),
+      ...(brand !== undefined && { brand: brand || null }),
+      ...(barcode !== undefined && { barcode: barcode || null }),
+      ...(quantity != null && { quantity: toPositiveNumber(quantity, existing.quantity) }),
+      ...(unit != null && { unit: unit || 'stk' }),
+      ...(expiryDate !== undefined && { expiryDate: expiryDate && isValidDate(expiryDate) ? new Date(expiryDate) : null }),
+      ...(location !== undefined && { location: location || null }),
+    },
+  });
+  res.json({
+    id: item.id,
+    name: item.name,
+    category: item.category,
+    brand: item.brand ?? undefined,
+    barcode: item.barcode ?? undefined,
+    quantity: item.quantity,
+    unit: item.unit,
+    expiryDate: item.expiryDate ? toISODate(item.expiryDate) : undefined,
+    location: item.location ?? undefined,
+    addedDate: toISODate(item.addedDate),
+  });
+}));
 
-inventoryRouter.delete('/:id', async (req: Request, res: Response) => 
+inventoryRouter.delete('/:id', asyncHandler(async (req, res) => 
 {
-  try 
+  const userId = getUserId(req);
+  const { id } = req.params;
+  const existing = await prisma.inventoryItem.findFirst({ where: { id, userId } });
+  if (!existing) 
   {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const { id } = req.params;
-    const existing = await prisma.inventoryItem.findFirst({ where: { id, userId } });
-    if (!existing) 
-    {
-      res.status(404).json({ error: 'Eintrag nicht gefunden' });
-      return;
-    }
-    await prisma.inventoryItem.delete({ where: { id, userId } });
-    res.status(204).send();
+    res.status(404).json({ error: 'Eintrag nicht gefunden' });
+    return;
   }
-  catch (e) 
-  {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
-  }
-});
+  await prisma.inventoryItem.delete({ where: { id, userId } });
+  res.status(204).send();
+}));

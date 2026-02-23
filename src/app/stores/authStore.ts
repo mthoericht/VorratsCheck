@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { login as apiLogin, signup as apiSignup } from '../lib/api';
+import { registerTokenProvider } from '../lib/api/client';
 
 export interface User {
   id: string;
@@ -21,25 +22,20 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       token: null,
       isLoading: true,
 
       setLoading: (loading) => set({ isLoading: loading }),
 
-      setUserFromToken: (user, token) => 
-      {
-        localStorage.setItem('vorratscheck_token', token);
-        set({ user, token });
-      },
+      setUserFromToken: (user, token) => set({ user, token }),
 
       login: async (email, password) => 
       {
         try 
         {
           const { token, user } = await apiLogin<{ token: string; user: User }>(email, password);
-          localStorage.setItem('vorratscheck_token', token);
           set({ user, token });
           return { success: true };
         }
@@ -59,7 +55,6 @@ export const useAuthStore = create<AuthState>()(
             password,
             inviteCode
           );
-          localStorage.setItem('vorratscheck_token', token);
           set({ user, token });
           return { success: true };
         }
@@ -69,19 +64,14 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      logout: () => 
-      {
-        localStorage.removeItem('vorratscheck_token');
-        set({ user: null, token: null });
-      },
+      logout: () => set({ user: null, token: null }),
     }),
     {
       name: 'vorratscheck-auth',
       partialize: (s) => ({ user: s.user, token: s.token }),
-      onRehydrateStorage: () => (state) => 
-      {
-        if (state?.token) localStorage.setItem('vorratscheck_token', state.token);
-      },
     }
   )
 );
+
+// Register authStore as the single source of truth for the API client token
+registerTokenProvider(() => useAuthStore.getState().token);

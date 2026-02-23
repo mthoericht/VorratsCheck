@@ -1,7 +1,8 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { toPositiveNumber, isValidDifficulty } from '../../shared/validation.js';
+import { getUserId, asyncHandler } from '../lib/routeHelpers.js';
 
 export const recipesRouter = Router();
 recipesRouter.use(authMiddleware);
@@ -80,118 +81,86 @@ function mapRecipe(recipe: {
   };
 }
 
-recipesRouter.get('/', async (req: Request, res: Response) => 
+recipesRouter.get('/', asyncHandler(async (req, res) => 
 {
-  try 
-  {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const recipes = await prisma.recipe.findMany({ where: { userId } });
-    res.json(recipes.map(mapRecipe));
-  }
-  catch (e) 
-  {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
-  }
-});
+  const userId = getUserId(req);
+  const recipes = await prisma.recipe.findMany({ where: { userId } });
+  res.json(recipes.map(mapRecipe));
+}));
 
-recipesRouter.post('/', async (req: Request, res: Response) => 
+recipesRouter.post('/', asyncHandler(async (req, res) => 
 {
-  try 
+  const userId = getUserId(req);
+  const { name, ingredients, instructions, cookingTime, difficulty, servings } = req.body;
+  if (!name || !Array.isArray(ingredients) || !Array.isArray(instructions) || cookingTime == null || !difficulty || servings == null) 
   {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const { name, ingredients, instructions, cookingTime, difficulty, servings } = req.body;
-    if (!name || !Array.isArray(ingredients) || !Array.isArray(instructions) || cookingTime == null || !difficulty || servings == null) 
-    {
-      res.status(400).json({ error: 'name, ingredients, instructions, cookingTime, difficulty, servings erforderlich' });
-      return;
-    }
-    if (!isValidDifficulty(difficulty))
-    {
-      res.status(400).json({ error: 'difficulty muss "easy", "medium" oder "hard" sein' });
-      return;
-    }
-    const normalizedIngredients = ingredients.map(normalizeIngredientItem);
-    const recipe = await prisma.recipe.create({
-      data: {
-        userId,
-        name,
-        ingredients: JSON.stringify(normalizedIngredients),
-        instructions: JSON.stringify(instructions),
-        cookingTime: toPositiveNumber(cookingTime, 0),
-        difficulty,
-        servings: toPositiveNumber(servings, 1),
-      },
-    });
-    res.status(201).json(mapRecipe(recipe));
+    res.status(400).json({ error: 'name, ingredients, instructions, cookingTime, difficulty, servings erforderlich' });
+    return;
   }
-  catch (e) 
+  if (!isValidDifficulty(difficulty))
   {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
+    res.status(400).json({ error: 'difficulty muss "easy", "medium" oder "hard" sein' });
+    return;
   }
-});
+  const normalizedIngredients = ingredients.map(normalizeIngredientItem);
+  const recipe = await prisma.recipe.create({
+    data: {
+      userId,
+      name,
+      ingredients: JSON.stringify(normalizedIngredients),
+      instructions: JSON.stringify(instructions),
+      cookingTime: toPositiveNumber(cookingTime, 0),
+      difficulty,
+      servings: toPositiveNumber(servings, 1),
+    },
+  });
+  res.status(201).json(mapRecipe(recipe));
+}));
 
-recipesRouter.patch('/:id', async (req: Request, res: Response) => 
+recipesRouter.patch('/:id', asyncHandler(async (req, res) => 
 {
-  try 
+  const userId = getUserId(req);
+  const { id } = req.params;
+  const existing = await prisma.recipe.findFirst({ where: { id, userId } });
+  if (!existing) 
   {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const { id } = req.params;
-    const existing = await prisma.recipe.findFirst({ where: { id, userId } });
-    if (!existing) 
-    {
-      res.status(404).json({ error: 'Rezept nicht gefunden' });
-      return;
-    }
-    const { name, ingredients, instructions, cookingTime, difficulty, servings } = req.body;
-    const normalizedIngredients =
-      ingredients != null && Array.isArray(ingredients)
-        ? ingredients.map(normalizeIngredientItem)
-        : undefined;
-    if (difficulty != null && !isValidDifficulty(difficulty))
-    {
-      res.status(400).json({ error: 'difficulty muss "easy", "medium" oder "hard" sein' });
-      return;
-    }
-    const recipe = await prisma.recipe.update({
-      where: { id, userId },
-      data: {
-        ...(name != null && { name }),
-        ...(normalizedIngredients !== undefined && { ingredients: JSON.stringify(normalizedIngredients) }),
-        ...(instructions != null && { instructions: JSON.stringify(instructions) }),
-        ...(cookingTime != null && { cookingTime: toPositiveNumber(cookingTime, existing.cookingTime) }),
-        ...(difficulty != null && { difficulty }),
-        ...(servings != null && { servings: toPositiveNumber(servings, existing.servings) }),
-      },
-    });
-    res.json(mapRecipe(recipe));
+    res.status(404).json({ error: 'Rezept nicht gefunden' });
+    return;
   }
-  catch (e) 
+  const { name, ingredients, instructions, cookingTime, difficulty, servings } = req.body;
+  const normalizedIngredients =
+    ingredients != null && Array.isArray(ingredients)
+      ? ingredients.map(normalizeIngredientItem)
+      : undefined;
+  if (difficulty != null && !isValidDifficulty(difficulty))
   {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
+    res.status(400).json({ error: 'difficulty muss "easy", "medium" oder "hard" sein' });
+    return;
   }
-});
+  const recipe = await prisma.recipe.update({
+    where: { id, userId },
+    data: {
+      ...(name != null && { name }),
+      ...(normalizedIngredients !== undefined && { ingredients: JSON.stringify(normalizedIngredients) }),
+      ...(instructions != null && { instructions: JSON.stringify(instructions) }),
+      ...(cookingTime != null && { cookingTime: toPositiveNumber(cookingTime, existing.cookingTime) }),
+      ...(difficulty != null && { difficulty }),
+      ...(servings != null && { servings: toPositiveNumber(servings, existing.servings) }),
+    },
+  });
+  res.json(mapRecipe(recipe));
+}));
 
-recipesRouter.delete('/:id', async (req: Request, res: Response) => 
+recipesRouter.delete('/:id', asyncHandler(async (req, res) => 
 {
-  try 
+  const userId = getUserId(req);
+  const { id } = req.params;
+  const existing = await prisma.recipe.findFirst({ where: { id, userId } });
+  if (!existing) 
   {
-    const userId = (req as Request & { user?: { userId: string } }).user!.userId;
-    const { id } = req.params;
-    const existing = await prisma.recipe.findFirst({ where: { id, userId } });
-    if (!existing) 
-    {
-      res.status(404).json({ error: 'Rezept nicht gefunden' });
-      return;
-    }
-    await prisma.recipe.delete({ where: { id, userId } });
-    res.status(204).send();
+    res.status(404).json({ error: 'Rezept nicht gefunden' });
+    return;
   }
-  catch (e) 
-  {
-    console.error(e);
-    res.status(500).json({ error: 'Serverfehler' });
-  }
-});
+  await prisma.recipe.delete({ where: { id, userId } });
+  res.status(204).send();
+}));

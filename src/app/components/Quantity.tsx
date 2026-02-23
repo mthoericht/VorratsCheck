@@ -6,28 +6,28 @@ import { UNITS } from '../lib/units';
 import { cn } from './ui/utils';
 
 interface QuantityProps {
-  /** Aktuelle Menge (leer = optional) */
+  /** Current quantity (empty = optional) */
   quantity: string | number;
-  /** Aktuelle Einheit */
+  /** Current unit */
   unit: string;
-  /** Callback bei Änderung (quantity als Zahl oder leer für optional) */
+  /** Callback on change (quantity as number or empty for optional) */
   onQuantityChange: (value: string) => void;
   onUnitChange: (value: string) => void;
-  /** Label (z. B. "Menge") */
+  /** Label (e.g. "Menge") */
   label?: string;
-  /** Placeholder für Mengenfeld */
+  /** Placeholder for quantity field */
   placeholder?: string;
-  /** Optional – kein Pflichtfeld */
+  /** Optional – not a required field */
   optional?: boolean;
-  /** Id-Prefix für Zugriff (z. B. "add" → id "add-quantity") */
+  /** ID prefix for access (e.g. "add" → id "add-quantity") */
   idPrefix?: string;
-  /** Kompakter Modus (z. B. in Listen) */
+  /** Compact mode (e.g. in lists) */
   compact?: boolean;
   className?: string;
 }
 
 /**
- * Kombiniertes Mengen- und Einheitenfeld (Vorrat, Rezept-Zutaten).
+ * Combined quantity and unit input field (inventory, recipe ingredients).
  */
 export function Quantity({
   quantity,

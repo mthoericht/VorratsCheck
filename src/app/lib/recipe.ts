@@ -87,25 +87,82 @@ export function ingredientMatches(ing: RecipeIngredient, inventory: InventoryIte
   return true;
 }
 
+/** Pre-normalizes inventory names/categories to lowercase for faster matching. */
+interface NormalizedInventoryItem extends InventoryItem {
+  nameLower: string;
+  categoryLower: string;
+}
+
+function normalizeInventory(inventory: InventoryItem[]): NormalizedInventoryItem[] 
+{
+  return inventory.map((item) => ({
+    ...item,
+    nameLower: item.name.toLowerCase(),
+    categoryLower: item.category.toLowerCase(),
+  }));
+}
+
+/** Returns whether the given ingredient is covered by at least one pre-normalized inventory item. */
+function ingredientMatchesNormalized(ing: RecipeIngredient, inventory: NormalizedInventoryItem[]): boolean 
+{
+  const nameLower = ing.name.toLowerCase().trim();
+  if (!nameLower) return false;
+
+  const candidates = inventory.filter(
+    (item) =>
+      item.nameLower.includes(nameLower) ||
+      nameLower.includes(item.nameLower) ||
+      item.categoryLower.includes(nameLower) ||
+      nameLower.includes(item.categoryLower)
+  );
+
+  if (candidates.length === 0) return false;
+
+  if (ing.quantity != null && ing.unit && Number.isFinite(Number(ing.quantity))) 
+  {
+    if (isPresenceOnlyUnit(ing.unit)) return true;
+    const needQty = Number(ing.quantity);
+    const needUnit = ing.unit;
+    return candidates.some((item) =>
+      quantityCovers(item.quantity, item.unit || 'stk', needQty, needUnit)
+    );
+  }
+  
+  return true;
+}
+
 /** Computes match data for each recipe (available/missing ingredients, percentage). */
 export function computeRecipesWithMatch(
   recipes: Recipe[],
   inventory: InventoryItem[]
 ): RecipeWithMatch[] 
 {
+  const normalizedInv = normalizeInventory(inventory);
   return recipes.map((recipe) => 
   {
-    const relevant = recipe.ingredients.filter((ing) => ing.name.trim());
-    const availableIngredients = relevant.filter((ing) => ingredientMatches(ing, inventory));
-    const missingIngredients = relevant.filter((ing) => !ingredientMatches(ing, inventory));
-    const totalIngredientsCount = relevant.length;
+    const relevantIngredients = recipe.ingredients.filter((ing) => ing.name.trim());
+    const availableIngredients: RecipeIngredient[] = [];
+    const missingIngredients: RecipeIngredient[] = [];
+
+    for (const ingredient of relevantIngredients) 
+    {
+      if (ingredientMatchesNormalized(ingredient, normalizedInv)) 
+      {
+        availableIngredients.push(ingredient);
+      }
+      else 
+      {
+        missingIngredients.push(ingredient);
+      }
+    }
+    const totalIngredientsCount = relevantIngredients.length;
     const matchPercentage = totalIngredientsCount > 0 
       ? (availableIngredients.length / totalIngredientsCount) * 100 
       : 0;
     return {
       ...recipe,
-      availableIngredients,
-      missingIngredients,
+      availableIngredients: availableIngredients,
+      missingIngredients: missingIngredients,
       matchPercentage,
       totalIngredientsCount,
     };

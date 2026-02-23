@@ -1,7 +1,7 @@
-// Fehler und Hilfsfunktionen
+// Errors and helpers
 export { ApiError, isApiError, getErrorMessage } from './errors';
 
-// Auth-Helfer (z. B. für eigene Requests)
+// Auth helpers (e.g. for custom requests)
 export { getAuthHeader } from './client';
 
 // Inventory

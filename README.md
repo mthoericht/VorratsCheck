@@ -18,7 +18,7 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 - **UI:** Radix UI primitives, Lucide icons, shadcn-style components in `src/app/components/ui/`
 - **Backend:** Express 4, TypeScript (tsx)
 - **Database:** Prisma 6, SQLite (dev); PostgreSQL supported for production
-- **Auth:** JWT, bcryptjs; token in `Authorization: Bearer <token>` and `localStorage` key `vorratscheck_token`
+- **Auth:** JWT, bcryptjs; token in `Authorization: Bearer <token>`, managed by Zustand persist (key `vorratscheck-auth`)
 
 ## Requirements
 

@@ -4,12 +4,12 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-/** Zutat: name + optionale Menge/Einheit (für Vorrats-Matching). */
+/** Ingredient: name + optional quantity/unit (for inventory matching). */
 type SeedIngredient = { name: string; quantity?: number; unit?: string };
 
 /**
- * Zählbare Zutaten (z. B. Möhre, Zwiebel, Tomaten, Ei) immer mit quantity und unit: 'stk' angeben,
- * damit das Rezept-Matching mit dem Vorrat funktioniert.
+ * Countable ingredients (e.g. Möhre, Zwiebel, Tomaten, Ei) should always use quantity with unit: 'stk',
+ * so that recipe-inventory matching works correctly.
  */
 /** Common recipes to seed per user. Ingredients as array of { name, quantity?, unit? }. */
 const DEFAULT_RECIPES = [

@@ -11,7 +11,7 @@ interface RecipeListSectionProps {
   onDelete: (id: string, name: string, e: React.MouseEvent) => void;
 }
 
-/** Eine Sektion mit Überschrift und Grid aus RecipeCards (z. B. Sofort kochbar, Teilweise möglich). */
+/** A section with heading and grid of RecipeCards (e.g. Ready to cook, Partially available). */
 export function RecipeListSection({
   title,
   icon,

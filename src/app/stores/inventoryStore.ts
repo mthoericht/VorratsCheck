@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { createResourceStore } from './createResourceStore';
 import {
   getInventory,
   createInventoryItem,
@@ -19,45 +19,10 @@ export interface InventoryItem {
   addedDate: string;
 }
 
-interface InventoryState 
-{
-  items: InventoryItem[];
-  loaded: boolean;
-  fetch: () => Promise<void>;
-  add: (item: Omit<InventoryItem, 'id' | 'addedDate'>) => Promise<void>;
-  update: (id: string, item: Partial<InventoryItem>) => Promise<void>;
-  remove: (id: string) => Promise<void>;
-}
-
-export const useInventoryStore = create<InventoryState>((set, get) => ({items: [],loaded: false,  
-  fetch: async () => 
-  {
-    try 
-    {
-      const items = await getInventory<InventoryItem[]>();
-      set({ items, loaded: true });
-    }
-    catch 
-    {
-      set({ loaded: true });
-    }
-  },
-
-  add: async (item) => 
-  {
-    const created = await createInventoryItem<InventoryItem>(item);
-    set({ items: [created, ...get().items] });
-  },
-
-  update: async (id, updates) => 
-  {
-    const updated = await updateInventoryItem<InventoryItem>(id, updates);
-    set({ items: get().items.map((i) => (i.id === id ? updated : i)) });
-  },
-
-  remove: async (id) => 
-  {
-    await deleteInventoryItem(id);
-    set({ items: get().items.filter((i) => i.id !== id) });
-  },
-}));
+export const useInventoryStore = createResourceStore<InventoryItem, Omit<InventoryItem, 'id' | 'addedDate'>, Partial<InventoryItem>>({
+  fetchFn: () => getInventory<InventoryItem[]>(),
+  createFn: (item) => createInventoryItem<InventoryItem>(item as Record<string, unknown>),
+  updateFn: (id, updates) => updateInventoryItem<InventoryItem>(id, updates as Record<string, unknown>),
+  deleteFn: deleteInventoryItem,
+  insertAt: 'start',
+});

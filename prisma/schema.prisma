@@ -1,4 +1,4 @@
-// VorratsCheck – Vorratsverwaltung für Lebensmittel
+// VorratsCheck – Food storage management
 // Prisma Schema
 
 generator client {
@@ -51,10 +51,10 @@ model MustHaveItem {
   id          String  @id @default(cuid())
   userId      String
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name        String  // Artikelname, z.B. Butter (wird mit Vorrats-Namen gematcht)
-  category    String? // Kategorie, z.B. Milchprodukte (zur Einordnung)
+  name        String  // Item name, e.g. Butter (matched against inventory names)
+  category    String? // Category, e.g. Milchprodukte (for classification)
   minQuantity Int     @default(1)
-  unit        String? // Einheit für minQuantity, z.B. Stück, g, ml (für Vergleich mit Vorrat)
+  unit        String? // Unit for minQuantity, e.g. Stück, g, ml (for comparison with inventory)
 }
 
 model WishListItem {

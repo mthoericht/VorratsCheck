@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { createResourceStore } from './createResourceStore';
 import { getDeals } from '../lib/api';
 
 export interface Deal {
@@ -14,26 +14,6 @@ export interface Deal {
   inStock?: boolean;
 }
 
-interface DealsState {
-  items: Deal[];
-  loaded: boolean;
-  fetch: () => Promise<void>;
-}
-
-export const useDealsStore = create<DealsState>((set) => ({
-  items: [],
-  loaded: false,
-
-  fetch: async () => 
-  {
-    try 
-    {
-      const items = await getDeals<Deal[]>();
-      set({ items, loaded: true });
-    }
-    catch 
-    {
-      set({ loaded: true });
-    }
-  },
-}));
+export const useDealsStore = createResourceStore<Deal>({
+  fetchFn: () => getDeals<Deal[]>(),
+});

@@ -2,13 +2,22 @@ import { ApiError } from './errors';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
+// Token provider registered by authStore – single source of truth for the JWT token.
+// Falls back to localStorage for environments without the store (e.g. integration tests).
+let tokenProvider: (() => string | null) | null = null;
+
+export function registerTokenProvider(provider: () => string | null) 
+{
+  tokenProvider = provider;
+}
+
 export function getAuthHeader(): Record<string, string> 
 {
-  const token = localStorage.getItem('vorratscheck_token');
+  const token = tokenProvider ? tokenProvider() : localStorage.getItem('vorratscheck_token');
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-/** Interner HTTP-Client – nur über die ressourcenspezifischen API-Funktionen verwenden. */
+/** Internal HTTP client – use only via the resource-specific API functions. */
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> 
 {
   const url = path.startsWith('http') ? path : `${API_BASE}${path}`;

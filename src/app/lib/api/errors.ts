@@ -1,4 +1,4 @@
-/** API-Fehler mit Statuscode und Server-Nachricht für gezieltes Error-Handling. */
+/** API error with status code and server message for targeted error handling. */
 export class ApiError extends Error 
 {
   constructor(

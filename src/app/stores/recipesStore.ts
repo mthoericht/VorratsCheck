@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { createResourceStore } from './createResourceStore';
 import {
   getRecipes,
   createRecipe,
@@ -20,48 +20,9 @@ export interface Recipe
   servings: number;
 }
 
-interface RecipesState 
-{
-  items: Recipe[];
-  loaded: boolean;
-  fetch: () => Promise<void>;
-  add: (recipe: Omit<Recipe, 'id'>) => Promise<void>;
-  update: (id: string, recipe: Partial<Recipe>) => Promise<void>;
-  remove: (id: string) => Promise<void>;
-}
-
-export const useRecipesStore = create<RecipesState>((set, get) => ({
-  items: [],
-  loaded: false,
-
-  fetch: async () => 
-  {
-    try 
-    {
-      const items = await getRecipes<Recipe[]>();
-      set({ items, loaded: true });
-    }
-    catch 
-    {
-      set({ loaded: true });
-    }
-  },
-
-  add: async (recipe) => 
-  {
-    const created = await createRecipe<Recipe>(recipe);
-    set({ items: [...get().items, created] });
-  },
-
-  update: async (id, updates) => 
-  {
-    const updated = await updateRecipe<Recipe>(id, updates);
-    set({ items: get().items.map((r) => (r.id === id ? updated : r)) });
-  },
-
-  remove: async (id) => 
-  {
-    await deleteRecipe(id);
-    set({ items: get().items.filter((r) => r.id !== id) });
-  },
-}));
+export const useRecipesStore = createResourceStore<Recipe, Omit<Recipe, 'id'>, Partial<Recipe>>({
+  fetchFn: () => getRecipes<Recipe[]>(),
+  createFn: (recipe) => createRecipe<Recipe>(recipe as Record<string, unknown>),
+  updateFn: (id, updates) => updateRecipe<Recipe>(id, updates as Record<string, unknown>),
+  deleteFn: deleteRecipe,
+});

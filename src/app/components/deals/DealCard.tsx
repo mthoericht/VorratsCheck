@@ -3,7 +3,7 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { MapPin, Tag, ShoppingCart } from 'lucide-react';
 import type { Deal } from '../../stores/dealsStore';
-import { formatDateDE } from '../../lib/format';
+import { useTranslation } from '../../lib/i18n';
 
 interface DealCardProps {
   deal: Deal;
@@ -13,6 +13,8 @@ interface DealCardProps {
 
 export function DealCard({ deal, isMustHave, isWishList }: DealCardProps) 
 {
+  const { t, formatDate } = useTranslation();
+
   return (
     <Card className="relative overflow-hidden flex flex-col h-full">
       {/* Discount Badge */}
@@ -42,7 +44,7 @@ export function DealCard({ deal, isMustHave, isWishList }: DealCardProps)
               </div>
             </div>
             <div className="text-right">
-              <div className="text-sm text-gray-500">Ersparnis</div>
+              <div className="text-sm text-gray-500">{t('deals.savings')}</div>
               <div className="font-bold text-red-600">
                 €{(deal.originalPrice - deal.discountPrice).toFixed(2)}
               </div>
@@ -57,33 +59,33 @@ export function DealCard({ deal, isMustHave, isWishList }: DealCardProps)
           </div>
 
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Gültig bis:</span>
-            <span className="font-medium">{formatDateDE(deal.validUntil)}</span>
+            <span className="text-gray-600">{t('deals.validUntil')}</span>
+            <span className="font-medium">{formatDate(deal.validUntil)}</span>
           </div>
 
           <div className="flex gap-2">
             {isMustHave && (
               <Badge variant="outline" className="border-emerald-600 text-emerald-600 flex-1 justify-center">
-                Must-Have
+                {t('deals.mustHave')}
               </Badge>
             )}
             {isWishList && (
               <Badge variant="outline" className="border-pink-600 text-pink-600 flex-1 justify-center">
-                Wunschliste
+                {t('deals.wishlist')}
               </Badge>
             )}
           </div>
 
           {deal.inStock === false && (
             <div className="text-sm text-orange-600 font-medium">
-              ⚠️ Möglicherweise nicht auf Lager
+              ⚠️ {t('deals.outOfStock')}
             </div>
           )}
         </div>
 
         <Button className="w-full gap-2 mt-auto">
           <ShoppingCart className="w-4 h-4" />
-          Zum Angebot
+          {t('deals.goToDeal')}
         </Button>
       </CardContent>
     </Card>

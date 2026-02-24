@@ -4,6 +4,7 @@ import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { UNITS } from '../lib/units';
 import { cn } from './ui/utils';
+import { useTranslation } from '../lib/i18n';
 
 interface QuantityProps {
   /** Current quantity (empty = optional) */
@@ -34,21 +35,24 @@ export function Quantity({
   unit,
   onQuantityChange,
   onUnitChange,
-  label = 'Menge',
-  placeholder = 'Optional (Standard: 1 Stück)',
+  label,
+  placeholder,
   optional = true,
   idPrefix = 'quantity',
   compact = false,
   className,
 }: QuantityProps) 
 {
+  const { t } = useTranslation();
+  const effectiveLabel = label ?? t('common.quantity');
+  const effectivePlaceholder = placeholder ?? t('inventory.quantityPlaceholder');
   const qtyStr = typeof quantity === 'number' ? (quantity === 0 ? '' : String(quantity)) : quantity;
   const idQty = idPrefix ? `${idPrefix}-quantity` : 'quantity';
   const idUnit = idPrefix ? `${idPrefix}-unit` : 'unit';
 
   const unitOptions = UNITS.map((u) => (
     <SelectItem key={u.value} value={u.value}>
-      {u.label}
+      {t(`units.${u.value}`)}
     </SelectItem>
   ));
 
@@ -80,7 +84,7 @@ export function Quantity({
     <div className={cn('grid grid-cols-2 gap-4', className)}>
       <div>
         <Label htmlFor={idQty}>
-          {label}
+          {effectiveLabel}
           {optional ? null : ' *'}
         </Label>
         <Input
@@ -90,11 +94,11 @@ export function Quantity({
           min={0}
           value={qtyStr}
           onChange={(e) => onQuantityChange(e.target.value)}
-          placeholder={placeholder}
+          placeholder={effectivePlaceholder}
         />
       </div>
       <div>
-        <Label htmlFor={idUnit}>Einheit</Label>
+        <Label htmlFor={idUnit}>{t('common.unit')}</Label>
         <Select value={unit || 'stk'} onValueChange={onUnitChange}>
           <SelectTrigger id={idUnit}>
             <SelectValue />

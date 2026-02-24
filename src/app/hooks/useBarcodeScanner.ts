@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
+import { useTranslation } from '../lib/i18n';
 
 const BARCODE_READER_ID = 'barcode-reader';
 
@@ -13,6 +14,7 @@ export interface UseBarcodeScannerOptions {
 
 export function useBarcodeScanner({ onScan, autoStart = true, onClose }: UseBarcodeScannerOptions)
 {
+  const { t } = useTranslation();
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
@@ -58,7 +60,7 @@ export function useBarcodeScanner({ onScan, autoStart = true, onClose }: UseBarc
     }
     catch (err)
     {
-      setError('Kamera konnte nicht gestartet werden. Bitte überprüfen Sie die Berechtigungen.');
+      setError(t('barcode.cameraError'));
       console.error('Error starting scanner:', err);
     }
   };

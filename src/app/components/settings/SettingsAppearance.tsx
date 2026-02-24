@@ -1,4 +1,3 @@
-import { useTheme } from 'next-themes';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Label } from '../ui/label';
 import {
@@ -9,23 +8,27 @@ import {
   SelectValue,
 } from '../ui/select';
 import { Sun, Moon, Palette, Monitor } from 'lucide-react';
-
-const options = [
-  { value: 'system', label: 'Automatisch', icon: Monitor },
-  { value: 'light', label: 'Hell', icon: Sun },
-  { value: 'dark', label: 'Dunkel', icon: Moon },
-] as const;
+import { useTranslation } from '../../lib/i18n';
+import { useSettingsStore, type Theme } from '../../stores/settingsStore';
 
 export function SettingsAppearance()
 {
-  const { theme, setTheme } = useTheme();
+  const theme = useSettingsStore((s) => s.theme);
+  const setTheme = useSettingsStore((s) => s.setTheme);
+  const { t } = useTranslation();
+
+  const themeOptions = [
+    { value: 'system', label: t('settings.themeSystem'), icon: Monitor },
+    { value: 'light', label: t('settings.themeLight'), icon: Sun },
+    { value: 'dark', label: t('settings.themeDark'), icon: Moon },
+  ] as const;
 
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Erscheinungsbild</h3>
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{t('settings.appearanceTitle')}</h3>
         <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Wähle das Design: Automatisch (System), Hell oder Dunkel
+          {t('settings.appearanceDescription')}
         </p>
       </div>
 
@@ -33,24 +36,24 @@ export function SettingsAppearance()
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Palette className="w-5 h-5" />
-            Design
+            {t('settings.designTitle')}
           </CardTitle>
           <CardDescription>
-            Automatisch übernimmt die Systemeinstellung, Hell und Dunkel erzwingen den jeweiligen Modus
+            {t('settings.designDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Label htmlFor="theme">Modus</Label>
+            <Label htmlFor="theme">{t('settings.themeLabel')}</Label>
             <Select
-              value={theme ?? 'light'}
-              onValueChange={(value) => setTheme(value)}
+              value={theme}
+              onValueChange={(value) => setTheme(value as Theme)}
             >
               <SelectTrigger id="theme" className="w-full max-w-xs">
-                <SelectValue placeholder="Modus wählen" />
+                <SelectValue placeholder={t('settings.themePlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                {options.map((opt) =>
+                {themeOptions.map((opt) =>
                 {
                   const Icon = opt.icon;
                   return (

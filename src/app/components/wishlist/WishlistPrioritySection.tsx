@@ -1,7 +1,8 @@
 import { Badge } from '../ui/badge';
-import { getPriorityColor, getPriorityLabel, type WishlistPriority } from './priorityUtils';
+import { getPriorityColor, type WishlistPriority } from './priorityUtils';
 import { WishlistItemCard } from './WishlistItemCard';
 import type { WishListItem } from '../../stores/wishlistStore';
+import { useTranslation } from '../../lib/i18n';
 
 interface WishlistPrioritySectionProps {
   priority: WishlistPriority;
@@ -17,12 +18,13 @@ export function WishlistPrioritySection({
   onDelete,
 }: WishlistPrioritySectionProps) 
 {
+  const { t } = useTranslation();
   if (items.length === 0) return null;
 
   return (
     <div>
       <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-        <Badge className={getPriorityColor(priority)}>{getPriorityLabel(priority)}</Badge>
+        <Badge className={getPriorityColor(priority)}>{t(`priorities.${priority}`)}</Badge>
         <span className="text-gray-600">({items.length})</span>
       </h3>
       <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,320px),1fr))] gap-4">

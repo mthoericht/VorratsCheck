@@ -2,9 +2,25 @@ import type { Preview } from '@storybook/react';
 import { ThemeProvider } from 'next-themes';
 import { MemoryRouter } from 'react-router';
 import React from 'react';
+import { useSettingsStore } from '../src/app/stores/settingsStore';
 import '../src/styles/index.css';
 
 const preview: Preview = {
+  globalTypes: {
+    locale: {
+      name: 'Locale',
+      description: 'UI language',
+      defaultValue: 'de',
+      toolbar: {
+        icon: 'globe',
+        items: [
+          { value: 'de', title: 'Deutsch' },
+          { value: 'en', title: 'English' },
+        ],
+        dynamicTitle: true,
+      },
+    },
+  },
   parameters: {
     controls: {
       matchers: {
@@ -40,6 +56,8 @@ const preview: Preview = {
   decorators: [
     (Story, context) =>
     {
+      const locale = (context.parameters.locale as 'de' | 'en' | undefined) ?? (context.globals?.locale as 'de' | 'en') ?? 'de';
+      useSettingsStore.getState().setLocale(locale);
       const initialEntries = context.parameters.router?.initialEntries as string[] | undefined;
       return (
         <MemoryRouter initialEntries={initialEntries}>

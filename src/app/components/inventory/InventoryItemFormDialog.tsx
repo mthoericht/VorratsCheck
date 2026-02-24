@@ -9,6 +9,7 @@ import { Quantity } from '../Quantity';
 import type { InventoryFormData } from '../../hooks/useInventoryPage';
 import type { Category } from '../../stores/categoriesStore';
 import { INVENTORY_LOCATION_OPTIONS } from '../../lib/inventory';
+import { useTranslation } from '../../lib/i18n';
 
 interface InventoryItemFormDialogProps {
   open: boolean;
@@ -36,6 +37,7 @@ export function InventoryItemFormDialog({
   idPrefix,
 }: InventoryItemFormDialogProps)
 {
+  const { t } = useTranslation();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
@@ -44,30 +46,30 @@ export function InventoryItemFormDialog({
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <Label htmlFor={`${idPrefix}-name`}>Name *</Label>
+            <Label htmlFor={`${idPrefix}-name`}>{t('inventory.nameLabel')}</Label>
             <Input
               id={`${idPrefix}-name`}
               value={formData.name}
               onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="z.B. Vollmilch"
+              placeholder={t('inventory.namePlaceholder')}
               required
             />
           </div>
 
           <div>
-            <Label htmlFor={`${idPrefix}-category`}>Kategorie *</Label>
+            <Label htmlFor={`${idPrefix}-category`}>{t('inventory.categoryLabel')}</Label>
             <Select
               value={formData.category || ''}
               onValueChange={v => setFormData(prev => ({ ...prev, category: v }))}
               required
             >
               <SelectTrigger id={`${idPrefix}-category`}>
-                <SelectValue placeholder="Kategorie wählen" />
+                <SelectValue placeholder={t('inventory.categoryPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
                 {categories.length === 0 ? (
                   <div className="px-2 py-4 text-sm text-muted-foreground text-center">
-                    Keine Kategorien. <Link to="/categories" className="text-primary underline">Kategorien anlegen</Link>
+                    {t('inventory.noCategories')} <Link to="/categories" className="text-primary underline">{t('inventory.createCategories')}</Link>
                   </div>
                 ) : (
                   categories.map(c => (
@@ -81,23 +83,23 @@ export function InventoryItemFormDialog({
           </div>
 
           <div>
-            <Label htmlFor={`${idPrefix}-brand`}>Marke</Label>
+            <Label htmlFor={`${idPrefix}-brand`}>{t('inventory.brandLabel')}</Label>
             <Input
               id={`${idPrefix}-brand`}
               value={formData.brand}
               onChange={e => setFormData(prev => ({ ...prev, brand: e.target.value }))}
-              placeholder="Optional"
+              placeholder={t('common.optional')}
             />
           </div>
 
           <div>
-            <Label htmlFor={`${idPrefix}-barcode`}>Barcode</Label>
+            <Label htmlFor={`${idPrefix}-barcode`}>{t('inventory.barcodeLabel')}</Label>
             <div className="flex gap-2">
               <Input
                 id={`${idPrefix}-barcode`}
                 value={formData.barcode}
                 onChange={e => setFormData(prev => ({ ...prev, barcode: e.target.value }))}
-                placeholder="Optional"
+                placeholder={t('common.optional')}
               />
               <Button type="button" variant="outline" onClick={onScanClick}>
                 <Scan className="w-4 h-4" />
@@ -110,14 +112,14 @@ export function InventoryItemFormDialog({
             unit={formData.unit}
             onQuantityChange={value => setFormData(prev => ({ ...prev, quantity: value }))}
             onUnitChange={value => setFormData(prev => ({ ...prev, unit: value }))}
-            label="Menge"
-            placeholder="Optional (Standard: 1 Stück)"
+            label={t('inventory.quantityLabel')}
+            placeholder={t('inventory.quantityPlaceholder')}
             optional
             idPrefix={idPrefix}
           />
 
           <div>
-            <Label htmlFor={`${idPrefix}-expiryDate`}>Mindesthaltbarkeitsdatum</Label>
+            <Label htmlFor={`${idPrefix}-expiryDate`}>{t('inventory.expiryLabel')}</Label>
             <Input
               id={`${idPrefix}-expiryDate`}
               type="date"
@@ -127,18 +129,18 @@ export function InventoryItemFormDialog({
           </div>
 
           <div>
-            <Label htmlFor={`${idPrefix}-location`}>Lagerort</Label>
+            <Label htmlFor={`${idPrefix}-location`}>{t('inventory.locationLabel')}</Label>
             <Select
               value={formData.location}
               onValueChange={value => setFormData(prev => ({ ...prev, location: value }))}
             >
               <SelectTrigger id={`${idPrefix}-location`}>
-                <SelectValue placeholder="Lagerort wählen" />
+                <SelectValue placeholder={t('inventory.locationPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
                 {INVENTORY_LOCATION_OPTIONS.map(opt => (
                   <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
+                    {t(`inventory.locations.${opt.id}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -147,7 +149,7 @@ export function InventoryItemFormDialog({
 
           <div className="flex gap-2 pt-4">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="flex-1">
-              Abbrechen
+              {t('common.cancel')}
             </Button>
             <Button type="submit" className="flex-1">
               {submitLabel}

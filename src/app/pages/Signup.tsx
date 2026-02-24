@@ -7,9 +7,11 @@ import { Label } from '../components/ui/label';
 import { Button } from '../components/ui/button';
 import { Package, AlertCircle, Info } from 'lucide-react';
 import { Alert, AlertDescription } from '../components/ui/alert';
+import { useTranslation } from '../lib/i18n';
 
 export function Signup() 
 {
+  const { t } = useTranslation();
   const signup = useAuthStore((s) => s.signup);
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
@@ -28,25 +30,25 @@ export function Signup()
     // Validation
     if (username.length < 3) 
     {
-      setError('Username muss mindestens 3 Zeichen lang sein');
+      setError(t('auth.usernameMinError'));
       return;
     }
 
     if (password.length < 6) 
     {
-      setError('Passwort muss mindestens 6 Zeichen lang sein');
+      setError(t('auth.passwordMinError'));
       return;
     }
 
     if (password !== confirmPassword) 
     {
-      setError('Passwörter stimmen nicht überein');
+      setError(t('auth.passwordMismatch'));
       return;
     }
 
     if (!inviteCode) 
     {
-      setError('Bitte geben Sie das Einladungspasswort ein');
+      setError(t('auth.inviteCodeMissing'));
       return;
     }
 
@@ -60,7 +62,7 @@ export function Signup()
     }
     else 
     {
-      setError(result.error || 'Registrierung fehlgeschlagen');
+      setError(result.error || t('auth.signupFailed'));
     }
     
     setIsLoading(false);
@@ -76,20 +78,20 @@ export function Signup()
             </div>
           </div>
           <CardTitle className="text-2xl">VorratsCheck</CardTitle>
-          <CardDescription>Erstellen Sie Ihr Konto</CardDescription>
+          <CardDescription>{t('auth.signupSubtitle')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Alert className="mb-4 bg-yellow-50 border-yellow-200">
             <AlertCircle className="h-4 w-4 text-yellow-600" />
             <AlertDescription className="text-yellow-800 text-sm">
-              Registrierung erfolgt über das Express-Backend.
+              {t('auth.signupInfo')}
             </AlertDescription>
           </Alert>
 
           <Alert className="mb-4 bg-blue-50 border-blue-200">
             <Info className="h-4 w-4 text-blue-600" />
             <AlertDescription className="text-blue-800 text-sm">
-              Einladungspasswort: <strong>VORRATSCHECK2026</strong>
+              {t('auth.inviteCodeHint')} <strong>VORRATSCHECK2026</strong>
             </AlertDescription>
           </Alert>
 
@@ -102,25 +104,25 @@ export function Signup()
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">{t('auth.username')}</Label>
               <Input
                 id="username"
                 type="text"
-                placeholder="ihr_username"
+                placeholder={t('auth.usernamePlaceholder')}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 autoComplete="username"
               />
-              <p className="text-xs text-gray-500">Mindestens 3 Zeichen</p>
+              <p className="text-xs text-gray-500">{t('auth.usernameMin')}</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('auth.email')}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="ihre@email.de"
+                placeholder={t('auth.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -129,7 +131,7 @@ export function Signup()
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Passwort</Label>
+              <Label htmlFor="password">{t('auth.password')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -139,11 +141,11 @@ export function Signup()
                 required
                 autoComplete="new-password"
               />
-              <p className="text-xs text-gray-500">Mindestens 6 Zeichen</p>
+              <p className="text-xs text-gray-500">{t('auth.passwordMin')}</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Passwort bestätigen</Label>
+              <Label htmlFor="confirmPassword">{t('auth.confirmPassword')}</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -156,26 +158,26 @@ export function Signup()
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="inviteCode">Einladungspasswort</Label>
+              <Label htmlFor="inviteCode">{t('auth.inviteCode')}</Label>
               <Input
                 id="inviteCode"
                 type="text"
-                placeholder="Einladungspasswort eingeben"
+                placeholder={t('auth.inviteCodePlaceholder')}
                 value={inviteCode}
                 onChange={(e) => setInviteCode(e.target.value)}
                 required
               />
-              <p className="text-xs text-gray-500">Erforderlich für die Registrierung</p>
+              <p className="text-xs text-gray-500">{t('auth.inviteCodeRequired')}</p>
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Wird registriert...' : 'Registrieren'}
+              {isLoading ? t('auth.registering') : t('auth.register')}
             </Button>
 
             <div className="text-center text-sm">
-              <span className="text-gray-600">Bereits ein Konto? </span>
+              <span className="text-gray-600">{t('auth.hasAccount')} </span>
               <Link to="/login" className="text-emerald-600 hover:underline">
-                Jetzt anmelden
+                {t('auth.loginNow')}
               </Link>
             </div>
           </form>

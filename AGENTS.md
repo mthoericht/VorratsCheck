@@ -41,13 +41,17 @@ VorratsCheck/
 │       │   │   ├── recipes.ts   # getRecipes, create/update/deleteRecipe
 │       │   │   ├── deals.ts     # getDeals
 │       │   │   └── auth.ts      # login, signup
+│       │   ├── i18n/            # Internationalization system (DE + EN, fallback: EN)
+│       │   │   ├── index.ts    # useTranslation() hook: t(key, params?), formatDate(date), currentLocale
+│       │   │   ├── de.ts       # German translations (default)
+│       │   │   └── en.ts       # English translations (fallback)
 │       │   ├── units.ts        # UNITS, convertFromGivenToBaseUnit, convertFromBaseToGivenUnit, quantityCovers
 │       │   ├── recipe.ts       # Recipe helpers (ingredients, difficulty, inventory matching)
 │       │   ├── mustHave.ts     # getStockStatus (unit-aware low-stock logic for Dashboard and Must-Have)
 │       │   ├── inventory.ts    # INVENTORY_LOCATION_OPTIONS, getExpiryStatus (expiry badge for Inventory cards)
-│       │   └── format.ts       # formatDateDE(date) – German date display (Tag.Monat.Jahr, e.g. 20.02.2025)
 │       ├── stores/              # Zustand stores (auth persisted; others fetch on login)
 │       │   ├── authStore.ts
+│       │   ├── settingsStore.ts   # Settings (locale, theme), persisted to localStorage; theme synced to next-themes
 │       │   ├── inventoryStore.ts
 │       │   ├── mustHaveStore.ts
 │       │   ├── wishlistStore.ts
@@ -69,8 +73,8 @@ VorratsCheck/
 │       │   ├── Deals.tsx
 │       │   ├── Recipes.tsx
 │       │   ├── Categories.tsx
-│       │   ├── Settings.tsx     # Settings layout (nav: Categories, Appearance)
-│       │   ├── Appearance.tsx    # Theme: light / dark / system
+│       │   ├── Settings.tsx     # Settings layout (nav: Categories, Appearance, Language)
+│       │   ├── Appearance.tsx    # Theme: light / dark / system (redirects to Settings)
 │       │   ├── Login.tsx
 │       │   └── Signup.tsx
 │       └── components/
@@ -111,6 +115,10 @@ VorratsCheck/
 │           │   ├── RecipeEditDialog.tsx
 │           │   ├── RecipeListSection.tsx
 │           │   └── RecipeViewDialog.tsx
+│           ├── settings/       # Settings sub-pages (Categories, Appearance, Language)
+│           │   ├── SettingsCategories.tsx
+│           │   ├── SettingsAppearance.tsx
+│           │   └── SettingsLanguage.tsx
 │           └── ui/              # Radix/shadcn-style primitives (button, dialog, select, stat-card, etc.)
 ├── src/styles/
 │   ├── index.css                 # Imports theme.css, tailwind
@@ -171,7 +179,7 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 
 ## Conventions and Patterns
 
-- **Comments**: Use English only for all source-code comments (TS/TSX, JS, Prisma, scripts). UI copy stays in German.
+- **Comments**: Use English only for all source-code comments (TS/TSX, JS, Prisma, scripts). UI copy is translated via i18n (German default, English fallback).
 
 ### Frontend
 
@@ -180,9 +188,9 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 - **Data loading**: When `user` is set, `App.tsx`’s `DataLoader` calls `fetch()` on inventory, mustHave, wishlist, categories, recipes, and deals stores once.
 - **API**: Use resource functions from `src/app/lib/api` (e.g. `getInventory`, `createCategory`, `login`). Do not call the internal `api()` directly. Base URL from `VITE_API_URL`; `Content-Type: application/json` and `Authorization: Bearer <token>` (via `getAuthHeader()`) are set in the client. On non-2xx or network errors the client throws `ApiError` (with `status`, `message`, optional `details`; helpers: `isApiError(e)`, `getErrorMessage(e)`; getters: `isUnauthorized`, `isNotFound`, `isServerError`).
 - **Stores**: Zustand. Each domain store (inventory, mustHave, wishlist, recipes, deals, categories) has `fetch` and CRUD-style methods that call the API layer (e.g. `getInventory`, `createRecipe`) and update local state. Auth store has `login`, `signup`, `logout`, `setUserFromToken`, `setLoading`.
-- **UI**: Tailwind + Radix-based components under `src/app/components/ui/`. User menu: Settings → sub-nav for Categories and Appearance (light/dark/system). Categories are under Settings, not main nav.
-- **Date display**: All user-facing dates in the frontend use `formatDateDE()` from `src/app/lib/format.ts` (German format: Tag.Monat.Jahr, e.g. 20.02.2025). Used in dashboard cards, inventory cards, and deal cards.
-- **Theming**: `next-themes` in `main.tsx`; theme in `localStorage` key `vorratscheck-theme`. All colors in `src/styles/theme.css`: `:root` (light), `.dark` (dark). Edit only that file for app-wide colors; base vars (e.g. `--background`, `--card`) and semantic (`--color-success`, `--color-warning`, `--color-danger`, `--color-brand` + `*_bg`, `*_border`). Layout and copy use German (e.g. “Vorrat”, “Wunschliste”, “Kategorien”, “Abmelden”).
+- **UI**: Tailwind + Radix-based components under `src/app/components/ui/`. User menu: Settings → sub-nav for Categories, Appearance (light/dark/system), and Language (DE/EN). Categories are under Settings, not main nav.
+- **Date display**: Use `formatDate(date)` from `useTranslation()` (`src/app/lib/i18n`) for locale-aware dates in the UI (dashboard, inventory, deal cards).
+- **Theming**: `next-themes` in `main.tsx`; theme preference in `settingsStore` (synced to next-themes via `SyncThemeFromStore` in `App.tsx`). All colors in `src/styles/theme.css`: `:root` (light), `.dark` (dark). Edit only that file for app-wide colors; base vars (e.g. `--background`, `--card`) and semantic (`--color-success`, `--color-warning`, `--color-danger`, `--color-brand` + `*_bg`, `*_border`). UI copy is translated via `t('key')` (German default, English fallback).
 
 ### Backend
 
@@ -197,8 +205,8 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 
 ### Testing
 
-- **Unit/component tests**: Vitest; `npm run test` (watch) or `npm run test:run` (single run). Config in `vitest.config.ts`; includes `src/**/*.test.{ts,tsx}`, excludes `test/integration/api/**` so the default run does not use the test DB.
-- **API integration tests**: In `test/integration/api/`. Use the **real API client** from `src/app/lib/api` (e.g. `login`, `signup`, `getInventory`, `createInventoryItem`); do not use raw HTTP/supertest. Run with `npm run test:integration:api` (sets `DATABASE_URL=file:./data/test.db`). Setup: `setup-db.ts` pushes schema to test DB; `setup-server.ts` starts the Express app on a random port, sets `process.env.VITE_API_URL`, and provides a `localStorage` polyfill so `getAuthHeader()` works. Tests clean the DB in `beforeEach` and set `localStorage.setItem('vorratscheck_token', token)` after login/signup for protected calls. Config: `vitest.integration-api.config.ts`.
+- **Unit/component tests**: Vitest; `npm run test` (watch) or `npm run test:run` (single run). Config in `vitest.config.ts`; includes `src/**/*.test.{ts,tsx}` and `test/unit/**`; excludes `test/integration/api/**` so the default run does not use the test DB.
+- **API integration tests**: In `test/integration/api/`. Use the **real API client** from `src/app/lib/api` (e.g. `login`, `signup`, `getInventory`, `createMustHave`, `getCategories`); do not use raw HTTP/supertest. Run with `npm run test:integration:api` (sets `DATABASE_URL=file:./data/test.db`). Setup: `setup-db.ts` pushes schema to test DB; `setup-server.ts` starts the Express app on a random port, sets `process.env.VITE_API_URL`, and provides a `localStorage` polyfill so `getAuthHeader()` works. Tests clean the DB in `beforeEach` and set `localStorage.setItem('vorratscheck_token', token)` after login/signup for protected calls. Config: `vitest.integration-api.config.ts` runs tests with `pool: 'forks'` and `singleFork: true` so tests run sequentially and do not share the same DB state across files. Test files: `auth.api.test.ts` (auth, inventory CRUD, health), `resources.api.test.ts` (must-have, wishlist, categories, recipes, deals).
 
 ---
 
@@ -212,7 +220,7 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 - `npm run db:generate` / `db:push` – Prisma generate, push schema. `db:seed-deals` / `db:seed-categories` / `db:seed-recipes` – run scripts in `scripts/`.
 - `npm run lint` / `lint:fix` – ESLint.
 - `npm run test` / `test:run` – Vitest: component/unit tests (main config; excludes `test/integration/api/**`).
-- `npm run test:integration:api` – API integration tests: uses **real API client** (e.g. `login`, `signup`, `getInventory`, `createInventoryItem` from `src/app/lib/api`) against test DB; `vitest.integration-api.config.ts` runs `setup-db.ts` (test DB push) and `setup-server.ts` (start app, set `VITE_API_URL`, `localStorage` polyfill), then `test/integration/api/**/*.test.ts`.
+- `npm run test:integration:api` – API integration tests: uses **real API client** (e.g. `login`, `signup`, `getInventory`, `createMustHave`, `getCategories` from `src/app/lib/api`) against test DB; `vitest.integration-api.config.ts` runs `setup-db.ts` (test DB push) and `setup-server.ts` (start app, set `VITE_API_URL`, `localStorage` polyfill), then `test/integration/api/**/*.test.ts` with `singleFork: true` (sequential) to avoid shared-DB conflicts.
 
 ---
 
@@ -242,18 +250,18 @@ Protected routes require header: `Authorization: Bearer <token>`.
 - **New page**: Add component in `src/app/pages/`, add route in `src/app/routes.tsx`, add nav entry in `Layout.tsx` if needed.
 - **Auth flow**: `server/routes/auth.ts`, `server/middleware/auth.ts`, `src/app/stores/authStore.ts`, `src/app/components/ProtectedRoute.tsx`.
 - **Data model**: `prisma/schema.prisma`, then `db:generate` and `db:push`; adjust routes and stores.
-- **UI/theme**: Tailwind + components in `src/app/components/ui/`; app shell and nav in `Layout.tsx`. **Colors**: edit only `src/styles/theme.css` – `:root` (light) and `.dark` (dark) with base and semantic variables. **Appearance**: user menu → Settings → Appearance (light/dark/system). **Categories**: user menu → Settings → Categories.
+- **UI/theme**: Tailwind + components in `src/app/components/ui/`; app shell and nav in `Layout.tsx`. **Colors**: edit only `src/styles/theme.css` – `:root` (light) and `.dark` (dark) with base and semantic variables. **Appearance**: user menu → Settings → Appearance (light/dark/system). **Language**: user menu → Settings → Language (DE/EN). **Categories**: user menu → Settings → Categories.
 - **Recipe UI**: All recipe-related components live in `src/app/components/recipe/` (RecipeCard, RecipeEditDialog, RecipeListSection, RecipeViewDialog). Import from `../components/recipe`. The Recipes page uses a single hook `useRecipesPage()` (match/sort, form state, delete); lib helpers in `src/app/lib/recipe.ts` (ingredients, difficulty, matching) and `lib/units.ts` (convertFromGivenToBaseUnit, convertFromBaseToGivenUnit, quantityCovers for matching).
-- **Dashboard UI**: Alert and quick-action cards in `src/app/components/dashboard/` (ExpiredItemsCard, ExpiringSoonCard, LowStockCard, QuickActionsCard). Import from `../components/dashboard`. Dashboard page uses StatCard for stats and these components for alerts and quick actions. Dates (e.g. MHD in ExpiredItemsCard, ExpiringSoonCard) use `formatDateDE` from `lib/format.ts`.
-- **Inventory UI**: Components in `src/app/components/inventory/` (InventoryItemFormDialog, InventoryItemCard, InventoryFilter, InventoryFilterBar, InventoryEmptyState). Import from `../components/inventory`. The Inventory page uses `useInventoryPage()` for form state, filters, filtered list, and CRUD. Location options (form and filter) and expiry display come from `lib/inventory.ts` (`INVENTORY_LOCATION_OPTIONS`, `getExpiryStatus`). Date display (e.g. MHD) uses `formatDateDE` from `lib/format.ts`. Dialogs use `Category` from `stores/categoriesStore`.
+- **Dashboard UI**: Alert and quick-action cards in `src/app/components/dashboard/` (ExpiredItemsCard, ExpiringSoonCard, LowStockCard, QuickActionsCard). Import from `../components/dashboard`. Dashboard page uses StatCard for stats and these components for alerts and quick actions. Dates use `formatDate(date)` from `useTranslation()` (`lib/i18n`) for locale-aware display.
+- **Inventory UI**: Components in `src/app/components/inventory/` (InventoryItemFormDialog, InventoryItemCard, InventoryFilter, InventoryFilterBar, InventoryEmptyState). Import from `../components/inventory`. The Inventory page uses `useInventoryPage()` for form state, filters, filtered list, and CRUD. Location options (form and filter) and expiry display come from `lib/inventory.ts` (`INVENTORY_LOCATION_OPTIONS`, `getExpiryStatus`). Date display uses `formatDate(date)` from `useTranslation()`. Dialogs use `Category` from `stores/categoriesStore`.
 - **Must-Have UI**: Components in `src/app/components/mustHave/` (MustHaveCard, MustHaveStats, MustHaveEmptyState, MustHaveItemDialog). Import from `../components/mustHave`. The Must-Have page uses `useMustHavePage()` for form state, stock counts (sufficient/low), and CRUD. Dialogs use `Category` from `stores/categoriesStore`. Low-stock logic (Dashboard and Must-Have page) uses `lib/mustHave.ts` (`getStockStatus`) for unit-aware comparison (weight→g, volume→ml, countable→same unit).
 - **Wishlist UI**: Components in `src/app/components/wishlist/` (WishlistItemDialog, WishlistItemCard, WishlistStats, WishlistPrioritySection, WishlistEmptyState, priorityUtils). Import from `../components/wishlist`. The Wishlist page uses `useWishlistPage()` for form state, grouped items, and CRUD. Dialogs use `Category` from `stores/categoriesStore`. The wishlist form has no type selector; name is required, category and brand are optional and always shown; priority is required. Items are grouped by priority on the page.
-- **Deals page**: Uses `useDealsPage()` for filter state (all/mustHave/wishList), match logic (must-have, wishlist), and filtered deals. Components in `src/app/components/deals/` (DealCard, DealsStats, DealsFilterBar, DealsEmptyState). Import from `../components/deals`. Deal “Gültig bis” dates use `formatDateDE` from `lib/format.ts`.
+- **Deals page**: Uses `useDealsPage()` for filter state (all/mustHave/wishList), match logic (must-have, wishlist), and filtered deals. Components in `src/app/components/deals/` (DealCard, DealsStats, DealsFilterBar, DealsEmptyState). Import from `../components/deals`. Deal “valid until” dates use `formatDate(date)` from `useTranslation()`.
 
 ---
 
 ## Language and Locale
 
-- **UI language**: German (labels, buttons, placeholders, error messages).
+- **UI language**: German (default) and English, switchable via Settings → Appearance → Language. All user-facing text uses `t('key')` from `useTranslation()` hook (`src/app/lib/i18n`). Translations live in `src/app/lib/i18n/de.ts` (German) and `en.ts` (English, fallback). Locale is persisted in `settingsStore` (`localStorage` key `vorratscheck-settings`). Use `formatDate(date)` from the hook for locale-aware date display. When adding new UI text, add keys to both `de.ts` and `en.ts`.
 - **Comments**: Always in English (in source code, scripts, and schema). This keeps the codebase consistent for agents and international contributors.
 - **AGENTS.md and this file**: English for clarity for agents and international contributors.

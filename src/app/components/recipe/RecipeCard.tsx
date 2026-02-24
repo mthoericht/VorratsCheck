@@ -6,9 +6,9 @@ import { ChefHat, Edit, Trash2 } from 'lucide-react';
 import {
   formatIngredient,
   getDifficultyColor,
-  getDifficultyLabel,
   type RecipeWithMatch,
 } from '../../lib/recipe';
+import { useTranslation } from '../../lib/i18n';
 
 interface RecipeCardProps {
   recipe: RecipeWithMatch;
@@ -24,6 +24,8 @@ export function RecipeCard({
   onDelete,
 }: RecipeCardProps) 
 {
+  const { t } = useTranslation();
+
   return (
     <Card 
       className="cursor-pointer hover:shadow-lg transition-shadow group"
@@ -37,7 +39,7 @@ export function RecipeCard({
               {recipe.name}
             </CardTitle>
             <CardDescription>
-              {recipe.servings} Portionen · {recipe.cookingTime} Minuten
+              {t('recipes.servingsMinutes', { servings: recipe.servings, time: recipe.cookingTime })}
             </CardDescription>
           </div>
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -67,7 +69,7 @@ export function RecipeCard({
       <CardContent className="space-y-3">
         <div className="flex gap-2 flex-wrap">
           <Badge className={getDifficultyColor(recipe.difficulty)}>
-            {getDifficultyLabel(recipe.difficulty)}
+            {t(`difficulties.${recipe.difficulty}`)}
           </Badge>
           <Badge 
             className={
@@ -78,12 +80,12 @@ export function RecipeCard({
                   : 'bg-gray-600 text-white'
             }
           >
-            {Math.round(recipe.matchPercentage)}% verfügbar
+            {t('recipes.availableLower', { percent: Math.round(recipe.matchPercentage) })}
           </Badge>
         </div>
         <div className="space-y-1">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Zutaten:</span>
+            <span className="text-gray-600">{t('recipes.ingredientsCount')}</span>
             <span className="font-medium">
               {recipe.availableIngredients?.length || 0} / {recipe.totalIngredientsCount ?? recipe.ingredients.length}
             </span>
@@ -103,13 +105,13 @@ export function RecipeCard({
         </div>
         {recipe.missingIngredients && recipe.missingIngredients.length > 0 && (
           <div className="text-sm text-gray-600">
-            Fehlt: {recipe.missingIngredients.slice(0, 2).map(formatIngredient).join(', ')}
+            {t('recipes.missing')}{recipe.missingIngredients.slice(0, 2).map(formatIngredient).join(', ')}
             {recipe.missingIngredients.length > 2 && ` +${recipe.missingIngredients.length - 2}`}
           </div>
         )}
         <Button className="w-full gap-2" variant="outline">
           <ChefHat className="w-4 h-4" />
-          Rezept anzeigen
+          {t('recipes.viewRecipe')}
         </Button>
       </CardContent>
     </Card>

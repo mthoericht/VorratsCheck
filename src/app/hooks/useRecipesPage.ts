@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useRecipesStore } from '../stores/recipesStore';
 import { useInventoryStore } from '../stores/inventoryStore';
+import { useTranslation } from '../lib/i18n';
 import type { Recipe } from '../stores/recipesStore';
 import { computeRecipesWithMatch, type RecipeIngredient, type RecipeWithMatch } from '../lib/recipe';
 import type { Difficulty } from '@shared/constants';
@@ -26,6 +27,7 @@ export type RecipeFormApi = ReturnType<typeof useRecipesPage>['form'];
  */
 export function useRecipesPage() 
 {
+  const { t } = useTranslation();
   const inventory = useInventoryStore((s) => s.items);
   const recipes = useRecipesStore((s) => s.items);
   const addRecipe = useRecipesStore((s) => s.add);
@@ -117,17 +119,17 @@ export function useRecipesPage()
 
     if (!formData.name || !formData.instructions || !formData.cookingTime || !formData.servings) 
     {
-      toast.error('Bitte füllen Sie alle Felder aus');
+      toast.error(t('recipes.fillAllFields'));
       return;
     }
     if (ingredientsFiltered.length === 0) 
     {
-      toast.error('Bitte geben Sie mindestens eine Zutat ein');
+      toast.error(t('recipes.addAtLeastOneIngredient'));
       return;
     }
     if (instructions.length === 0) 
     {
-      toast.error('Bitte geben Sie mindestens einen Zubereitungsschritt ein');
+      toast.error(t('recipes.addAtLeastOneStep'));
       return;
     }
 
@@ -147,12 +149,12 @@ export function useRecipesPage()
       if (editingRecipe) 
       {
         await updateRecipe(editingRecipe.id, recipeData);
-        toast.success('Rezept aktualisiert');
+        toast.success(t('recipes.recipeUpdated'));
       }
       else 
       {
         await addRecipe(recipeData);
-        toast.success('Rezept hinzugefügt');
+        toast.success(t('recipes.recipeAdded'));
       }
       closeForm();
     }
@@ -165,11 +167,11 @@ export function useRecipesPage()
   const handleDelete = async (id: string, name: string, e: React.MouseEvent) => 
   {
     e.stopPropagation();
-    if (!confirm(`Möchten Sie das Rezept "${name}" wirklich löschen?`)) return;
+    if (!confirm(t('recipes.confirmDelete', { name }))) return;
     try 
     {
       await deleteRecipe(id);
-      toast.success(`${name} wurde gelöscht`);
+      toast.success(t('common.deleted', { name }));
     }
     catch (err) 
     {

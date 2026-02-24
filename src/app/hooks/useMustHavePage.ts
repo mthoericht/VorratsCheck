@@ -4,6 +4,7 @@ import { useMustHaveStore } from '../stores/mustHaveStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useCategoriesStore } from '../stores/categoriesStore';
 import { getStockStatus } from '../lib/mustHave';
+import { useTranslation } from '../lib/i18n';
 import type { MustHaveItem } from '../stores/mustHaveStore';
 import type { MustHaveFormData } from '../components/mustHave';
 
@@ -19,6 +20,7 @@ export const initialMustHaveFormData: MustHaveFormData = {
  */
 export function useMustHavePage()
 {
+  const { t } = useTranslation();
   const mustHaveList = useMustHaveStore(s => s.items);
   const addMustHaveItem = useMustHaveStore(s => s.add);
   const updateMustHaveItem = useMustHaveStore(s => s.update);
@@ -74,13 +76,13 @@ export function useMustHavePage()
     e.preventDefault();
     if (!formData.name)
     {
-      toast.error('Bitte Name angeben');
+      toast.error(t('mustHave.nameRequired'));
       return;
     }
     const qty = formData.minQuantity === '' ? 1 : parseFloat(formData.minQuantity);
     if (!Number.isFinite(qty) || qty < 0)
     {
-      toast.error('Bitte gültige Menge angeben');
+      toast.error(t('mustHave.invalidQuantity'));
       return;
     }
     const payload = {
@@ -94,12 +96,12 @@ export function useMustHavePage()
       if (editingId)
       {
         await updateMustHaveItem(editingId, payload);
-        toast.success('Must-Have Artikel aktualisiert');
+        toast.success(t('mustHave.itemUpdated'));
       }
       else
       {
         await addMustHaveItem(payload);
-        toast.success('Must-Have Artikel hinzugefügt');
+        toast.success(t('mustHave.itemAdded'));
       }
       handleCloseDialog(false);
     }
@@ -114,7 +116,7 @@ export function useMustHavePage()
     try
     {
       await deleteMustHaveItem(id);
-      toast.success(`${name} wurde entfernt`);
+      toast.success(t('common.removed', { name }));
     }
     catch (err)
     {

@@ -4,6 +4,7 @@ import { useInventoryStore } from '../stores/inventoryStore';
 import { useCategoriesStore } from '../stores/categoriesStore';
 import { INVENTORY_LOCATION_OPTIONS } from '../lib/inventory';
 import { lookupProductByBarcode } from '../lib/productLookup';
+import { useTranslation } from '../lib/i18n';
 import type { InventoryItem } from '../stores/inventoryStore';
 
 export const initialInventoryFormData = {
@@ -25,6 +26,7 @@ export type InventoryFormData = typeof initialInventoryFormData;
  */
 export function useInventoryPage()
 {
+  const { t } = useTranslation();
   const inventory = useInventoryStore(s => s.items);
   const addInventoryItem = useInventoryStore(s => s.add);
   const updateInventoryItem = useInventoryStore(s => s.update);
@@ -72,15 +74,15 @@ export function useInventoryPage()
       setShowAddDialog(true);
 
       if (product?.name)
-        toast.success(`„${product.name}" gefunden – Formular ausgefüllt`);
+        toast.success(t('inventory.productFound', { name: product.name }));
       else
-        toast.success(`Barcode ${barcode} gescannt`);
+        toast.success(t('inventory.barcodeScanned', { barcode }));
     }
     catch
     {
       setFormData(prev => ({ ...prev, barcode: barcode.trim() }));
       setShowAddDialog(true);
-      toast.success(`Barcode ${barcode} gescannt`);
+      toast.success(t('inventory.barcodeScanned', { barcode }));
     }
   };
 
@@ -144,7 +146,7 @@ export function useInventoryPage()
     e.preventDefault();
     if (!formData.name || !formData.category)
     {
-      toast.error('Bitte füllen Sie alle Pflichtfelder aus');
+      toast.error(t('inventory.fillRequired'));
       return;
     }
     const parsedQty = formData.quantity.trim() ? parseFloat(formData.quantity) : NaN;
@@ -162,7 +164,7 @@ export function useInventoryPage()
         expiryDate: formData.expiryDate || undefined,
         location: formData.location || undefined,
       });
-      toast.success('Artikel hinzugefügt');
+      toast.success(t('inventory.itemAdded'));
       closeAdd();
     }
     catch (err)
@@ -176,7 +178,7 @@ export function useInventoryPage()
     e.preventDefault();
     if (!editingItem || !formData.name || !formData.category)
     {
-      toast.error('Bitte füllen Sie alle Pflichtfelder aus');
+      toast.error(t('inventory.fillRequired'));
       return;
     }
     const parsedQty = formData.quantity.trim() ? parseFloat(formData.quantity) : NaN;
@@ -194,7 +196,7 @@ export function useInventoryPage()
         expiryDate: formData.expiryDate || undefined,
         location: formData.location || undefined,
       });
-      toast.success('Artikel aktualisiert');
+      toast.success(t('inventory.itemUpdated'));
       closeEdit();
     }
     catch (err)
@@ -208,7 +210,7 @@ export function useInventoryPage()
     try
     {
       await deleteInventoryItem(id);
-      toast.success(`${name} wurde entfernt`);
+      toast.success(t('common.removed', { name }));
     }
     catch (err)
     {

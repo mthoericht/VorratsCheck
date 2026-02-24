@@ -7,9 +7,11 @@ import { Label } from '../components/ui/label';
 import { Button } from '../components/ui/button';
 import { Package, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '../components/ui/alert';
+import { useTranslation } from '../lib/i18n';
 
 export function Login() 
 {
+  const { t } = useTranslation();
   const login = useAuthStore((s) => s.login);
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -31,7 +33,7 @@ export function Login()
     }
     else 
     {
-      setError(result.error || 'Login fehlgeschlagen');
+      setError(result.error || t('auth.loginFailed'));
     }
     
     setIsLoading(false);
@@ -47,13 +49,13 @@ export function Login()
             </div>
           </div>
           <CardTitle className="text-2xl">VorratsCheck</CardTitle>
-          <CardDescription>Melden Sie sich an, um fortzufahren</CardDescription>
+          <CardDescription>{t('auth.loginSubtitle')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Alert className="mb-4 bg-yellow-50 border-yellow-200">
             <AlertCircle className="h-4 w-4 text-yellow-600" />
             <AlertDescription className="text-yellow-800 text-sm">
-              Anmeldung erfolgt über das Express-Backend (JWT).
+              {t('auth.loginInfo')}
             </AlertDescription>
           </Alert>
 
@@ -66,11 +68,11 @@ export function Login()
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('auth.email')}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="ihre@email.de"
+                placeholder={t('auth.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -79,7 +81,7 @@ export function Login()
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Passwort</Label>
+              <Label htmlFor="password">{t('auth.password')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -92,13 +94,13 @@ export function Login()
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Wird angemeldet...' : 'Anmelden'}
+              {isLoading ? t('auth.loggingIn') : t('auth.login')}
             </Button>
 
             <div className="text-center text-sm">
-              <span className="text-gray-600">Noch kein Konto? </span>
+              <span className="text-gray-600">{t('auth.noAccount')} </span>
               <Link to="/signup" className="text-emerald-600 hover:underline">
-                Jetzt registrieren
+                {t('auth.registerNow')}
               </Link>
             </div>
           </form>

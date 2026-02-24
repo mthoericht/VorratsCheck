@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Clock } from 'lucide-react';
-import { formatDateDE } from '../../lib/format';
+import { useTranslation } from '../../lib/i18n';
 
 export interface ExpiringSoonItem {
   id: string;
@@ -17,6 +17,8 @@ interface ExpiringSoonCardProps {
 
 export function ExpiringSoonCard({ items, maxItems = 5 }: ExpiringSoonCardProps) 
 {
+  const { t, formatDate } = useTranslation();
+
   if (items.length === 0) return null;
 
   const displayItems = items.slice(0, maxItems);
@@ -26,9 +28,9 @@ export function ExpiringSoonCard({ items, maxItems = 5 }: ExpiringSoonCardProps)
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-orange-900">
           <Clock className="w-5 h-5" />
-          Läuft bald ab
+          {t('dashboard.expiringSoonTitle')}
         </CardTitle>
-        <CardDescription>Bitte bald verbrauchen</CardDescription>
+        <CardDescription>{t('dashboard.expiringSoonDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
@@ -36,10 +38,10 @@ export function ExpiringSoonCard({ items, maxItems = 5 }: ExpiringSoonCardProps)
             <div key={item.id} className="flex items-center justify-between p-2 bg-white rounded-lg">
               <div>
                 <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-gray-600">MHD: {item.expiryDate ? formatDateDE(item.expiryDate) : ''}</p>
+                <p className="text-sm text-gray-600">{t('dashboard.bestBefore')}{item.expiryDate ? formatDate(item.expiryDate) : ''}</p>
               </div>
               <Badge variant="outline" className="border-orange-600 text-orange-600">
-                Bald fällig
+                {t('dashboard.expiringBadge')}
               </Badge>
             </div>
           ))}

@@ -1,5 +1,6 @@
 import { Button } from '../ui/button';
 import { cn } from '../ui/utils';
+import { useTranslation } from '../../lib/i18n';
 
 export interface InventoryFilterBarOption {
   value: string;
@@ -28,11 +29,13 @@ export function InventoryFilterBar({
   options,
   value,
   onChange,
-  allLabel = 'Alle',
+  allLabel,
   className,
 }: InventoryFilterBarProps)
 {
-  const hasAll = allLabel != null;
+  const { t } = useTranslation();
+  const resolvedAllLabel = allLabel ?? t('common.all');
+  const hasAll = resolvedAllLabel != null;
   return (
     <div className={cn('flex flex-wrap items-center gap-2', className)}>
       {label && (
@@ -46,7 +49,7 @@ export function InventoryFilterBar({
           size="sm"
           onClick={() => onChange('all')}
         >
-          {allLabel}
+          {resolvedAllLabel}
         </Button>
       )}
       {options.map(opt => (

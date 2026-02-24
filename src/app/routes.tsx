@@ -11,6 +11,7 @@ import { Recipes } from "./pages/Recipes";
 import { SettingsCategories } from "./components/settings/SettingsCategories";
 import { Settings } from "./pages/Settings";
 import { SettingsAppearance } from "./components/settings/SettingsAppearance";
+import { SettingsLanguage } from "./components/settings/SettingsLanguage";
 import { Login } from "./pages/Login";
 import { Signup } from "./pages/Signup";
 
@@ -47,6 +48,7 @@ export const router = createBrowserRouter([
           { index: true, element: <Navigate to="/settings/categories" replace /> },
           { path: "categories", Component: SettingsCategories },
           { path: "appearance", Component: SettingsAppearance },
+          { path: "language", Component: SettingsLanguage },
         ],
       },
     ],

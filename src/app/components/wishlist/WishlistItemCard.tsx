@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Button } from '../ui/button';
 import { Heart, Edit, Trash2 } from 'lucide-react';
 import type { WishListItem } from '../../stores/wishlistStore';
+import { useTranslation } from '../../lib/i18n';
 
 interface WishlistItemCardProps {
   item: WishListItem;
@@ -11,6 +12,7 @@ interface WishlistItemCardProps {
 
 export function WishlistItemCard({ item, onEdit, onDelete }: WishlistItemCardProps) 
 {
+  const { t } = useTranslation();
   return (
     <Card>
       <CardHeader>
@@ -32,7 +34,7 @@ export function WishlistItemCard({ item, onEdit, onDelete }: WishlistItemCardPro
               size="sm"
               onClick={() => onEdit(item)}
               className="h-8 w-8 p-0"
-              title="Bearbeiten"
+              title={t('common.edit')}
             >
               <Edit className="w-4 h-4" />
             </Button>
@@ -41,7 +43,7 @@ export function WishlistItemCard({ item, onEdit, onDelete }: WishlistItemCardPro
               size="sm"
               onClick={() => onDelete(item.id, item.name)}
               className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
-              title="Löschen"
+              title={t('common.delete')}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -51,13 +53,13 @@ export function WishlistItemCard({ item, onEdit, onDelete }: WishlistItemCardPro
       <CardContent className="space-y-2">
         {item.category && (
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Kategorie:</span>
+            <span className="text-gray-600">{t('wishlist.categoryDisplay')}</span>
             <span className="font-medium">{item.category}</span>
           </div>
         )}
         {item.brand && (
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Marke:</span>
+            <span className="text-gray-600">{t('wishlist.brandDisplay')}</span>
             <span className="font-medium">{item.brand}</span>
           </div>
         )}

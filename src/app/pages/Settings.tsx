@@ -1,22 +1,25 @@
 import { Link, Outlet, useLocation } from 'react-router';
 import { cn } from '../components/ui/utils';
-import { FolderOpen, Palette } from 'lucide-react';
-
-const settingsNavItems = [
-  { path: '/settings/categories', label: 'Kategorien', icon: FolderOpen },
-  { path: '/settings/appearance', label: 'Erscheinungsbild', icon: Palette },
-];
+import { FolderOpen, Globe, Palette } from 'lucide-react';
+import { useTranslation } from '../lib/i18n';
 
 export function Settings() 
 {
+  const { t } = useTranslation();
   const location = useLocation();
+
+  const settingsNavItems = [
+    { path: '/settings/categories', label: t('settings.categories'), icon: FolderOpen },
+    { path: '/settings/appearance', label: t('settings.appearance'), icon: Palette },
+    { path: '/settings/language', label: t('settings.languageTitle'), icon: Globe },
+  ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Einstellungen</h2>
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('settings.title')}</h2>
         <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Kategorien und weitere Optionen verwalten
+          {t('settings.subtitle')}
         </p>
       </div>
 

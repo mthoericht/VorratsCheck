@@ -1,6 +1,7 @@
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import type { DealsFilterType } from '../../hooks/useDealsPage';
+import { useTranslation } from '../../lib/i18n';
 
 interface DealsFilterBarProps {
   filterType: DealsFilterType;
@@ -11,6 +12,8 @@ interface DealsFilterBarProps {
 
 export function DealsFilterBar({ filterType, setFilterType, mustHaveCount, wishListCount }: DealsFilterBarProps) 
 {
+  const { t } = useTranslation();
+
   return (
     <div className="flex gap-2 overflow-x-auto pb-2">
       <Button
@@ -18,7 +21,7 @@ export function DealsFilterBar({ filterType, setFilterType, mustHaveCount, wishL
         size="sm"
         onClick={() => setFilterType('all')}
       >
-        Alle Angebote
+        {t('deals.allDeals')}
       </Button>
       <Button
         variant={filterType === 'mustHave' ? 'default' : 'outline'}
@@ -26,7 +29,7 @@ export function DealsFilterBar({ filterType, setFilterType, mustHaveCount, wishL
         onClick={() => setFilterType('mustHave')}
         className="gap-2"
       >
-        Must-Have
+        {t('deals.mustHave')}
         {mustHaveCount > 0 && (
           <Badge variant="secondary" className="ml-1">{mustHaveCount}</Badge>
         )}
@@ -37,7 +40,7 @@ export function DealsFilterBar({ filterType, setFilterType, mustHaveCount, wishL
         onClick={() => setFilterType('wishList')}
         className="gap-2"
       >
-        Wunschliste
+        {t('deals.wishlist')}
         {wishListCount > 0 && (
           <Badge variant="secondary" className="ml-1">{wishListCount}</Badge>
         )}

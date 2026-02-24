@@ -2,8 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Pencil, Trash2, AlertTriangle, MapPin } from 'lucide-react';
-import { getExpiryStatus } from '../../lib/inventory';
-import { formatDateDE } from '../../lib/format';
+import { getExpiryStatus, INVENTORY_LOCATIONS } from '../../lib/inventory';
+import { useTranslation } from '../../lib/i18n';
 import type { InventoryItem } from '../../stores/inventoryStore';
 
 interface InventoryItemCardProps {
@@ -14,7 +14,15 @@ interface InventoryItemCardProps {
 
 export function InventoryItemCard({ item, onEdit, onDelete }: InventoryItemCardProps)
 {
+  const { t, formatDate } = useTranslation();
   const expiryStatus = getExpiryStatus(item.expiryDate);
+  const expiryLabel = expiryStatus
+    ? expiryStatus.status === 'expired'
+      ? t('inventory.expired')
+      : t('inventory.daysLeft', { days: expiryStatus.daysUntilExpiry })
+    : '';
+  const locationId = INVENTORY_LOCATIONS.find(l => l.value === item.location)?.id;
+  const locationLabel = locationId ? t(`inventory.locations.${locationId}`) : item.location;
 
   return (
     <Card className="relative">
@@ -30,7 +38,7 @@ export function InventoryItemCard({ item, onEdit, onDelete }: InventoryItemCardP
               size="sm"
               onClick={() => onEdit(item)}
               className="text-gray-600 hover:text-gray-900"
-              title="Bearbeiten"
+              title={t('common.edit')}
             >
               <Pencil className="w-4 h-4" />
             </Button>
@@ -39,7 +47,7 @@ export function InventoryItemCard({ item, onEdit, onDelete }: InventoryItemCardP
               size="sm"
               onClick={() => onDelete(item.id, item.name)}
               className="text-red-600 hover:text-red-700 hover:bg-red-50"
-              title="Löschen"
+              title={t('common.delete')}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -48,13 +56,13 @@ export function InventoryItemCard({ item, onEdit, onDelete }: InventoryItemCardP
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600">Menge:</span>
+          <span className="text-sm text-gray-600">{t('inventory.quantityDisplay')}</span>
           <span className="font-medium">{item.quantity} {item.unit}</span>
         </div>
 
         {item.expiryDate && (
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">MHD: {formatDateDE(item.expiryDate)}</span>
+            <span className="text-sm text-gray-600">{t('inventory.bestBefore')} {formatDate(item.expiryDate)}</span>
             <div className="flex items-center gap-2">
               {expiryStatus?.status === 'expired' && (
                 <AlertTriangle className="w-4 h-4 text-red-600" />
@@ -63,7 +71,7 @@ export function InventoryItemCard({ item, onEdit, onDelete }: InventoryItemCardP
                 <AlertTriangle className="w-4 h-4 text-orange-600" />
               )}
               <Badge variant={expiryStatus?.variant}>
-                {expiryStatus?.label}
+                {expiryLabel}
               </Badge>
             </div>
           </div>
@@ -72,13 +80,13 @@ export function InventoryItemCard({ item, onEdit, onDelete }: InventoryItemCardP
         {item.location && (
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <MapPin className="w-4 h-4" />
-            {item.location}
+            {locationLabel}
           </div>
         )}
 
         {item.barcode && (
           <div className="text-xs text-gray-500 font-mono">
-            Barcode: {item.barcode}
+            {t('inventory.barcodePrefix')} {item.barcode}
           </div>
         )}
       </CardContent>

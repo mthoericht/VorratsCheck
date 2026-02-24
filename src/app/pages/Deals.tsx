@@ -1,5 +1,6 @@
 import { useDealsPage } from '../hooks/useDealsPage';
 import { DealsStats, DealsFilterBar, DealCard, DealsEmptyState } from '../components/deals';
+import { useTranslation } from '../lib/i18n';
 
 export function Deals()
 {
@@ -15,11 +16,13 @@ export function Deals()
     isWishListDeal,
   } = useDealsPage();
 
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold text-gray-900">Angebote</h2>
-        <p className="text-gray-600 mt-1">Aktuelle Angebote in Ihrer Nähe</p>
+        <h2 className="text-3xl font-bold text-gray-900">{t('deals.title')}</h2>
+        <p className="text-gray-600 mt-1">{t('deals.subtitle')}</p>
       </div>
 
       <DealsStats

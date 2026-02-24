@@ -3,7 +3,15 @@
  * against the test database. Run with: npm run test:integration:api
  */
 import { describe, it, expect, beforeEach } from 'vitest';
-import { signup, login, getInventory, createInventoryItem, isApiError } from '../../../src/app/lib/api';
+import {
+  signup,
+  login,
+  getInventory,
+  createInventoryItem,
+  updateInventoryItem,
+  deleteInventoryItem,
+  isApiError,
+} from '../../../src/app/lib/api';
 import { prisma } from '../../../server/lib/prisma';
 
 const INVITE_CODE = process.env.INVITE_CODE ?? 'VORRATSCHECK2026';
@@ -132,6 +140,72 @@ describe('API integration (test DB)', () =>
       expect(items).toHaveLength(1);
       expect(items[0].name).toBe('Milch');
       expect(items[0].quantity).toBe(2);
+    });
+
+    it('updateInventoryItem updates and returns item', async () =>
+    {
+      const signupRes = await signup<{ token: string }>(
+        'invuser3',
+        'inv3@example.com',
+        'secret',
+        INVITE_CODE
+      );
+      localStorage.setItem('vorratscheck_token', signupRes.token);
+
+      const created = await createInventoryItem<{ id: string; name: string; quantity: number }>({
+        name: 'Joghurt',
+        category: 'Milchprodukte',
+        quantity: 1,
+        unit: 'stk',
+      });
+      const updated = await updateInventoryItem<{ name: string; quantity: number }>(created.id, {
+        name: 'Joghurt',
+        quantity: 3,
+      });
+      expect(updated.quantity).toBe(3);
+
+      const items = (await getInventory()) as { name: string; quantity: number }[];
+      expect(items[0].quantity).toBe(3);
+    });
+
+    it('deleteInventoryItem removes item and returns 204', async () =>
+    {
+      const signupRes = await signup<{ token: string }>(
+        'invuser4',
+        'inv4@example.com',
+        'secret',
+        INVITE_CODE
+      );
+      localStorage.setItem('vorratscheck_token', signupRes.token);
+
+      const created = await createInventoryItem<{ id: string }>({
+        name: 'Butter',
+        category: 'Milchprodukte',
+      });
+      await deleteInventoryItem(created.id);
+      const items = await getInventory();
+      expect(items).toHaveLength(0);
+    });
+
+    it('updateInventoryItem returns 404 for non-existent id', async () =>
+    {
+      const signupRes = await signup<{ token: string }>(
+        'invuser5',
+        'inv5@example.com',
+        'secret',
+        INVITE_CODE
+      );
+      localStorage.setItem('vorratscheck_token', signupRes.token);
+
+      try
+      {
+        await updateInventoryItem('non-existent-id', { name: 'X', quantity: 1 });
+        expect.fail('expected update to throw');
+      }
+      catch (e)
+      {
+        expect(isApiError(e) && e.status === 404).toBe(true);
+      }
     });
   });
 

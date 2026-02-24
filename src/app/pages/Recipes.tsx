@@ -8,9 +8,11 @@ import {
 } from '../components/recipe';
 import { ChefHat, CheckCircle2, XCircle, Plus, TrendingUp } from 'lucide-react';
 import { useRecipesPage } from '../hooks/useRecipesPage';
+import { useTranslation } from '../lib/i18n';
 
 export function Recipes()
 {
+  const { t } = useTranslation();
   const {
     recipes,
     sortBy,
@@ -29,8 +31,8 @@ export function Recipes()
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Rezepte</h2>
-          <p className="text-gray-600 mt-1">Basierend auf Ihrem aktuellen Vorrat</p>
+          <h2 className="text-3xl font-bold text-gray-900">{t('recipes.title')}</h2>
+          <p className="text-gray-600 mt-1">{t('recipes.subtitle')}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button
@@ -38,21 +40,21 @@ export function Recipes()
             size="sm"
             onClick={() => setSortBy('match')}
           >
-            Nach Verfügbarkeit
+            {t('recipes.sortByAvailability')}
           </Button>
           <Button
             variant={sortBy === 'time' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setSortBy('time')}
           >
-            Nach Zeit
+            {t('recipes.sortByTime')}
           </Button>
           <RecipeEditDialog
             form={form}
             trigger={
               <Button className="gap-2 whitespace-normal text-center min-w-0" onClick={form.openAdd}>
                 <Plus className="w-4 h-4 shrink-0" />
-                <span>Rezept hinzufügen</span>
+                <span>{t('recipes.addRecipe')}</span>
               </Button>
             }
           />
@@ -62,25 +64,25 @@ export function Recipes()
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard
-          title="Sofort kochbar"
+          title={t('recipes.cookableNow')}
           value={fullMatchRecipes.length}
-          subtitle="Alle Zutaten vorhanden"
+          subtitle={t('recipes.allIngredientsAvailable')}
           className="border-green-200"
           titleClassName="text-sm font-medium text-green-800"
           valueClassName="text-2xl font-bold text-green-600"
         />
         <StatCard
-          title="Teilweise möglich"
+          title={t('recipes.partiallyCookable')}
           value={partialMatchRecipes.length}
-          subtitle="Einige Zutaten fehlen"
+          subtitle={t('recipes.someIngredientsMissing')}
           className="border-yellow-200"
           titleClassName="text-sm font-medium text-yellow-800"
           valueClassName="text-2xl font-bold text-yellow-600"
         />
         <StatCard
-          title="Gesamt Rezepte"
+          title={t('recipes.totalRecipes')}
           value={recipes.length}
-          subtitle="In der Sammlung"
+          subtitle={t('recipes.inCollection')}
           className="border-gray-200"
           titleClassName="text-sm font-medium text-gray-800"
           valueClassName="text-2xl font-bold text-gray-600"
@@ -90,15 +92,15 @@ export function Recipes()
       {recipes.length === 0 && (
         <Card className="p-12 text-center">
           <ChefHat className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">Noch keine Rezepte vorhanden</p>
+          <p className="text-gray-500">{t('recipes.noRecipes')}</p>
           <Button className="mt-4" onClick={form.openAdd}>
-            Erstes Rezept hinzufügen
+            {t('recipes.addFirstRecipe')}
           </Button>
         </Card>
       )}
 
       <RecipeListSection
-        title="Sofort kochbar"
+        title={t('recipes.cookableNow')}
         icon={<CheckCircle2 className="w-6 h-6 text-green-600" />}
         recipes={fullMatchRecipes}
         onSelectRecipe={setSelectedRecipe}
@@ -107,7 +109,7 @@ export function Recipes()
       />
 
       <RecipeListSection
-        title="Teilweise möglich"
+        title={t('recipes.partiallyCookable')}
         icon={<TrendingUp className="w-6 h-6 text-yellow-600" />}
         recipes={partialMatchRecipes}
         onSelectRecipe={setSelectedRecipe}
@@ -116,7 +118,7 @@ export function Recipes()
       />
 
       <RecipeListSection
-        title="Weitere Rezepte"
+        title={t('recipes.moreRecipes')}
         icon={<XCircle className="w-6 h-6 text-gray-600" />}
         recipes={noMatchRecipes}
         onSelectRecipe={setSelectedRecipe}

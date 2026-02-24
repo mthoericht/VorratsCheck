@@ -5,6 +5,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Quantity } from '../Quantity';
 import type { Category } from '../../stores/categoriesStore';
+import { useTranslation } from '../../lib/i18n';
 
 export interface MustHaveFormData {
   name: string;
@@ -33,37 +34,38 @@ export function MustHaveItemDialog({
   categories,
 }: MustHaveItemDialogProps) 
 {
+  const { t } = useTranslation();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{editingId ? 'Must-Have Artikel bearbeiten' : 'Neuer Must-Have Artikel'}</DialogTitle>
+          <DialogTitle>{editingId ? t('mustHave.editTitle') : t('mustHave.addTitle')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{t('common.name')}</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-              placeholder="z.B. Butter, Milch, Eier, Nudeln"
+              placeholder={t('mustHave.namePlaceholder')}
               required
             />
             <p className="text-sm text-gray-500 mt-1">
-              Wird mit dem Namen der Vorratsartikel abgeglichen (z.B. „Butter“)
+              {t('mustHave.nameHelp')}
             </p>
           </div>
           <div>
-            <Label htmlFor="category">Kategorie</Label>
+            <Label htmlFor="category">{t('common.category')}</Label>
             <Select
               value={formData.category || 'none'}
               onValueChange={(v) => setFormData((prev) => ({ ...prev, category: v === 'none' ? '' : v }))}
             >
               <SelectTrigger id="category">
-                <SelectValue placeholder="Kategorie wählen (optional)" />
+                <SelectValue placeholder={t('mustHave.categoryPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Keine</SelectItem>
+                <SelectItem value="none">{t('common.none')}</SelectItem>
                 {categories.map((c) => (
                   <SelectItem key={c.id} value={c.name}>
                     {c.name}
@@ -72,28 +74,28 @@ export function MustHaveItemDialog({
               </SelectContent>
             </Select>
             <p className="text-sm text-gray-500 mt-1">
-              Optionale Einordnung (wird nur zur Anzeige genutzt)
+              {t('mustHave.categoryHelp')}
             </p>
           </div>
           <Quantity
-            label="Minimale Menge"
+            label={t('mustHave.minQuantityLabel')}
             quantity={formData.minQuantity}
             unit={formData.unit}
             onQuantityChange={(value) => setFormData((prev) => ({ ...prev, minQuantity: value }))}
             onUnitChange={(value) => setFormData((prev) => ({ ...prev, unit: value }))}
-            placeholder="z.B. 1, 2, 500"
+            placeholder={t('mustHave.minQuantityPlaceholder')}
             optional={false}
             idPrefix="musthave"
           />
           <p className="text-sm text-gray-500 -mt-2">
-            Die Mindestmenge in der gewählten Einheit, die immer vorhanden sein sollte
+            {t('mustHave.minQuantityHelp')}
           </p>
           <div className="flex gap-2 pt-4">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="flex-1">
-              Abbrechen
+              {t('common.cancel')}
             </Button>
             <Button type="submit" className="flex-1">
-              {editingId ? 'Speichern' : 'Hinzufügen'}
+              {editingId ? t('common.save') : t('common.add')}
             </Button>
           </div>
         </form>

@@ -36,11 +36,9 @@ describe('inventory', () =>
     it('returns expired for past date', () => 
     {
       const result = getExpiryStatus('2025-02-10');
-      expect(result).toEqual({
-        status: 'expired',
-        label: 'Abgelaufen',
-        variant: 'destructive',
-      });
+      expect(result?.status).toBe('expired');
+      expect(result?.daysUntilExpiry).toBeLessThan(0);
+      expect(result?.variant).toBe('destructive');
     });
 
     it('returns warning for within 7 days', () => 
@@ -48,7 +46,8 @@ describe('inventory', () =>
       const result = getExpiryStatus('2025-02-18');
       expect(result?.status).toBe('warning');
       expect(result?.variant).toBe('outline');
-      expect(result?.label).toMatch(/\d+ Tage/);
+      expect(result?.daysUntilExpiry).toBeGreaterThanOrEqual(0);
+      expect(result?.daysUntilExpiry).toBeLessThanOrEqual(7);
     });
 
     it('returns ok for more than 7 days', () => 
@@ -56,7 +55,7 @@ describe('inventory', () =>
       const result = getExpiryStatus('2025-03-01');
       expect(result?.status).toBe('ok');
       expect(result?.variant).toBe('secondary');
-      expect(result?.label).toMatch(/\d+ Tage/);
+      expect(result?.daysUntilExpiry).toBeGreaterThan(7);
     });
   });
 });

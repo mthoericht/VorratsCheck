@@ -11,7 +11,8 @@ import {
 export interface NavItem {
   path: string;
   icon: LucideIcon;
-  label: string;
+  /** i18n key (e.g. 'nav.dashboard') – translated by the component via t(). */
+  labelKey: string;
 }
 
 export type LayoutNavBreakpoint = 'sm' | 'md' | 'lg';
@@ -38,10 +39,10 @@ export function getNavBreakpointClasses(): { burgerButton: string; desktopNav: s
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/inventory', icon: Package, label: 'Vorrat' },
-  { path: '/must-have', icon: ListChecks, label: 'Must-Have' },
-  { path: '/wishlist', icon: Heart, label: 'Wunschliste' },
-  { path: '/recipes', icon: ChefHat, label: 'Rezepte' },
-  { path: '/deals', icon: Tag, label: 'Angebote' },
+  { path: '/', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
+  { path: '/inventory', icon: Package, labelKey: 'nav.inventory' },
+  { path: '/must-have', icon: ListChecks, labelKey: 'nav.mustHave' },
+  { path: '/wishlist', icon: Heart, labelKey: 'nav.wishlist' },
+  { path: '/recipes', icon: ChefHat, labelKey: 'nav.recipes' },
+  { path: '/deals', icon: Tag, labelKey: 'nav.deals' },
 ];

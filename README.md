@@ -10,6 +10,7 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 - **Recipes** – Recipes with ingredients, instructions, matched against inventory
 - **Deals** – Deals filtered by must-have and wishlist
 - **Categories** – Central category management; in inventory, must-have, and wishlist only selectable (no free text)
+- **Localization** – UI in German (default) and English; switchable via **Settings → Language**. All user-facing text and dates use the i18n system (`src/app/lib/i18n`).
 - **Layout** – Responsive: burger menu (Sheet) on small viewports, horizontal nav from configurable breakpoint (see `src/app/lib/layoutNav.ts`: `LAYOUT_NAV_BREAKPOINT` = sm/md/lg)
 
 ## Tech Stack
@@ -18,7 +19,8 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 - **UI:** Radix UI primitives, Lucide icons, shadcn-style components in `src/app/components/ui/`
 - **Backend:** Express 4, TypeScript (tsx)
 - **Database:** Prisma 6, SQLite (dev); PostgreSQL supported for production
-- **Auth:** JWT, bcryptjs; token in `Authorization: Bearer <token>`, managed by Zustand persist (key `vorratscheck-auth`)
+- **Auth:** JWT, bcryptjs; token in `Authorization: Bearer <token>` and `localStorage` key `vorratscheck_token`
+- **Settings:** Theme (light/dark/system) and locale (DE/EN) in `settingsStore`, persisted to `localStorage` (key `vorratscheck-settings`); theme synced to `next-themes` via `SyncThemeFromStore` in `App.tsx`
 
 ## Requirements
 
@@ -96,17 +98,18 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
   `npm run test`  
   (watch mode)  
   `npm run test:run`  
-  (single run; component/unit tests in `src/**/*.test.{ts,tsx}`; excludes API integration tests)  
+  (single run; component/unit tests; excludes API integration tests)  
   `npm run test:integration:api`  
-  (API integration tests: real API client against test DB; server started automatically; uses `data/test.db`)
+  (API integration tests: real API client against test DB; server started automatically; uses `data/test.db`. Tests in `test/integration/api/auth.api.test.ts` and `resources.api.test.ts`; run sequentially via `singleFork` to avoid shared-DB conflicts.)
 
 - **Prisma Studio (DB UI):**  
   `npm run db:studio`  
   (opens database browser at http://localhost:5555)
 
-## Theming
+## Theming and localization
 
-- **Appearance**: User menu (top right) → **Settings** → **Appearance**. Choose light, dark, or system.
+- **Appearance**: User menu (top right) → **Settings** → **Appearance**. Choose light, dark, or system. Preference is stored in `settingsStore` and synced to `next-themes`.
+- **Language**: **Settings** → **Language**. Choose German (default) or English. Locale is stored in `settingsStore`; all UI text and dates use `useTranslation()` and `src/app/lib/i18n` (translations in `de.ts`, `en.ts`).
 - **Colors**: All theme colors are defined in `src/styles/theme.css`. Edit `:root` for light mode and `.dark` for dark mode; base variables (e.g. `--background`, `--card`) and semantic ones (`--color-success`, `--color-warning`, `--color-danger`, `--color-brand`) are managed there.
 
 ## Production
@@ -137,7 +140,7 @@ The server implements the following security measures. Relevant code is commente
 
 - `shared/constants.ts` – Shared constants and types (units, priorities, difficulties, wishlist types, locations); `shared/validation.ts` – Shared validation helpers. Both used by frontend (`@shared/…`) and backend (`../../shared/….js`)
 - `src/app/` – React app (pages, components, stores, hooks, lib)
-- `src/app/pages/` – Dashboard, Inventory, Must-Have, Wishlist, Recipes, Deals, **Settings** (Categories, Appearance), Login, Signup
+- `src/app/pages/` – Dashboard, Inventory, Must-Have, Wishlist, Recipes, Deals, **Settings** (sub-routes: Categories, Appearance, Language), Login, Signup
 - `src/app/components/Layout.tsx` – Header, desktop nav (from breakpoint), mobile burger menu (Sheet), user menu. Uses `useLayout()` and `src/app/lib/layoutNav.ts` (NAV_ITEMS, LAYOUT_NAV_BREAKPOINT, getNavBreakpointClasses).
 - `src/app/components/dashboard/` – Dashboard cards: ExpiredItemsCard, ExpiringSoonCard, LowStockCard, QuickActionsCard (import from `../components/dashboard`)
 - `src/app/components/deals/` – Deals page UI: DealCard, DealsStats, DealsFilterBar, DealsEmptyState (import from `../components/deals`). Page logic in `useDealsPage()`.
@@ -145,11 +148,12 @@ The server implements the following security measures. Relevant code is commente
 - `src/app/components/recipe/` – Recipe page UI: RecipeCard, RecipeEditDialog, RecipeListSection, RecipeViewDialog (import from `../components/recipe`)
 - `src/app/components/mustHave/` – Must-Have page UI: MustHaveCard, MustHaveStats, MustHaveEmptyState, MustHaveItemDialog (import from `../components/mustHave`). Page logic in `useMustHavePage()`.
 - `src/app/components/wishlist/` – Wishlist page UI: WishlistItemDialog, WishlistItemCard, WishlistStats, WishlistPrioritySection, WishlistEmptyState (import from `../components/wishlist`). Page logic in `useWishlistPage()`.
+- `src/app/components/settings/` – Settings sub-pages: SettingsCategories, SettingsAppearance, SettingsLanguage (theme and locale).
 - `src/app/components/BarcodeScanner.tsx` – Modal scanner; uses `useBarcodeScanner` (start/stop/close, onClose).
-- `src/app/stores/` – Zustand stores (Auth, Inventory, MustHave, Wishlist, Recipes, Deals, Categories)
+- `src/app/stores/` – Zustand stores (Auth, **Settings** (locale, theme), Inventory, MustHave, Wishlist, Recipes, Deals, Categories)
 - `src/app/hooks/` – useLayout (header/nav state, logout), useRecipesPage, useInventoryPage, useMustHavePage, useWishlistPage, useDealsPage, useBarcodeScanner (start/stop/close, onClose, elementId)
 - `src/app/lib/api/` – API client modules (resource functions per domain, error handling via `ApiError`; entry point `api/index.ts`)
-- `src/app/lib/` – Domain/logic: `layoutNav.ts` (NAV_ITEMS, LAYOUT_NAV_BREAKPOINT, getNavBreakpointClasses), `units.ts`, `recipe.ts`, `mustHave.ts`, `inventory.ts` (INVENTORY_LOCATION_OPTIONS, getExpiryStatus), `format.ts` (formatDateDE for German date display, Tag.Monat.Jahr), `productLookup.ts` (barcode → product info, e.g. Open Food Facts)
+- `src/app/lib/` – Domain/logic: `layoutNav.ts` (NAV_ITEMS, LAYOUT_NAV_BREAKPOINT, getNavBreakpointClasses), **`i18n/`** (useTranslation, t(), formatDate, translations in `de.ts`/`en.ts`), `units.ts`, `recipe.ts`, `mustHave.ts`, `inventory.ts` (INVENTORY_LOCATION_OPTIONS, getExpiryStatus), `productLookup.ts` (barcode → product info, e.g. Open Food Facts)
 - `src/styles/theme.css` – **Central theme and colors**: light/dark mode, all CSS variables (`:root` and `.dark`). Edit only this file to change app-wide colors.
 - `server/` – Express API: `app.ts` exports the app (used by tests); `index.ts` runs `app.listen()`. Routes, middleware, Prisma under `server/`.
 - `prisma/schema.prisma` – Data model (User, Category, InventoryItem, MustHaveItem, WishListItem, Recipe, Deal)

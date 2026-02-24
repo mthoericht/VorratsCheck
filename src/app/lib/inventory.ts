@@ -1,20 +1,20 @@
 /** Storage locations for inventory items. Client-only (form and filter); server accepts any string. */
 export const INVENTORY_LOCATIONS = [
-  { value: 'Kühlschrank', label: 'Kühlschrank' },
-  { value: 'Gefrierschrank', label: 'Gefrierschrank' },
-  { value: 'Vorratsschrank', label: 'Vorratsschrank' },
+  { value: 'Kühlschrank', id: 'fridge' },
+  { value: 'Gefrierschrank', id: 'freezer' },
+  { value: 'Vorratsschrank', id: 'pantry' },
 ] as const;
 
 export type InventoryLocation = (typeof INVENTORY_LOCATIONS)[number]['value'];
 
 /** Options for inventory item location (storage place). Used in form and filter. */
-export const INVENTORY_LOCATION_OPTIONS = INVENTORY_LOCATIONS as readonly { value: string; label: string }[];
+export const INVENTORY_LOCATION_OPTIONS = INVENTORY_LOCATIONS as readonly { value: string; id: string }[];
 
 /**
- * Returns expiry status for display (badge label and variant).
- * Used by Inventory item cards and dashboard.
+ * Returns expiry status for display (status, days until expiry, and badge variant).
+ * The calling component translates the label via i18n keys.
  */
-export function getExpiryStatus(expiryDate?: string): { status: 'expired' | 'warning' | 'ok'; label: string; variant: 'destructive' | 'outline' | 'secondary' } | null
+export function getExpiryStatus(expiryDate?: string): { status: 'expired' | 'warning' | 'ok'; daysUntilExpiry: number; variant: 'destructive' | 'outline' | 'secondary' } | null
 {
   if (!expiryDate) return null;
 
@@ -24,11 +24,11 @@ export function getExpiryStatus(expiryDate?: string): { status: 'expired' | 'war
 
   if (daysUntilExpiry < 0)
   {
-    return { status: 'expired', label: 'Abgelaufen', variant: 'destructive' };
+    return { status: 'expired', daysUntilExpiry, variant: 'destructive' };
   }
   if (daysUntilExpiry <= 7)
   {
-    return { status: 'warning', label: `${daysUntilExpiry} Tage`, variant: 'outline' };
+    return { status: 'warning', daysUntilExpiry, variant: 'outline' };
   }
-  return { status: 'ok', label: `${daysUntilExpiry} Tage`, variant: 'secondary' };
+  return { status: 'ok', daysUntilExpiry, variant: 'secondary' };
 }

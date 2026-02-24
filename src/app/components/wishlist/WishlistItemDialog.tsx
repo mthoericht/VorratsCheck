@@ -4,6 +4,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import type { Category } from '../../stores/categoriesStore';
+import { useTranslation } from '../../lib/i18n';
 
 export interface WishlistFormData {
   name: string;
@@ -32,28 +33,29 @@ export function WishlistItemDialog({
   categories,
 }: WishlistItemDialogProps) 
 {
+  const { t } = useTranslation();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {editingId ? 'Wunschlistenartikel bearbeiten' : 'Neuer Wunschlistenartikel'}
+            {editingId ? t('wishlist.editTitle') : t('wishlist.addTitle')}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="wishlist-name">Name</Label>
+            <Label htmlFor="wishlist-name">{t('common.name')}</Label>
             <Input
               id="wishlist-name"
               value={formData.name}
               onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-              placeholder="z.B. Schokolade oder Lindt Excellence 85%"
+              placeholder={t('wishlist.namePlaceholder')}
               required
             />
           </div>
 
           <div>
-            <Label htmlFor="wishlist-category">Kategorie (optional)</Label>
+            <Label htmlFor="wishlist-category">{t('wishlist.categoryLabel')}</Label>
             <Select
               value={formData.category || 'none'}
               onValueChange={(v) =>
@@ -61,10 +63,10 @@ export function WishlistItemDialog({
               }
             >
               <SelectTrigger id="wishlist-category">
-                <SelectValue placeholder="Kategorie wählen" />
+                <SelectValue placeholder={t('wishlist.categoryPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Keine</SelectItem>
+                <SelectItem value="none">{t('common.none')}</SelectItem>
                 {categories.map((c) => (
                   <SelectItem key={c.id} value={c.name}>
                     {c.name}
@@ -75,17 +77,17 @@ export function WishlistItemDialog({
           </div>
 
           <div>
-            <Label htmlFor="wishlist-brand">Marke (optional)</Label>
+            <Label htmlFor="wishlist-brand">{t('wishlist.brandLabel')}</Label>
             <Input
               id="wishlist-brand"
               value={formData.brand}
               onChange={(e) => setFormData((prev) => ({ ...prev, brand: e.target.value }))}
-              placeholder="z.B. Lindt"
+              placeholder={t('wishlist.brandPlaceholder')}
             />
           </div>
 
           <div>
-            <Label htmlFor="wishlist-priority">Priorität</Label>
+            <Label htmlFor="wishlist-priority">{t('wishlist.priorityLabel')}</Label>
             <Select
               value={formData.priority}
               onValueChange={(value: string) =>
@@ -96,9 +98,9 @@ export function WishlistItemDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="high">Hoch</SelectItem>
-                <SelectItem value="medium">Mittel</SelectItem>
-                <SelectItem value="low">Niedrig</SelectItem>
+                <SelectItem value="high">{t('priorities.high')}</SelectItem>
+                <SelectItem value="medium">{t('priorities.medium')}</SelectItem>
+                <SelectItem value="low">{t('priorities.low')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -110,10 +112,10 @@ export function WishlistItemDialog({
               onClick={() => onOpenChange(false)}
               className="flex-1"
             >
-              Abbrechen
+              {t('common.cancel')}
             </Button>
             <Button type="submit" className="flex-1">
-              {editingId ? 'Speichern' : 'Hinzufügen'}
+              {editingId ? t('common.save') : t('common.add')}
             </Button>
           </div>
         </form>

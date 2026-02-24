@@ -2,12 +2,14 @@ import { useInventoryStore } from '../stores/inventoryStore';
 import { useMustHaveStore } from '../stores/mustHaveStore';
 import { useWishlistStore } from '../stores/wishlistStore';
 import { getStockStatus } from '../lib/mustHave';
+import { useTranslation } from '../lib/i18n';
 import { StatCard } from '../components/ui/stat-card';
 import { ExpiredItemsCard, ExpiringSoonCard, LowStockCard, QuickActionsCard } from '../components/dashboard';
 import { Clock, Package, Heart, TrendingDown } from 'lucide-react';
 
 export function Dashboard() 
 {
+  const { t } = useTranslation();
   const inventory = useInventoryStore((s) => s.items);
   const mustHaveList = useMustHaveStore((s) => s.items);
   const wishList = useWishlistStore((s) => s.items);
@@ -39,36 +41,36 @@ export function Dashboard()
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold text-gray-900">Dashboard</h2>
-        <p className="text-gray-600 mt-1">Übersicht über Ihren Vorrat</p>
+        <h2 className="text-3xl font-bold text-gray-900">{t('dashboard.title')}</h2>
+        <p className="text-gray-600 mt-1">{t('dashboard.subtitle')}</p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          title="Gesamt Artikel"
+          title={t('dashboard.totalItems')}
           value={inventory.length}
-          subtitle="Im Vorrat"
+          subtitle={t('dashboard.inStock')}
           icon={<Package className="w-4 h-4 text-gray-600" />}
         />
         <StatCard
-          title="Läuft bald ab"
+          title={t('dashboard.expiringSoon')}
           value={expiringSoon.length}
-          subtitle="Nächste 7 Tage"
+          subtitle={t('dashboard.next7Days')}
           icon={<Clock className="w-4 h-4 text-orange-600" />}
           valueClassName="text-2xl font-bold text-orange-600"
         />
         <StatCard
-          title="Niedrige Bestände"
+          title={t('dashboard.lowStock')}
           value={lowStockItems.length}
-          subtitle="Nachkaufen"
+          subtitle={t('dashboard.restock')}
           icon={<TrendingDown className="w-4 h-4 text-red-600" />}
           valueClassName="text-2xl font-bold text-red-600"
         />
         <StatCard
-          title="Wunschliste"
+          title={t('dashboard.wishlist')}
           value={wishList.length}
-          subtitle="Artikel"
+          subtitle={t('common.items')}
           icon={<Heart className="w-4 h-4 text-pink-600" />}
         />
       </div>

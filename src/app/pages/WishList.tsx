@@ -7,9 +7,11 @@ import {
   WishlistEmptyState,
 } from '../components/wishlist';
 import { useWishlistPage } from '../hooks/useWishlistPage';
+import { useTranslation } from '../lib/i18n';
 
 export function WishList()
 {
+  const { t } = useTranslation();
   const {
     wishList,
     categories,
@@ -29,12 +31,12 @@ export function WishList()
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Wunschliste</h2>
-          <p className="text-gray-600 mt-1">Artikel die Sie bei Gelegenheit kaufen möchten</p>
+          <h2 className="text-3xl font-bold text-gray-900">{t('wishlist.title')}</h2>
+          <p className="text-gray-600 mt-1">{t('wishlist.subtitle')}</p>
         </div>
         <Button className="gap-2" onClick={openAdd}>
           <Plus className="w-4 h-4" />
-          Artikel hinzufügen
+          {t('wishlist.addItem')}
         </Button>
       </div>
 

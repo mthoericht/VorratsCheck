@@ -2,6 +2,7 @@ import { Button } from './ui/button';
 import { X, Camera } from 'lucide-react';
 import { Card } from './ui/card';
 import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
+import { useTranslation } from '../lib/i18n';
 
 interface BarcodeScannerProps {
   onScan: (barcode: string) => void;
@@ -12,6 +13,7 @@ interface BarcodeScannerProps {
 
 export function BarcodeScanner({ onScan, onClose, autoStart = true }: BarcodeScannerProps)
 {
+  const { t } = useTranslation();
   const { isScanning, error, startScanning, stopScanning, close, elementId } = useBarcodeScanner({
     onScan,
     onClose,
@@ -22,7 +24,7 @@ export function BarcodeScanner({ onScan, onClose, autoStart = true }: BarcodeSca
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-lg bg-white p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">Barcode Scanner</h3>
+          <h3 className="text-lg font-semibold">{t('barcode.title')}</h3>
           <Button variant="ghost" size="sm" onClick={close}>
             <X className="w-5 h-5" />
           </Button>
@@ -40,16 +42,16 @@ export function BarcodeScanner({ onScan, onClose, autoStart = true }: BarcodeSca
           {!isScanning ? (
             <Button onClick={startScanning} className="w-full gap-2">
               <Camera className="w-4 h-4" />
-              Kamera starten
+              {t('barcode.startCamera')}
             </Button>
           ) : (
             <Button onClick={stopScanning} variant="destructive" className="w-full">
-              Scanner stoppen
+              {t('barcode.stopScanner')}
             </Button>
           )}
 
           <p className="text-sm text-gray-600 text-center">
-            Halten Sie den Barcode in den markierten Bereich
+            {t('barcode.instruction')}
           </p>
         </div>
       </Card>

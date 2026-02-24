@@ -1,9 +1,10 @@
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { InventoryFilterBar } from './InventoryFilterBar';
+import { useTranslation } from '../../lib/i18n';
 
 interface InventoryFilterProps {
-  locationOptions: { value: string; label: string }[];
+  locationOptions: readonly { value: string; id: string }[];
   filterLocation: string;
   onLocationChange: (value: string) => void;
   filterCategories: string[];
@@ -20,25 +21,26 @@ export function InventoryFilter({
   onCategoryChange,
 }: InventoryFilterProps)
 {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
       <InventoryFilterBar
-        label="Lagerort"
-        options={locationOptions}
+        label={t('inventory.filterLocation')}
+        options={locationOptions.map(opt => ({ value: opt.value, label: t(`inventory.locations.${opt.id}`) }))}
         value={filterLocation}
         onChange={onLocationChange}
-        allLabel="Alle"
+        allLabel={t('common.all')}
       />
       <div className="flex items-center gap-2">
         <Label htmlFor="filter-category" className="text-sm font-medium text-muted-foreground shrink-0">
-          Kategorie
+          {t('inventory.filterCategory')}
         </Label>
         <Select value={filterCategory} onValueChange={onCategoryChange}>
           <SelectTrigger id="filter-category" className="w-[180px]" size="sm">
-            <SelectValue placeholder="Alle" />
+            <SelectValue placeholder={t('common.all')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Alle</SelectItem>
+            <SelectItem value="all">{t('common.all')}</SelectItem>
             {filterCategories.map(cat => (
               <SelectItem key={cat} value={cat}>
                 {cat}

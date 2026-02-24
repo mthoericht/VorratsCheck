@@ -5,10 +5,12 @@ import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 import { NAV_ITEMS, getNavBreakpointClasses } from '../lib/layoutNav';
 import { useLayout } from '../hooks/useLayout';
+import { useTranslation } from '../lib/i18n';
 
 export function Layout()
 {
   const location = useLocation();
+  const { t } = useTranslation();
   const {
     user,
     isUserMenuOpen,
@@ -33,14 +35,14 @@ export function Layout()
                     variant="ghost"
                     size="icon"
                     className={cn(navBreakpoint.burgerButton, 'shrink-0')}
-                    aria-label="Menü öffnen"
+                    aria-label={t('nav.openMenu')}
                   >
                     <Menu className="w-6 h-6" />
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-[min(85vw,20rem)] p-0 flex flex-col">
                   <SheetHeader className="border-b border-border px-4 py-3 text-left">
-                    <SheetTitle className="text-lg">Menü</SheetTitle>
+                    <SheetTitle className="text-lg">{t('nav.menu')}</SheetTitle>
                   </SheetHeader>
                   <nav className="flex flex-col flex-1 overflow-y-auto py-2">
                     {NAV_ITEMS.map((item) => 
@@ -60,7 +62,7 @@ export function Layout()
                           )}
                         >
                           <Icon className="w-5 h-5 shrink-0" />
-                          {item.label}
+                          {t(item.labelKey)}
                         </Link>
                       );
                     })}
@@ -72,7 +74,7 @@ export function Layout()
                       className="flex items-center gap-3 px-4 py-3 text-base text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-accent"
                     >
                       <Settings className="w-5 h-5 shrink-0" />
-                      Einstellungen
+                      {t('nav.settings')}
                     </Link>
                     <button
                       onClick={() => 
@@ -83,7 +85,7 @@ export function Layout()
                       className="flex w-full items-center gap-3 px-4 py-3 text-base text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
                     >
                       <LogOut className="w-5 h-5 shrink-0" />
-                      Abmelden
+                      {t('nav.logout')}
                     </button>
                   </div>
                 </SheetContent>
@@ -129,14 +131,14 @@ export function Layout()
                         className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-foreground hover:bg-gray-50 dark:hover:bg-accent w-full"
                       >
                         <Settings className="w-4 h-4" />
-                        Einstellungen
+                        {t('nav.settings')}
                       </Link>
                       <button
                         onClick={handleLogout}
                         className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2 transition-colors"
                       >
                         <LogOut className="w-4 h-4" />
-                        Abmelden
+                        {t('nav.logout')}
                       </button>
                     </div>
                   </div>
@@ -168,7 +170,7 @@ export function Layout()
                   )}
                 >
                   <Icon className="w-5 h-5" />
-                  {item.label}
+                  {t(item.labelKey)}
                 </Link>
               );
             })}

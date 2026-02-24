@@ -1,6 +1,7 @@
 import { Button } from '../components/ui/button';
 import { Plus } from 'lucide-react';
 import { getStockStatus } from '../lib/mustHave';
+import { useTranslation } from '../lib/i18n';
 import {
   MustHaveCard,
   MustHaveEmptyState,
@@ -11,6 +12,7 @@ import { useMustHavePage } from '../hooks/useMustHavePage';
 
 export function MustHaveList()
 {
+  const { t } = useTranslation();
   const {
     mustHaveList,
     inventory,
@@ -32,12 +34,12 @@ export function MustHaveList()
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Must-Have Liste</h2>
-          <p className="text-gray-600 mt-1">Lebensmittel die immer verfügbar sein sollten</p>
+          <h2 className="text-3xl font-bold text-gray-900">{t('mustHave.title')}</h2>
+          <p className="text-gray-600 mt-1">{t('mustHave.subtitle')}</p>
         </div>
         <Button className="gap-2" onClick={openAdd}>
           <Plus className="w-4 h-4" />
-          Artikel hinzufügen
+          {t('mustHave.addItem')}
         </Button>
       </div>
 

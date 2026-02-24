@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import { RouterProvider } from 'react-router';
 import { Toaster } from './components/ui/sonner';
 import { useAuthStore } from './stores/authStore';
+import { useSettingsStore } from './stores/settingsStore';
 import { useInventoryStore } from './stores/inventoryStore';
 import { useMustHaveStore } from './stores/mustHaveStore';
 import { useWishlistStore } from './stores/wishlistStore';
@@ -9,6 +11,18 @@ import { useRecipesStore } from './stores/recipesStore';
 import { useDealsStore } from './stores/dealsStore';
 import { useCategoriesStore } from './stores/categoriesStore';
 import { router } from './routes';
+
+/** Syncs theme preference from settingsStore to next-themes (store is source of truth). */
+function SyncThemeFromStore()
+{
+  const theme = useSettingsStore((s) => s.theme);
+  const { setTheme } = useTheme();
+  useEffect(() =>
+  {
+    setTheme(theme);
+  }, [theme, setTheme]);
+  return null;
+}
 
 function DataLoader() 
 {
@@ -36,6 +50,7 @@ function App()
 
   return (
     <>
+      <SyncThemeFromStore />
       <DataLoader />
       <RouterProvider router={router} />
       <Toaster />

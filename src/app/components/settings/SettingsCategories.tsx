@@ -7,9 +7,11 @@ import { Label } from '../ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '../ui/dialog';
 import { Plus, Trash2, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from '../../lib/i18n';
 
 export function SettingsCategories()
 {
+  const { t } = useTranslation();
   const categories = useCategoriesStore((s) => s.items);
   const addCategory = useCategoriesStore((s) => s.add);
   const removeCategory = useCategoriesStore((s) => s.remove);
@@ -22,13 +24,13 @@ export function SettingsCategories()
     const trimmed = newName.trim();
     if (!trimmed)
     {
-      toast.error('Bitte einen Namen eingeben');
+      toast.error(t('settings.nameRequired'));
       return;
     }
     try
     {
       await addCategory(trimmed);
-      toast.success('Kategorie hinzugefügt');
+      toast.success(t('settings.categoryAdded'));
       setShowAddDialog(false);
       setNewName('');
     }
@@ -43,7 +45,7 @@ export function SettingsCategories()
     try
     {
       await removeCategory(id);
-      toast.success(`${name} wurde entfernt`);
+      toast.success(t('common.removed', { name }));
     }
     catch (err)
     {
@@ -55,40 +57,40 @@ export function SettingsCategories()
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-xl font-semibold text-gray-900">Kategorien</h3>
+          <h3 className="text-xl font-semibold text-gray-900">{t('settings.categories')}</h3>
           <p className="text-gray-600 mt-1">
-            Kategorien verwalten – werden in Vorrat, Must-Have und Wunschliste zur Auswahl genutzt
+            {t('settings.categoriesDescription')}
           </p>
         </div>
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogTrigger asChild>
             <Button className="gap-2">
               <Plus className="w-4 h-4" />
-              Kategorie hinzufügen
+              {t('settings.addCategory')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Neue Kategorie</DialogTitle>
-              <DialogDescription>Name der Kategorie (z.B. Milchprodukte, Getränke)</DialogDescription>
+              <DialogTitle>{t('settings.newCategory')}</DialogTitle>
+              <DialogDescription>{t('settings.newCategoryDescription')}</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="categoryName">Name</Label>
+                <Label htmlFor="categoryName">{t('common.name')}</Label>
                 <Input
                   id="categoryName"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  placeholder="z.B. Milchprodukte"
+                  placeholder={t('settings.categoryNamePlaceholder')}
                   required
                 />
               </div>
               <div className="flex gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={() => setShowAddDialog(false)} className="flex-1">
-                  Abbrechen
+                  {t('common.cancel')}
                 </Button>
                 <Button type="submit" className="flex-1">
-                  Hinzufügen
+                  {t('common.add')}
                 </Button>
               </div>
             </form>
@@ -100,10 +102,10 @@ export function SettingsCategories()
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FolderOpen className="w-5 h-5" />
-            Alle Kategorien
+            {t('settings.allCategories')}
           </CardTitle>
           <CardDescription>
-            Diese Kategorien stehen in den Listen zur Auswahl. Doppelte Namen sind nicht erlaubt.
+            {t('settings.allCategoriesDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -127,7 +129,7 @@ export function SettingsCategories()
           </ul>
           {categories.length === 0 && (
             <p className="text-muted-foreground text-center py-8">
-              Noch keine Kategorien. Kategorien anlegen, um sie in Vorrat, Must-Have und Wunschliste auswählen zu können.
+              {t('settings.noCategoriesEmpty')}
             </p>
           )}
         </CardContent>

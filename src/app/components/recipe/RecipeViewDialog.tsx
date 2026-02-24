@@ -6,11 +6,11 @@ import { ChefHat, Clock, Edit, Trash2, CheckCircle2, XCircle } from 'lucide-reac
 import {
   formatIngredient,
   getDifficultyColor,
-  getDifficultyLabel,
   ingredientMatches,
   type RecipeWithMatch,
 } from '../../lib/recipe';
 import type { InventoryItem } from '../../stores/inventoryStore';
+import { useTranslation } from '../../lib/i18n';
 
 interface RecipeViewDialogProps {
   recipe: RecipeWithMatch | null;
@@ -29,6 +29,8 @@ export function RecipeViewDialog({
   onDelete,
 }: RecipeViewDialogProps) 
 {
+  const { t } = useTranslation();
+
   if (!recipe) return null;
 
   return (
@@ -45,14 +47,14 @@ export function RecipeViewDialog({
           {/* Meta Info */}
           <div className="flex gap-4 flex-wrap">
             <Badge className={getDifficultyColor(recipe.difficulty)}>
-              {getDifficultyLabel(recipe.difficulty)}
+              {t(`difficulties.${recipe.difficulty}`)}
             </Badge>
             <Badge variant="outline" className="gap-1">
               <Clock className="w-3 h-3" />
-              {recipe.cookingTime} Min
+              {recipe.cookingTime} {t('recipes.minuteShort')}
             </Badge>
             <Badge variant="outline">
-              {recipe.servings} Portionen
+              {t('recipes.servings', { count: recipe.servings })}
             </Badge>
             <Badge
               className={
@@ -63,7 +65,7 @@ export function RecipeViewDialog({
                     : 'bg-gray-600 text-white'
               }
             >
-              {Math.round(recipe.matchPercentage)}% Verfügbar
+              {t('recipes.available', { percent: Math.round(recipe.matchPercentage) })}
             </Badge>
           </div>
 
@@ -75,7 +77,7 @@ export function RecipeViewDialog({
               onClick={() => { onClose(); onEdit(recipe); }}
             >
               <Edit className="w-4 h-4" />
-              Bearbeiten
+              {t('common.edit')}
             </Button>
             <Button
               variant="outline"
@@ -83,13 +85,13 @@ export function RecipeViewDialog({
               onClick={(e) => { onDelete(e); onClose(); }}
             >
               <Trash2 className="w-4 h-4" />
-              Löschen
+              {t('common.delete')}
             </Button>
           </div>
 
           {/* Ingredients */}
           <div>
-            <h3 className="font-semibold mb-3">Zutaten</h3>
+            <h3 className="font-semibold mb-3">{t('recipes.ingredients')}</h3>
             <div className="space-y-2">
               {recipe.ingredients.map((ing, index) => 
               {
@@ -117,7 +119,7 @@ export function RecipeViewDialog({
 
           {/* Instructions */}
           <div>
-            <h3 className="font-semibold mb-3">Zubereitung</h3>
+            <h3 className="font-semibold mb-3">{t('recipes.preparation')}</h3>
             <ol className="space-y-3">
               {recipe.instructions.map((instruction, index) => (
                 <li key={index} className="flex gap-3">
@@ -133,7 +135,7 @@ export function RecipeViewDialog({
           {recipe.missingIngredients && recipe.missingIngredients.length > 0 && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <h4 className="font-semibold text-yellow-900 mb-2">
-                Fehlende Zutaten ({recipe.missingIngredients.length})
+                {t('recipes.missingIngredients', { count: recipe.missingIngredients.length })}
               </h4>
               <p className="text-sm text-yellow-800">
                 {recipe.missingIngredients.map(formatIngredient).join(', ')}

@@ -8,9 +8,11 @@ import {
   InventoryFilter,
   InventoryEmptyState,
 } from '../components/inventory';
+import { useTranslation } from '../lib/i18n';
 
 export function Inventory()
 {
+  const { t } = useTranslation();
   const {
     inventory,
     categories,
@@ -43,17 +45,17 @@ export function Inventory()
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Vorrat</h2>
-          <p className="text-gray-600 mt-1">{inventory.length} Artikel im Vorrat</p>
+          <h2 className="text-3xl font-bold text-gray-900">{t('inventory.title')}</h2>
+          <p className="text-gray-600 mt-1">{t('inventory.itemCount', { count: inventory.length })}</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={() => setShowScanner(true)} variant="outline" className="gap-2">
             <Scan className="w-4 h-4" />
-            Barcode scannen
+            {t('inventory.scanBarcode')}
           </Button>
           <Button className="gap-2" onClick={openAdd}>
             <Plus className="w-4 h-4" />
-            Artikel hinzufügen
+            {t('inventory.addItem')}
           </Button>
         </div>
       </div>
@@ -61,11 +63,11 @@ export function Inventory()
       <InventoryItemFormDialog
         open={showAddDialog}
         onOpenChange={handleAddDialogOpenChange}
-        title="Neuer Artikel"
+        title={t('inventory.newItem')}
         formData={formData}
         setFormData={setFormData}
         onSubmit={handleSubmitAdd}
-        submitLabel="Hinzufügen"
+        submitLabel={t('common.add')}
         onScanClick={openScannerFromAdd}
         categories={categories}
         idPrefix="add"
@@ -74,11 +76,11 @@ export function Inventory()
       <InventoryItemFormDialog
         open={editingItem !== null}
         onOpenChange={handleEditDialogOpenChange}
-        title="Artikel bearbeiten"
+        title={t('inventory.editItem')}
         formData={formData}
         setFormData={setFormData}
         onSubmit={handleSubmitEdit}
-        submitLabel="Speichern"
+        submitLabel={t('common.save')}
         onScanClick={openScannerFromEdit}
         categories={categories}
         idPrefix="edit"

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useWishlistStore } from '../stores/wishlistStore';
 import { useCategoriesStore } from '../stores/categoriesStore';
+import { useTranslation } from '../lib/i18n';
 import type { WishListItem } from '../stores/wishlistStore';
 import type { WishlistFormData } from '../components/wishlist';
 
@@ -17,6 +18,7 @@ export const initialWishlistFormData: WishlistFormData = {
  */
 export function useWishlistPage()
 {
+  const { t } = useTranslation();
   const wishList = useWishlistStore(s => s.items);
   const addWishListItem = useWishlistStore(s => s.add);
   const updateWishListItem = useWishlistStore(s => s.update);
@@ -70,7 +72,7 @@ export function useWishlistPage()
     e.preventDefault();
     if (!formData.name)
     {
-      toast.error('Bitte geben Sie einen Namen ein');
+      toast.error(t('wishlist.nameRequired'));
       return;
     }
     try
@@ -85,12 +87,12 @@ export function useWishlistPage()
       if (editingId)
       {
         await updateWishListItem(editingId, payload);
-        toast.success('Wunschlistenartikel aktualisiert');
+        toast.success(t('wishlist.itemUpdated'));
       }
       else
       {
         await addWishListItem(payload);
-        toast.success('Artikel zur Wunschliste hinzugefügt');
+        toast.success(t('wishlist.itemAdded'));
       }
       handleCloseDialog(false);
     }
@@ -105,7 +107,7 @@ export function useWishlistPage()
     try
     {
       await deleteWishListItem(id);
-      toast.success(`${name} wurde entfernt`);
+      toast.success(t('common.removed', { name }));
     }
     catch (err)
     {

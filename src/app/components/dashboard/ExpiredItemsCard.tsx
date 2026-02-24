@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { AlertTriangle } from 'lucide-react';
-import { formatDateDE } from '../../lib/format';
+import { useTranslation } from '../../lib/i18n';
 
 export interface ExpiredItem {
   id: string;
@@ -15,6 +15,8 @@ interface ExpiredItemsCardProps {
 
 export function ExpiredItemsCard({ items }: ExpiredItemsCardProps) 
 {
+  const { t, formatDate } = useTranslation();
+
   if (items.length === 0) return null;
 
   return (
@@ -22,9 +24,9 @@ export function ExpiredItemsCard({ items }: ExpiredItemsCardProps)
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-red-900">
           <AlertTriangle className="w-5 h-5" />
-          Abgelaufene Artikel
+          {t('dashboard.expiredItems')}
         </CardTitle>
-        <CardDescription>Diese Artikel sind bereits abgelaufen</CardDescription>
+        <CardDescription>{t('dashboard.expiredDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
@@ -32,9 +34,9 @@ export function ExpiredItemsCard({ items }: ExpiredItemsCardProps)
             <div key={item.id} className="flex items-center justify-between p-2 bg-white rounded-lg">
               <div>
                 <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-gray-600">Abgelaufen: {item.expiryDate ? formatDateDE(item.expiryDate) : ''}</p>
+                <p className="text-sm text-gray-600">{t('dashboard.expiredPrefix')}{item.expiryDate ? formatDate(item.expiryDate) : ''}</p>
               </div>
-              <Badge variant="destructive">Abgelaufen</Badge>
+              <Badge variant="destructive">{t('dashboard.expired')}</Badge>
             </div>
           ))}
         </div>

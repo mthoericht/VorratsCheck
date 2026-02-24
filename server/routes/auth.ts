@@ -19,21 +19,21 @@ authRouter.post('/login', asyncHandler(async (req, res) =>
   const { email, password } = req.body;
   if (!email || !password) 
   {
-    res.status(400).json({ error: 'E-Mail und Passwort erforderlich' });
+    res.status(400).json({ error: 'serverErrors.emailPasswordRequired' });
     return;
   }
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) 
   {
     // Security: same message as wrong password to avoid user enumeration
-    res.status(401).json({ error: 'Ungültige Anmeldedaten' });
+    res.status(401).json({ error: 'serverErrors.invalidCredentials' });
     return;
   }
   // Security: constant-time comparison via bcrypt; passwords are stored hashed (see signup)
   const valid = await bcrypt.compare(password, user.passwordHash);
   if (!valid) 
   {
-    res.status(401).json({ error: 'Ungültige Anmeldedaten' });
+    res.status(401).json({ error: 'serverErrors.invalidCredentials' });
     return;
   }
   const token = signToken({ userId: user.id, email: user.email });
@@ -48,13 +48,13 @@ authRouter.post('/signup', asyncHandler(async (req, res) =>
   const { username, email, password, inviteCode } = req.body;
   if (!username || !email || !password || !inviteCode) 
   {
-    res.status(400).json({ error: 'Alle Felder erforderlich' });
+    res.status(400).json({ error: 'serverErrors.allFieldsRequired' });
     return;
   }
   // Security: enforce invite code before creating user
   if (inviteCode !== INVITE_CODE) 
   {
-    res.status(400).json({ error: 'Ungültiges Einladungspasswort' });
+    res.status(400).json({ error: 'serverErrors.invalidInviteCode' });
     return;
   }
   const existing = await prisma.user.findFirst({
@@ -62,8 +62,8 @@ authRouter.post('/signup', asyncHandler(async (req, res) =>
   });
   if (existing) 
   {
-    const field = existing.email === email ? 'E-Mail' : 'Benutzername';
-    res.status(409).json({ error: `${field} bereits vergeben` });
+    const errorKey = existing.email === email ? 'serverErrors.emailTaken' : 'serverErrors.usernameTaken';
+    res.status(409).json({ error: errorKey });
     return;
   }
   // Security: hash password with bcrypt (cost 10) before storing; never store plaintext

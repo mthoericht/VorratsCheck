@@ -46,7 +46,7 @@ const authLimiter = rateLimit({
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: 'Zu viele Anfragen, bitte versuchen Sie es später erneut' },
+  message: { error: 'serverErrors.tooManyRequests' },
 });
 
 app.use('/api/auth', authLimiter, authRouter);

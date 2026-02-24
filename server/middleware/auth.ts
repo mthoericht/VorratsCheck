@@ -20,7 +20,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction)
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Bearer ')) 
   {
-    res.status(401).json({ error: 'Nicht authentifiziert' });
+    res.status(401).json({ error: 'serverErrors.notAuthenticated' });
     return;
   }
   const token = authHeader.slice(7);
@@ -32,7 +32,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction)
   }
   catch 
   {
-    res.status(401).json({ error: 'Ungültiger oder abgelaufener Token' });
+    res.status(401).json({ error: 'serverErrors.invalidToken' });
   }
 }
 

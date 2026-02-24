@@ -49,17 +49,17 @@ dealsRouter.post('/', authMiddleware, asyncHandler(async (req, res) =>
   const { product, name, store, originalPrice, discountPrice, discount, validUntil, distance, inStock } = req.body;
   if (!product || !store || originalPrice == null || discountPrice == null || discount == null || !validUntil || distance == null) 
   {
-    res.status(400).json({ error: 'product, store, originalPrice, discountPrice, discount, validUntil, distance erforderlich' });
+    res.status(400).json({ error: 'serverErrors.dealFieldsRequired' });
     return;
   }
   if (!isValidNumber(originalPrice) || !isValidNumber(discountPrice) || !isValidNumber(discount) || !isValidNumber(distance))
   {
-    res.status(400).json({ error: 'Preise, Rabatt und Entfernung müssen gültige Zahlen sein' });
+    res.status(400).json({ error: 'serverErrors.invalidNumbers' });
     return;
   }
   if (!isValidDate(validUntil))
   {
-    res.status(400).json({ error: 'validUntil muss ein gültiges Datum sein' });
+    res.status(400).json({ error: 'serverErrors.invalidDate' });
     return;
   }
   const dealName = name || 'Sonstiges';
@@ -87,7 +87,7 @@ dealsRouter.delete('/:id', authMiddleware, asyncHandler(async (req, res) =>
   const existing = await prisma.deal.findFirst({ where: { id, userId } });
   if (!existing) 
   {
-    res.status(404).json({ error: 'Angebot nicht gefunden' });
+    res.status(404).json({ error: 'serverErrors.dealNotFound' });
     return;
   }
   await prisma.deal.delete({ where: { id, userId } });

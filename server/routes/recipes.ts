@@ -94,12 +94,12 @@ recipesRouter.post('/', asyncHandler(async (req, res) =>
   const { name, ingredients, instructions, cookingTime, difficulty, servings } = req.body;
   if (!name || !Array.isArray(ingredients) || !Array.isArray(instructions) || cookingTime == null || !difficulty || servings == null) 
   {
-    res.status(400).json({ error: 'name, ingredients, instructions, cookingTime, difficulty, servings erforderlich' });
+    res.status(400).json({ error: 'serverErrors.recipeFieldsRequired' });
     return;
   }
   if (!isValidDifficulty(difficulty))
   {
-    res.status(400).json({ error: 'difficulty muss "easy", "medium" oder "hard" sein' });
+    res.status(400).json({ error: 'serverErrors.invalidDifficulty' });
     return;
   }
   const normalizedIngredients = ingredients.map(normalizeIngredientItem);
@@ -124,7 +124,7 @@ recipesRouter.patch('/:id', asyncHandler(async (req, res) =>
   const existing = await prisma.recipe.findFirst({ where: { id, userId } });
   if (!existing) 
   {
-    res.status(404).json({ error: 'Rezept nicht gefunden' });
+    res.status(404).json({ error: 'serverErrors.recipeNotFound' });
     return;
   }
   const { name, ingredients, instructions, cookingTime, difficulty, servings } = req.body;
@@ -134,7 +134,7 @@ recipesRouter.patch('/:id', asyncHandler(async (req, res) =>
       : undefined;
   if (difficulty != null && !isValidDifficulty(difficulty))
   {
-    res.status(400).json({ error: 'difficulty muss "easy", "medium" oder "hard" sein' });
+    res.status(400).json({ error: 'serverErrors.invalidDifficulty' });
     return;
   }
   const recipe = await prisma.recipe.update({
@@ -158,7 +158,7 @@ recipesRouter.delete('/:id', asyncHandler(async (req, res) =>
   const existing = await prisma.recipe.findFirst({ where: { id, userId } });
   if (!existing) 
   {
-    res.status(404).json({ error: 'Rezept nicht gefunden' });
+    res.status(404).json({ error: 'serverErrors.recipeNotFound' });
     return;
   }
   await prisma.recipe.delete({ where: { id, userId } });

@@ -29,17 +29,17 @@ wishlistRouter.post('/', asyncHandler(async (req, res) =>
   const { name, type, category, brand, priority } = req.body;
   if (!name || !type || !priority) 
   {
-    res.status(400).json({ error: 'name, type und priority erforderlich' });
+    res.status(400).json({ error: 'serverErrors.nameTypePriorityRequired' });
     return;
   }
   if (!isValidWishlistType(type))
   {
-    res.status(400).json({ error: 'type muss "category" oder "specific" sein' });
+    res.status(400).json({ error: 'serverErrors.invalidWishlistType' });
     return;
   }
   if (!isValidPriority(priority))
   {
-    res.status(400).json({ error: 'priority muss "low", "medium" oder "high" sein' });
+    res.status(400).json({ error: 'serverErrors.invalidPriority' });
     return;
   }
   const item = await prisma.wishListItem.create({
@@ -70,17 +70,17 @@ wishlistRouter.patch('/:id', asyncHandler(async (req, res) =>
   const existing = await prisma.wishListItem.findFirst({ where: { id, userId } });
   if (!existing)
   {
-    res.status(404).json({ error: 'Eintrag nicht gefunden' });
+    res.status(404).json({ error: 'serverErrors.entryNotFound' });
     return;
   }
   if (priority != null && !isValidPriority(priority))
   {
-    res.status(400).json({ error: 'priority muss "low", "medium" oder "high" sein' });
+    res.status(400).json({ error: 'serverErrors.invalidPriority' });
     return;
   }
   if (type != null && !isValidWishlistType(type))
   {
-    res.status(400).json({ error: 'type muss "category" oder "specific" sein' });
+    res.status(400).json({ error: 'serverErrors.invalidWishlistType' });
     return;
   }
   const item = await prisma.wishListItem.update({
@@ -110,7 +110,7 @@ wishlistRouter.delete('/:id', asyncHandler(async (req, res) =>
   const existing = await prisma.wishListItem.findFirst({ where: { id, userId } });
   if (!existing) 
   {
-    res.status(404).json({ error: 'Eintrag nicht gefunden' });
+    res.status(404).json({ error: 'serverErrors.entryNotFound' });
     return;
   }
   await prisma.wishListItem.delete({ where: { id, userId } });

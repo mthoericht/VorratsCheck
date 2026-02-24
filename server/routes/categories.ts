@@ -23,7 +23,7 @@ categoriesRouter.post('/', asyncHandler(async (req, res) =>
   const trimmed = typeof name === 'string' ? name.trim() : '';
   if (!trimmed) 
   {
-    res.status(400).json({ error: 'name erforderlich' });
+    res.status(400).json({ error: 'serverErrors.nameRequired' });
     return;
   }
   const existing = await prisma.category.findFirst({
@@ -31,7 +31,7 @@ categoriesRouter.post('/', asyncHandler(async (req, res) =>
   });
   if (existing) 
   {
-    res.status(409).json({ error: 'Kategorie existiert bereits' });
+    res.status(409).json({ error: 'serverErrors.categoryExists' });
     return;
   }
   const item = await prisma.category.create({
@@ -47,7 +47,7 @@ categoriesRouter.delete('/:id', asyncHandler(async (req, res) =>
   const existing = await prisma.category.findFirst({ where: { id, userId } });
   if (!existing) 
   {
-    res.status(404).json({ error: 'Kategorie nicht gefunden' });
+    res.status(404).json({ error: 'serverErrors.categoryNotFound' });
     return;
   }
 
@@ -81,7 +81,8 @@ categoriesRouter.delete('/:id', asyncHandler(async (req, res) =>
   {
     const examples = usedByNames.join(', ');
     res.status(409).json({
-      error: `Kategorie wird noch verwendet und kann nicht gelöscht werden. Verwendet u. a. von: ${examples}`,
+      error: 'serverErrors.categoryInUse',
+      params: { examples },
     });
     return;
   }

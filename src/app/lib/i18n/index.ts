@@ -15,11 +15,13 @@ const translations: Record<Locale, Record<string, unknown>> = { de, en };
 function resolve(obj: Record<string, unknown>, path: string): string | undefined
 {
   let current: unknown = obj;
+
   for (const key of path.split('.'))
   {
     if (current == null || typeof current !== 'object') return undefined;
     current = (current as Record<string, unknown>)[key];
   }
+
   return typeof current === 'string' ? current : undefined;
 }
 
@@ -31,6 +33,21 @@ function interpolate(text: string, params?: Record<string, string | number>): st
 }
 
 export type TranslateFn = (key: string, params?: Record<string, string | number>) => string;
+
+/**
+ * Non-hook translate function for use outside React components (e.g. API client).
+ * Reads locale from the store directly (non-reactive).
+ */
+export function translate(key: string, params?: Record<string, string | number>): string
+{
+  const locale = useSettingsStore.getState().locale;
+  const value =
+    resolve(translations[locale], key) ??
+    resolve(translations.en as Record<string, unknown>, key) ??
+    key;
+    
+  return interpolate(value, params);
+}
 
 /**
  * Main i18n hook. Returns:

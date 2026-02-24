@@ -36,14 +36,14 @@ inventoryRouter.post('/', asyncHandler(async (req, res) =>
   const { name, category, brand, barcode, quantity, unit, expiryDate, location } = req.body;
   if (!name || !category) 
   {
-    res.status(400).json({ error: 'name und category erforderlich' });
+    res.status(400).json({ error: 'serverErrors.nameCategoryRequired' });
     return;
   }
   const quantityNum = quantity != null && quantity !== '' ? toPositiveNumber(quantity, 1) : 1;
   const unitVal = unit || 'stk';
   if (!isValidUnit(unitVal))
   {
-    res.status(400).json({ error: 'Ungültige Einheit' });
+    res.status(400).json({ error: 'serverErrors.invalidUnit' });
     return;
   }
   const item = await prisma.inventoryItem.create({
@@ -80,13 +80,13 @@ inventoryRouter.patch('/:id', asyncHandler(async (req, res) =>
   const existing = await prisma.inventoryItem.findFirst({ where: { id, userId } });
   if (!existing) 
   {
-    res.status(404).json({ error: 'Eintrag nicht gefunden' });
+    res.status(404).json({ error: 'serverErrors.entryNotFound' });
     return;
   }
   const { name, category, brand, barcode, quantity, unit, expiryDate, location } = req.body;
   if (unit != null && unit !== '' && !isValidUnit(unit))
   {
-    res.status(400).json({ error: 'Ungültige Einheit' });
+    res.status(400).json({ error: 'serverErrors.invalidUnit' });
     return;
   }
   const item = await prisma.inventoryItem.update({
@@ -123,7 +123,7 @@ inventoryRouter.delete('/:id', asyncHandler(async (req, res) =>
   const existing = await prisma.inventoryItem.findFirst({ where: { id, userId } });
   if (!existing) 
   {
-    res.status(404).json({ error: 'Eintrag nicht gefunden' });
+    res.status(404).json({ error: 'serverErrors.entryNotFound' });
     return;
   }
   await prisma.inventoryItem.delete({ where: { id, userId } });

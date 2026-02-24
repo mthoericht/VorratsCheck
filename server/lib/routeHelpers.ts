@@ -27,7 +27,7 @@ export function asyncHandler(fn: (req: Request, res: Response, next: NextFunctio
     fn(req, res, next).catch((e) => 
     {
       console.error(e);
-      res.status(500).json({ error: 'Serverfehler' });
+      res.status(500).json({ error: 'serverErrors.serverError' });
     });
   };
 }

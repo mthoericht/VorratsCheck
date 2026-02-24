@@ -1,4 +1,5 @@
 import { ApiError } from './errors';
+import { translate } from '../i18n';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '';
 
@@ -15,6 +16,18 @@ export function getAuthHeader(): Record<string, string>
 {
   const token = tokenProvider ? tokenProvider() : localStorage.getItem('vorratscheck_token');
   return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+/** Translate a server error key (e.g. "serverErrors.invalidCredentials") with optional params. */
+function translateError(data: Record<string, unknown>): string
+{
+  const key = typeof data?.error === 'string' ? data.error : '';
+  if (!key) return translate('serverErrors.unknownError');
+  
+  const params = (typeof data?.params === 'object' && data.params !== null)
+    ? data.params as Record<string, string | number>
+    : undefined;
+  return translate(key, params);
 }
 
 /** Internal HTTP client – use only via the resource-specific API functions. */
@@ -36,18 +49,17 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   }
   catch (e) 
   {
-    const message = e instanceof Error ? e.message : 'Netzwerkfehler';
+    const message = e instanceof Error ? e.message : translate('serverErrors.networkError');
     throw new ApiError(message, 0, e);
   }
 
   if (res.status === 204) return undefined as T;
 
   const data = await res.json().catch(() => ({}));
-  const message = typeof data?.error === 'string' ? data.error : res.statusText || 'Unbekannter Fehler';
 
   if (!res.ok) 
   {
-    throw new ApiError(message, res.status, data);
+    throw new ApiError(translateError(data), res.status, data);
   }
 
   return data as T;

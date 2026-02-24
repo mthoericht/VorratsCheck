@@ -20,12 +20,12 @@ mustHaveRouter.post('/', asyncHandler(async (req, res) =>
   const { name, category, minQuantity, unit } = req.body;
   if (!name) 
   {
-    res.status(400).json({ error: 'name erforderlich' });
+    res.status(400).json({ error: 'serverErrors.nameRequired' });
     return;
   }
   if (unit != null && unit !== '' && !isValidUnit(unit))
   {
-    res.status(400).json({ error: 'Ungültige Einheit' });
+    res.status(400).json({ error: 'serverErrors.invalidUnit' });
     return;
   }
   const item = await prisma.mustHaveItem.create({
@@ -42,12 +42,12 @@ const handleUpdateMustHave = asyncHandler(async (req, res) =>
   const existing = await prisma.mustHaveItem.findFirst({ where: { id, userId } });
   if (!existing) 
   {
-    res.status(404).json({ error: 'Eintrag nicht gefunden' });
+    res.status(404).json({ error: 'serverErrors.entryNotFound' });
     return;
   }
   if (unit !== undefined && unit != null && unit !== '' && !isValidUnit(unit))
   {
-    res.status(400).json({ error: 'Ungültige Einheit' });
+    res.status(400).json({ error: 'serverErrors.invalidUnit' });
     return;
   }
   const item = await prisma.mustHaveItem.update({
@@ -72,7 +72,7 @@ mustHaveRouter.delete('/:id', asyncHandler(async (req, res) =>
   const existing = await prisma.mustHaveItem.findFirst({ where: { id, userId } });
   if (!existing) 
   {
-    res.status(404).json({ error: 'Eintrag nicht gefunden' });
+    res.status(404).json({ error: 'serverErrors.entryNotFound' });
     return;
   }
   await prisma.mustHaveItem.delete({ where: { id, userId } });

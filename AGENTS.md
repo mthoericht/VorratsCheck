@@ -32,7 +32,7 @@ VorratsCheck/
 │       │   ├── api/            # API client (modular; do not call api() directly)
 │       │   │   ├── index.ts    # Re-exports: errors, getAuthHeader, resource functions
 │       │   │   ├── errors.ts   # ApiError, isApiError(), getErrorMessage()
-│       │   │   ├── client.ts   # getAuthHeader(), internal api() – base HTTP client
+│       │   │   ├── client.ts   # getAuthHeader(), internal api() – base HTTP client; translates server error keys via translate()
 │       │   │   ├── crud.ts     # createCrud(basePath) – shared get/create/update/delete
 │       │   │   ├── inventory.ts # getInventory, create/update/deleteInventoryItem
 │       │   │   ├── mustHave.ts  # getMustHave, createMustHaveItem, updateMustHaveItem, deleteMustHaveItem
@@ -42,16 +42,17 @@ VorratsCheck/
 │       │   │   ├── deals.ts     # getDeals
 │       │   │   └── auth.ts      # login, signup
 │       │   ├── i18n/            # Internationalization system (DE + EN, fallback: EN)
-│       │   │   ├── index.ts    # useTranslation() hook: t(key, params?), formatDate(date), currentLocale
+│       │   │   ├── index.ts    # useTranslation() hook: t(key, params?), formatDate(date), locale; translate() non-hook for API layer
 │       │   │   ├── de.ts       # German translations (default)
 │       │   │   └── en.ts       # English translations (fallback)
 │       │   ├── units.ts        # UNITS, convertFromGivenToBaseUnit, convertFromBaseToGivenUnit, quantityCovers
 │       │   ├── recipe.ts       # Recipe helpers (ingredients, difficulty, inventory matching)
 │       │   ├── mustHave.ts     # getStockStatus (unit-aware low-stock logic for Dashboard and Must-Have)
 │       │   ├── inventory.ts    # INVENTORY_LOCATION_OPTIONS, getExpiryStatus (expiry badge for Inventory cards)
+│       │   └── format.ts       # formatDateDE(date) – legacy German date display; prefer formatDate() from useTranslation()
 │       ├── stores/              # Zustand stores (auth persisted; others fetch on login)
 │       │   ├── authStore.ts
-│       │   ├── settingsStore.ts   # Settings (locale, theme), persisted to localStorage; theme synced to next-themes
+│       │   ├── settingsStore.ts   # Settings (locale), persisted to localStorage
 │       │   ├── inventoryStore.ts
 │       │   ├── mustHaveStore.ts
 │       │   ├── wishlistStore.ts

@@ -10,11 +10,21 @@ export function RouteErrorBoundary()
   const error = useRouteError();
   const { t } = useTranslation();
 
-  const message = isRouteErrorResponse(error)
-    ? (typeof error.data === 'string' ? error.data : (error.data as { message?: string })?.message) ?? error.statusText ?? t('errors.generic')
-    : error instanceof Error
-      ? error.message
-      : t('errors.unexpected');
+  const message = (() => 
+  {
+    //TypeGuard, that checks if it a HTTP like response (for example 404, 500), then take the message property or data if available
+    if (isRouteErrorResponse(error)) 
+    {
+      const data = typeof error.data === 'string' ? error.data : (error.data as { message?: string })?.message;
+      return data ?? error.statusText ?? t('errors.generic');
+    }
+
+    //if is a regulary JS Error-Object (triggered by new Error("something is broken"))
+    if (error instanceof Error) return error.message;
+
+    //fallback
+    return t('errors.unexpected');
+  })();
 
   const isAuthError = isApiError(error) && error.isUnauthorized;
 

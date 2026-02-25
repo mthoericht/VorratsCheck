@@ -20,6 +20,7 @@ export function useWishlistPage()
 {
   const { t } = useTranslation();
   const wishList = useWishlistStore(s => s.items);
+  const wishlistError = useWishlistStore(s => s.error);
   const addWishListItem = useWishlistStore(s => s.add);
   const updateWishListItem = useWishlistStore(s => s.update);
   const deleteWishListItem = useWishlistStore(s => s.remove);
@@ -117,6 +118,7 @@ export function useWishlistPage()
 
   return {
     wishList,
+    wishlistError,
     categories,
     showAddDialog,
     editingId,

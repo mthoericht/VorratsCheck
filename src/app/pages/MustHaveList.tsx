@@ -9,12 +9,14 @@ import {
   MustHaveStats,
 } from '../components/mustHave';
 import { useMustHavePage } from '../hooks/useMustHavePage';
+import { StoreErrorAlert } from '../components/ui/store-error-alert';
 
 export function MustHaveList()
 {
   const { t } = useTranslation();
   const {
     mustHaveList,
+    mustHaveError,
     inventory,
     categories,
     showAddDialog,
@@ -42,6 +44,8 @@ export function MustHaveList()
           {t('mustHave.addItem')}
         </Button>
       </div>
+
+      <StoreErrorAlert error={mustHaveError} />
 
       <MustHaveItemDialog
         open={showAddDialog}

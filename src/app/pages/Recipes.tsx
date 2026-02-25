@@ -9,12 +9,14 @@ import {
 import { ChefHat, CheckCircle2, XCircle, Plus, TrendingUp } from 'lucide-react';
 import { useRecipesPage } from '../hooks/useRecipesPage';
 import { useTranslation } from '../lib/i18n';
+import { StoreErrorAlert } from '../components/ui/store-error-alert';
 
 export function Recipes()
 {
   const { t } = useTranslation();
   const {
     recipes,
+    recipesError,
     sortBy,
     setSortBy,
     fullMatchRecipes,
@@ -60,6 +62,8 @@ export function Recipes()
           />
         </div>
       </div>
+
+      <StoreErrorAlert error={recipesError} />
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

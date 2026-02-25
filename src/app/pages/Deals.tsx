@@ -1,11 +1,13 @@
 import { useDealsPage } from '../hooks/useDealsPage';
 import { DealsStats, DealsFilterBar, DealCard, DealsEmptyState } from '../components/deals';
 import { useTranslation } from '../lib/i18n';
+import { StoreErrorAlert } from '../components/ui/store-error-alert';
 
 export function Deals()
 {
   const {
     dealsFromApi,
+    dealsError,
     deals,
     filterType,
     setFilterType,
@@ -24,6 +26,8 @@ export function Deals()
         <h2 className="text-3xl font-bold text-gray-900">{t('deals.title')}</h2>
         <p className="text-gray-600 mt-1">{t('deals.subtitle')}</p>
       </div>
+
+      <StoreErrorAlert error={dealsError} />
 
       <DealsStats
         totalCount={dealsFromApi.length}

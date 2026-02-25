@@ -30,6 +30,7 @@ export function useRecipesPage()
   const { t } = useTranslation();
   const inventory = useInventoryStore((s) => s.items);
   const recipes = useRecipesStore((s) => s.items);
+  const recipesError = useRecipesStore((s) => s.error);
   const addRecipe = useRecipesStore((s) => s.add);
   const updateRecipe = useRecipesStore((s) => s.update);
   const deleteRecipe = useRecipesStore((s) => s.remove);
@@ -192,6 +193,7 @@ export function useRecipesPage()
 
   return {
     recipes,
+    recipesError,
     sortedRecipes,
     sortBy,
     setSortBy,

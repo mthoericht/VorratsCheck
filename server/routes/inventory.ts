@@ -10,6 +10,11 @@ inventoryRouter.use(authMiddleware);
 inventoryRouter.get('/', asyncHandler(async (req, res) => 
 {
   const userId = getUserId(req);
+
+  //test-error
+  //res.status(400).json({ error: 'serverErrors.invalidUnit' });
+  //return;
+
   const items = await prisma.inventoryItem.findMany({
     where: { userId },
     orderBy: { addedDate: 'desc' },

@@ -9,12 +9,14 @@ import {
   InventoryEmptyState,
 } from '../components/inventory';
 import { useTranslation } from '../lib/i18n';
+import { StoreErrorAlert } from '../components/ui/store-error-alert';
 
 export function Inventory()
 {
   const { t } = useTranslation();
   const {
     inventory,
+    inventoryError,
     categories,
     showScanner,
     setShowScanner,
@@ -59,6 +61,8 @@ export function Inventory()
           </Button>
         </div>
       </div>
+
+      <StoreErrorAlert error={inventoryError} />
 
       <InventoryItemFormDialog
         open={showAddDialog}

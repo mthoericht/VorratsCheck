@@ -22,6 +22,7 @@ export function useMustHavePage()
 {
   const { t } = useTranslation();
   const mustHaveList = useMustHaveStore(s => s.items);
+  const mustHaveError = useMustHaveStore(s => s.error);
   const addMustHaveItem = useMustHaveStore(s => s.add);
   const updateMustHaveItem = useMustHaveStore(s => s.update);
   const deleteMustHaveItem = useMustHaveStore(s => s.remove);
@@ -126,6 +127,7 @@ export function useMustHavePage()
 
   return {
     mustHaveList,
+    mustHaveError,
     inventory,
     categories,
     showAddDialog,

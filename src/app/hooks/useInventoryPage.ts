@@ -28,6 +28,7 @@ export function useInventoryPage()
 {
   const { t } = useTranslation();
   const inventory = useInventoryStore(s => s.items);
+  const inventoryError = useInventoryStore(s => s.error);
   const addInventoryItem = useInventoryStore(s => s.add);
   const updateInventoryItem = useInventoryStore(s => s.update);
   const deleteInventoryItem = useInventoryStore(s => s.remove);
@@ -220,6 +221,7 @@ export function useInventoryPage()
 
   return {
     inventory,
+    inventoryError,
     categories,
     showScanner,
     setShowScanner,

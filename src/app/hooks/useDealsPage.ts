@@ -16,6 +16,7 @@ export function useDealsPage()
   const mustHaveList = useMustHaveStore(s => s.items);
   const wishList = useWishlistStore(s => s.items);
   const dealsFromApi = useDealsStore(s => s.items);
+  const dealsError = useDealsStore(s => s.error);
 
   const [filterType, setFilterType] = useState<DealsFilterType>('all');
 
@@ -73,6 +74,7 @@ export function useDealsPage()
 
   return {
     dealsFromApi,
+    dealsError,
     deals,
     filterType,
     setFilterType,

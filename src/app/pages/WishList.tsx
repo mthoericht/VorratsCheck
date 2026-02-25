@@ -8,12 +8,14 @@ import {
 } from '../components/wishlist';
 import { useWishlistPage } from '../hooks/useWishlistPage';
 import { useTranslation } from '../lib/i18n';
+import { StoreErrorAlert } from '../components/ui/store-error-alert';
 
 export function WishList()
 {
   const { t } = useTranslation();
   const {
     wishList,
+    wishlistError,
     categories,
     showAddDialog,
     editingId,
@@ -39,6 +41,8 @@ export function WishList()
           {t('wishlist.addItem')}
         </Button>
       </div>
+
+      <StoreErrorAlert error={wishlistError} />
 
       <WishlistItemDialog
         open={showAddDialog}

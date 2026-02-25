@@ -6,11 +6,13 @@ import { useTranslation } from '../lib/i18n';
 import { StatCard } from '../components/ui/stat-card';
 import { ExpiredItemsCard, ExpiringSoonCard, LowStockCard, QuickActionsCard } from '../components/dashboard';
 import { Clock, Package, Heart, TrendingDown } from 'lucide-react';
+import { StoreErrorAlert } from '../components/ui/store-error-alert';
 
 export function Dashboard() 
 {
   const { t } = useTranslation();
   const inventory = useInventoryStore((s) => s.items);
+  const inventoryError = useInventoryStore((s) => s.error);
   const mustHaveList = useMustHaveStore((s) => s.items);
   const wishList = useWishlistStore((s) => s.items);
 
@@ -44,6 +46,8 @@ export function Dashboard()
         <h2 className="text-3xl font-bold text-gray-900">{t('dashboard.title')}</h2>
         <p className="text-gray-600 mt-1">{t('dashboard.subtitle')}</p>
       </div>
+
+      <StoreErrorAlert error={inventoryError} />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

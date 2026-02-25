@@ -112,6 +112,14 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 - **Language**: **Settings** → **Language**. Choose German (default) or English. Locale is stored in `settingsStore`; all UI text and dates use `useTranslation()` and `src/app/lib/i18n` (translations in `de.ts`, `en.ts`).
 - **Colors**: All theme colors are defined in `src/styles/theme.css`. Edit `:root` for light mode and `.dark` for dark mode; base variables (e.g. `--background`, `--card`) and semantic ones (`--color-success`, `--color-warning`, `--color-danger`, `--color-brand`) are managed there.
 
+## Error Handling
+
+- **Backend**: Routes return errors as `{ error: 'serverErrors.<key>' }`. The `asyncHandler` wrapper in `server/lib/routeHelpers.ts` catches unhandled exceptions and returns a generic `serverErrors.serverError`. For specific, localized errors use `res.status(4xx).json({ error: 'serverErrors.<key>' })`.
+- **Frontend API client** (`src/app/lib/api/client.ts`): Translates server error keys (e.g. `serverErrors.invalidUnit`) via `translate()` from the i18n system and throws an `ApiError` with the localized message.
+- **CRUD actions** (add/update/delete): Errors are caught in page hooks and shown as toast notifications (`sonner`).
+- **Store fetch errors**: The `createResourceStore` catches fetch failures and stores the error message in `store.error`. Each page renders a `<StoreErrorAlert>` (`src/app/components/ui/store-error-alert.tsx`) that displays the error inline when present.
+- **Route-level errors**: React Router's `RouteErrorBoundary` (`src/app/components/RouteErrorBoundary.tsx`) catches rendering errors and shows a full-page error UI with reload/home links.
+
 ## Production
 
 - **Build frontend:** `npm run build`

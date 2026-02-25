@@ -32,22 +32,23 @@ function interpolate(text: string, params?: Record<string, string | number>): st
   return text.replace(/\{\{(\w+)\}\}/g, (_, key) => String(params[key] ?? `{{${key}}}`));
 }
 
+/** Resolve a key in the given locale with English fallback. */
+function resolveKey(locale: Locale, key: string): string
+{
+  return resolve(translations[locale], key) ?? resolve(translations.en, key) ?? key;
+}
+
 export type TranslateFn = (key: string, params?: Record<string, string | number>) => string;
 
 /**
  * Non-hook translate function for use outside React components (e.g. API client).
  * Reads locale from the store directly (non-reactive).
  */
-export function translate(key: string, params?: Record<string, string | number>): string
+export const translate: TranslateFn = (key, params) =>
 {
   const locale = useSettingsStore.getState().locale;
-  const value =
-    resolve(translations[locale], key) ??
-    resolve(translations.en as Record<string, unknown>, key) ??
-    key;
-    
-  return interpolate(value, params);
-}
+  return interpolate(resolveKey(locale, key), params);
+};
 
 /**
  * Main i18n hook. Returns:
@@ -59,14 +60,7 @@ export function useTranslation()
 {
   const currentLocale = useSettingsStore((s) => s.locale);
 
-  const t: TranslateFn = (key, params) =>
-  {
-    const value =
-      resolve(translations[currentLocale] as unknown as Record<string, unknown>, key) ??
-      resolve(translations.en as unknown as Record<string, unknown>, key) ??
-      key;
-    return interpolate(value, params);
-  };
+  const t: TranslateFn = translate;
 
   /**
    * Format a date for display in the current locale.

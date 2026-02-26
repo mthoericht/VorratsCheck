@@ -54,6 +54,14 @@ export function getDifficultyLabel(difficulty: string): string
 
 // --- Recipe–inventory matching ---
 
+/** Checks if `term` appears in `text` at a word boundary (start of word, example: "Ei" → "Eier"). */
+function wordStartMatch(text: string, term: string): boolean
+{
+  const idx = text.indexOf(term);
+  if (idx === -1) return false;
+  return idx === 0 || text[idx - 1] === ' ';
+}
+
 export interface RecipeWithMatch extends Recipe {
   availableIngredients: RecipeIngredient[];
   missingIngredients: RecipeIngredient[];
@@ -66,14 +74,15 @@ export function ingredientMatches(ing: RecipeIngredient, inventory: InventoryIte
 {
   const nameLower = ing.name.toLowerCase().trim();
   if (!nameLower) return false;
+
   const candidates = inventory.filter(
     (item) =>
-      item.name.toLowerCase().includes(nameLower) ||
-      nameLower.includes(item.name.toLowerCase()) ||
-      item.category.toLowerCase().includes(nameLower) ||
-      nameLower.includes(item.category.toLowerCase())
+      wordStartMatch(item.name.toLowerCase(), nameLower) ||
+      wordStartMatch(nameLower, item.name.toLowerCase())      
   );
+
   if (candidates.length === 0) return false;
+  
   if (ing.quantity != null && ing.unit && Number.isFinite(Number(ing.quantity))) 
   {
     // For presence-only units (e.g. Kugeln, Zehen) just require the ingredient to be in inventory.
@@ -102,40 +111,49 @@ function normalizeInventory(inventory: InventoryItem[]): NormalizedInventoryItem
   }));
 }
 
+/** Checks if an ingredient name fuzzy-matches an inventory item's name or category. */
+function nameMatchesItem(ingredientName: string, item: NormalizedInventoryItem): boolean
+{
+  return wordStartMatch(item.nameLower, ingredientName) ||
+    wordStartMatch(ingredientName, item.nameLower) ||
+    wordStartMatch(item.categoryLower, ingredientName) ||
+    wordStartMatch(ingredientName, item.categoryLower);
+}
+
+/** Checks if a recipe ingredient requires a specific quantity (not just presence). */
+function hasQuantityRequirement(ing: RecipeIngredient): boolean
+{
+  return ing.quantity != null && ing.unit != null && Number.isFinite(Number(ing.quantity));
+}
+
+/** Checks if any candidate inventory item has enough quantity to cover the ingredient. */
+function candidatesCoverQuantity(candidates: NormalizedInventoryItem[], needQty: number, needUnit: string): boolean
+{
+  return candidates.some((item) =>
+    quantityCovers(item.quantity, item.unit || 'stk', needQty, needUnit)
+  );
+}
+
 /** Returns whether the given ingredient is covered by at least one pre-normalized inventory item. */
 function ingredientMatchesNormalized(ing: RecipeIngredient, inventory: NormalizedInventoryItem[]): boolean 
 {
   const nameLower = ing.name.toLowerCase().trim();
   if (!nameLower) return false;
 
-  const candidates = inventory.filter(
-    (item) =>
-      item.nameLower.includes(nameLower) ||
-      nameLower.includes(item.nameLower) ||
-      item.categoryLower.includes(nameLower) ||
-      nameLower.includes(item.categoryLower)
-  );
-
+  const candidates = inventory.filter((item) => nameMatchesItem(nameLower, item));
   if (candidates.length === 0) return false;
 
-  if (ing.quantity != null && ing.unit && Number.isFinite(Number(ing.quantity))) 
+  if (hasQuantityRequirement(ing))
   {
-    if (isPresenceOnlyUnit(ing.unit)) return true;
-    const needQty = Number(ing.quantity);
-    const needUnit = ing.unit;
-    return candidates.some((item) =>
-      quantityCovers(item.quantity, item.unit || 'stk', needQty, needUnit)
-    );
+    if (isPresenceOnlyUnit(ing.unit!)) return true;
+    return candidatesCoverQuantity(candidates, Number(ing.quantity), ing.unit!);
   }
-  
+
   return true;
 }
 
 /** Computes match data for each recipe (available/missing ingredients, percentage). */
-export function computeRecipesWithMatch(
-  recipes: Recipe[],
-  inventory: InventoryItem[]
-): RecipeWithMatch[] 
+export function computeRecipesWithMatch(recipes: Recipe[], inventory: InventoryItem[]): RecipeWithMatch[] 
 {
   const normalizedInv = normalizeInventory(inventory);
   return recipes.map((recipe) => 

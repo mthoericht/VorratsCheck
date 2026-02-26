@@ -77,12 +77,14 @@ describe('recipe', () =>
       },
     ];
 
-    it('matches by name (ingredient name in item name)', () => 
+    it('matches by name at word boundary', () => 
     {
-      expect(ingredientMatches({ name: 'Milch' }, inventory)).toBe(true);
-      expect(ingredientMatches({ name: 'Spaghetti', quantity: 400, unit: 'g' }, inventory)).toBe(
-        true
-      );
+      expect(ingredientMatches({ name: 'Spaghetti', quantity: 400, unit: 'g' }, inventory)).toBe(true);
+    });
+
+    it('does not match mid-word (e.g. Milch in Vollmilch)', () => 
+    {
+      expect(ingredientMatches({ name: 'Milch' }, inventory)).toBe(false);
     });
 
     it('matches without quantity when name matches', () => 

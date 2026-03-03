@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   formatIngredient,
+  filterRecipesBySearch,
   getDifficultyColor,
   getDifficultyLabel,
   ingredientMatches,
@@ -9,8 +10,62 @@ import {
 import type { InventoryItem } from '@/app/stores/inventoryStore';
 import type { Recipe } from '@/app/stores/recipesStore';
 
+/** Minimal recipe-like shape for search tests. */
+function recipe(name: string, ingredientNames: string[]): { name: string; ingredients: { name: string }[] } 
+{
+  return {
+    name,
+    ingredients: ingredientNames.map((name) => ({ name })),
+  };
+}
+
 describe('recipe', () => 
 {
+  describe('filterRecipesBySearch', () => 
+  {
+    const recipes = [
+      recipe('Spaghetti Bolognese', ['Spaghetti', 'Hackfleisch', 'Tomaten', 'Zwiebeln']),
+      recipe('Kartoffelsalat', ['Kartoffeln', 'Mayo', 'Gurke']),
+      recipe('Tomatensuppe', ['Tomaten', 'Zwiebeln', 'Basilikum']),
+    ];
+
+    it('returns all recipes when search is empty', () => 
+    {
+      expect(filterRecipesBySearch(recipes, '')).toEqual(recipes);
+      expect(filterRecipesBySearch(recipes, '   ')).toEqual(recipes);
+    });
+
+    it('matches by recipe name (substring, case-insensitive)', () => 
+    {
+      expect(filterRecipesBySearch(recipes, 'Bolognese')).toHaveLength(1);
+      expect(filterRecipesBySearch(recipes, 'Bolognese')[0].name).toBe('Spaghetti Bolognese');
+      expect(filterRecipesBySearch(recipes, 'kartoffel')).toHaveLength(1);
+      expect(filterRecipesBySearch(recipes, 'KARTOFFEL')[0].name).toBe('Kartoffelsalat');
+      expect(filterRecipesBySearch(recipes, 'tomat')).toHaveLength(2); // Tomatensuppe, and Spaghetti has Tomaten
+    });
+
+    it('matches by ingredient name (substring, case-insensitive)', () => 
+    {
+      expect(filterRecipesBySearch(recipes, 'Hackfleisch')).toHaveLength(1);
+      expect(filterRecipesBySearch(recipes, 'hackfleisch')[0].name).toBe('Spaghetti Bolognese');
+      expect(filterRecipesBySearch(recipes, 'Mayo')).toHaveLength(1);
+      expect(filterRecipesBySearch(recipes, 'zwiebeln')).toHaveLength(2); // Bolognese, Tomatensuppe
+      expect(filterRecipesBySearch(recipes, 'Tomaten')).toHaveLength(2); // both have Tomaten
+    });
+
+    it('returns empty array when no recipe matches', () => 
+    {
+      expect(filterRecipesBySearch(recipes, 'Pizza')).toHaveLength(0);
+      expect(filterRecipesBySearch(recipes, 'xyz')).toHaveLength(0);
+    });
+
+    it('preserves original order of matching recipes', () => 
+    {
+      const result = filterRecipesBySearch(recipes, 'Tomaten');
+      expect(result.map((r) => r.name)).toEqual(['Spaghetti Bolognese', 'Tomatensuppe']);
+    });
+  });
+
   describe('formatIngredient', () => 
   {
     it('formats with quantity and unit', () => 

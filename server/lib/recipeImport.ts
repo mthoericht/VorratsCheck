@@ -16,10 +16,12 @@ export interface ImportedRecipe {
   difficulty: 'easy' | 'medium' | 'hard';
   servings: number;
   sourceUrl: string;
+  /** True when data was extracted from JSON-LD; false when only HTML fallback was used. */
+  fromJsonLd?: boolean;
 }
 
-/** Maps common German/English unit strings to app unit values (g, kg, ml, l, EL, TL, pr, stk). */
-const UNIT_MAP: Record<string, string> = {
+/** Maps common German/English unit strings (recipe sites) to app unit values (g, kg, ml, l, EL, TL, pr, stk). */
+const UNIT_IMPORT_MAP: Record<string, string> = {
   g: 'g', gramm: 'g', gram: 'g', grams: 'g',
   kg: 'kg', kilogramm: 'kg', kilogram: 'kg',
   ml: 'ml', milliliter: 'ml',
@@ -35,11 +37,17 @@ const UNIT_MAP: Record<string, string> = {
   tasse: 'stk', tassen: 'stk', cup: 'stk', cups: 'stk',
 };
 
-/** Normalizes a raw unit string to an app unit value. Falls back to 'stk'. */
-function mapUnit(raw: string): string
+/** Maps a raw unit string from imported recipes to an app unit value. Falls back to 'stk'. */
+function mapUnit(raw: string): string 
 {
   const lower = raw.toLowerCase().trim();
-  return UNIT_MAP[lower] || 'stk';
+  return UNIT_IMPORT_MAP[lower] ?? 'stk';
+}
+
+/** Returns true if the raw string is a known key in UNIT_IMPORT_MAP (used to detect unit vs. part of name). */
+function hasImportUnit(raw: string): boolean 
+{
+  return raw.toLowerCase().trim() in UNIT_IMPORT_MAP;
 }
 
 /** Parses a numeric string that may contain unicode fractions (e.g. "1 ½", "¾", "2,5"). */
@@ -87,14 +95,20 @@ function parseIngredientString(text: string): ImportedIngredient
 {
   const trimmed = text.trim();
   if (!trimmed) return { name: trimmed };
+  // Match: (quantity) + space + optional (unit + space) + (rest = name).
+  // Group 1 (quantity): digits with optional decimal [.,] or optional unicode fraction (½, ¾, …), or standalone fraction.
+  // Group 2 (optional unit): non-whitespace token before the rest (only used if it's a known unit).
+  // Group 3: ingredient name (remainder).
   const match = trimmed.match(/^(\d+(?:[.,]\d+)?(?:\s*[½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞])?|[½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞])\s+(?:(\S+)\s+)?(.+)$/);
+
   if (match)
   {
     const quantity = parseFraction(match[1]);
     const possibleUnit = match[2];
     const rest = match[3].trim();
 
-    if (possibleUnit && UNIT_MAP[possibleUnit.toLowerCase()])
+    // If we found a known unit, use it; otherwise, the unit was part of the name.
+    if (possibleUnit && hasImportUnit(possibleUnit))
     {
       return {
         name: rest,
@@ -145,7 +159,7 @@ function extractJsonLd(html: string): Record<string, unknown> | null
 
 /** Parses an ISO 8601 duration (e.g. "PT45M", "PT1H30M") into total minutes. */
 function parseIsoDuration(iso: string): number
-{
+{  
   const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
   if (!match) return 0;
   const hours = parseInt(match[1] || '0', 10);
@@ -185,7 +199,8 @@ function parseServings(raw: unknown): number
 function parseInstructions(raw: unknown): string[]
 {
   if (typeof raw === 'string')
-    return raw.split('\n').map(s => s.trim()).filter(Boolean);
+    // Split by newline and trim whitespace, then remove empty strings
+    return raw.split('\n').map(s => s.trim()).filter(Boolean); 
 
   if (Array.isArray(raw))
   {
@@ -202,7 +217,7 @@ function parseInstructions(raw: unknown): string[]
       if ('text' in item) return [String(item.text).trim()];
 
       return [];
-    }).filter(Boolean);
+    }).filter(Boolean); // Remove empty strings
   }
 
   return [];
@@ -290,6 +305,7 @@ export async function importRecipeFromUrl(url: string): Promise<ImportedRecipe>
       difficulty: mapDifficulty(difficultyText || String(jsonLd.difficulty || '')),
       servings: parseServings(jsonLd.recipeYield),
       sourceUrl: url,
+      fromJsonLd: true,
     };
   }
 
@@ -303,5 +319,6 @@ export async function importRecipeFromUrl(url: string): Promise<ImportedRecipe>
     difficulty: 'medium',
     servings: 4,
     sourceUrl: url,
+    fromJsonLd: false,
   };
 }

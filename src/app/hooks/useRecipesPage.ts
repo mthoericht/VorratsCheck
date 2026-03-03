@@ -4,7 +4,7 @@ import { useRecipesStore } from '../stores/recipesStore';
 import { useInventoryStore } from '../stores/inventoryStore';
 import { useTranslation } from '../lib/i18n';
 import type { Recipe } from '../stores/recipesStore';
-import { computeRecipesWithMatch, type RecipeIngredient, type RecipeWithMatch } from '../lib/recipe';
+import { computeRecipesWithMatch, filterRecipesBySearch, type RecipeIngredient, type RecipeWithMatch } from '../lib/recipe';
 import type { Difficulty } from '@shared/constants';
 import type { ImportedRecipe } from '../lib/api/recipes';
 
@@ -37,6 +37,7 @@ export function useRecipesPage()
   const deleteRecipe = useRecipesStore((s) => s.remove);
 
   const [sortBy, setSortBy] = useState<'match' | 'time'>('match');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedRecipe, setSelectedRecipe] = useState<RecipeWithMatch | null>(null);
   const [formData, setFormData] = useState<RecipeFormData>(initialFormData);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -47,6 +48,7 @@ export function useRecipesPage()
     [recipes, inventory]
   );
 
+  /** Recipes sorted by match percentage or cooking time. */
   const sortedRecipes = useMemo(() => 
   {
     const sorted = [...recipesWithMatch];
@@ -57,19 +59,24 @@ export function useRecipesPage()
     return sorted;
   }, [recipesWithMatch, sortBy]);
 
+  const filteredRecipes = useMemo(
+    () => filterRecipesBySearch(sortedRecipes, searchQuery),
+    [sortedRecipes, searchQuery]
+  );
+
   const fullMatchRecipes = useMemo(
-    () => sortedRecipes.filter((r) => r.matchPercentage === 100),
-    [sortedRecipes]
+    () => filteredRecipes.filter((r) => r.matchPercentage === 100),
+    [filteredRecipes]
   );
 
   const partialMatchRecipes = useMemo(
-    () => sortedRecipes.filter((r) => r.matchPercentage > 0 && r.matchPercentage < 100),
-    [sortedRecipes]
+    () => filteredRecipes.filter((r) => r.matchPercentage > 0 && r.matchPercentage < 100),
+    [filteredRecipes]
   );
-  
+
   const noMatchRecipes = useMemo(
-    () => sortedRecipes.filter((r) => r.matchPercentage === 0),
-    [sortedRecipes]
+    () => filteredRecipes.filter((r) => r.matchPercentage === 0),
+    [filteredRecipes]
   );
 
   const openAdd = () => 
@@ -216,9 +223,11 @@ export function useRecipesPage()
   return {
     recipes,
     recipesError,
-    sortedRecipes,
+    sortedRecipes: filteredRecipes,
     sortBy,
     setSortBy,
+    searchQuery,
+    setSearchQuery,
     fullMatchRecipes,
     partialMatchRecipes,
     noMatchRecipes,

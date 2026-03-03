@@ -4,8 +4,10 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { importRecipe } from '../../lib/api/recipes';
 import { useTranslation } from '../../lib/i18n';
+import { isApiError, getErrorMessage } from '../../lib/api/errors';
 import type { ImportedRecipe } from '../../lib/api/recipes';
 
 interface RecipeImportDialogProps {
@@ -38,7 +40,21 @@ export function RecipeImportDialog({ trigger, onImported }: RecipeImportDialogPr
     }
     catch (err)
     {
-      setError((err as Error).message || t('recipes.importError'));
+      //error status 422: Unprocessable Entity (means that the recipe was not recognized)
+      if (isApiError(err) && err.status === 422)
+      {
+        const body = err.details as { recipe?: ImportedRecipe } | undefined;
+        if (body?.recipe)
+        {
+          setOpen(false);
+          setUrl('');
+          toast.warning(err.message);
+          onImported(body.recipe);
+          return;
+        }
+      }
+      //if it is not a 422 error, set the error message to the error message or the default error message
+      setError(getErrorMessage(err) || t('recipes.importError'));
     }
     finally
     {
@@ -62,7 +78,7 @@ export function RecipeImportDialog({ trigger, onImported }: RecipeImportDialogPr
               id="import-url"
               type="url"
               value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={(e) => { setUrl(e.target.value); setError(''); }}
               placeholder={t('recipes.importUrlPlaceholder')}
               required
               disabled={loading}

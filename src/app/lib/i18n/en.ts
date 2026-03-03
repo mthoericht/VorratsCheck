@@ -186,6 +186,7 @@ export const en = {
   recipes: {
     title: 'Recipes',
     subtitle: 'Based on your current inventory',
+    searchPlaceholder: 'Search recipe or ingredient…',
     sortByAvailability: 'By availability',
     sortByTime: 'By time',
     addRecipe: 'Add recipe',
@@ -354,5 +355,6 @@ export const en = {
     categoryInUse: 'Category is still in use and cannot be deleted. Used by: {{examples}}',
     urlRequired: 'Please enter a URL',
     importFailed: 'Could not import recipe from the URL. Please check the URL.',
+    recipeNotRecognized: 'Recipe not recognized – please review and adjust if needed.',
   },
 } as const;

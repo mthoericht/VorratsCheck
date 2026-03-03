@@ -163,6 +163,11 @@ recipesRouter.post('/import', asyncHandler(async (req, res) =>
   try 
   {
     const imported = await importRecipeFromUrl(url);
+    if (imported.fromJsonLd === false)
+    {
+      res.status(422).json({ error: 'serverErrors.recipeNotRecognized', recipe: imported });
+      return;
+    }
     res.json(imported);
   }
   catch 

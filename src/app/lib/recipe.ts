@@ -69,6 +69,24 @@ export interface RecipeWithMatch extends Recipe {
   totalIngredientsCount: number;
 }
 
+/**
+ * Filters recipes by search query: keeps recipes whose name or any ingredient name
+ * contains the query (case-insensitive substring). Empty or whitespace query returns all recipes.
+ */
+export function filterRecipesBySearch<T extends { name: string; ingredients: RecipeIngredient[] }>(
+  recipes: T[],
+  searchQuery: string
+): T[]
+{
+  const q = searchQuery.trim().toLowerCase();
+  if (!q) return recipes;
+  return recipes.filter((r) =>
+  {
+    if (r.name.toLowerCase().includes(q)) return true;
+    return r.ingredients.some((ing) => ing.name.toLowerCase().includes(q));
+  });
+}
+
 /** Returns whether the given ingredient is covered by at least one inventory item. */
 export function ingredientMatches(ing: RecipeIngredient, inventory: InventoryItem[]): boolean 
 {

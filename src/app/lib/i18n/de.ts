@@ -186,6 +186,7 @@ export const de = {
   recipes: {
     title: 'Rezepte',
     subtitle: 'Basierend auf Ihrem aktuellen Vorrat',
+    searchPlaceholder: 'Rezept oder Zutat suchen…',
     sortByAvailability: 'Nach Verfügbarkeit',
     sortByTime: 'Nach Zeit',
     addRecipe: 'Rezept hinzufügen',
@@ -354,6 +355,7 @@ export const de = {
     categoryInUse: 'Kategorie wird noch verwendet und kann nicht gelöscht werden. Verwendet u. a. von: {{examples}}',
     urlRequired: 'Bitte geben Sie eine URL ein',
     importFailed: 'Rezept konnte nicht von der URL importiert werden. Bitte prüfen Sie die URL.',
+    recipeNotRecognized: 'Rezept nicht erkannt – bitte prüfen und ggf. anpassen.',
   },
 } as const;
 

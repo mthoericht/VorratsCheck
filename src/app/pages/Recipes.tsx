@@ -7,10 +7,11 @@ import {
   RecipeListSection,
   RecipeViewDialog,
 } from '../components/recipe';
-import { ChefHat, CheckCircle2, XCircle, Plus, TrendingUp, Globe } from 'lucide-react';
+import { ChefHat, CheckCircle2, XCircle, Plus, TrendingUp, Globe, Search } from 'lucide-react';
 import { useRecipesPage } from '../hooks/useRecipesPage';
 import { useTranslation } from '../lib/i18n';
 import { StoreErrorAlert } from '../components/ui/store-error-alert';
+import { Input } from '../components/ui/input';
 
 export function Recipes()
 {
@@ -20,6 +21,8 @@ export function Recipes()
     recipesError,
     sortBy,
     setSortBy,
+    searchQuery,
+    setSearchQuery,
     fullMatchRecipes,
     partialMatchRecipes,
     noMatchRecipes,
@@ -74,6 +77,19 @@ export function Recipes()
       </div>
 
       <StoreErrorAlert error={recipesError} />
+
+      {/* Search */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          type="search"
+          placeholder={t('recipes.searchPlaceholder')}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-9"
+          aria-label={t('recipes.searchPlaceholder')}
+        />
+      </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -15,7 +15,7 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 
 ### Recipe URL Import
 
-Import recipes from external sites (Chefkoch.de, EatSmarter, etc.) via `POST /api/recipes/import`. The backend fetches the page, extracts structured data from JSON-LD Schema.org `Recipe` markup (with cheerio), and returns parsed name, ingredients, instructions, cooking time, difficulty, and servings. The frontend opens a pre-filled edit dialog so the user can review and adjust before saving. Falls back to HTML parsing (og:title, common ingredient selectors) when no JSON-LD is present.
+Import recipes from external sites (Chefkoch.de, EatSmarter, etc.) via `POST /api/recipes/import`. The backend fetches the page and prefers structured data from **JSON-LD** (JavaScript Object Notation for Linked Data): many recipe sites embed a Schema.org `Recipe` object in a `<script type="application/ld+json">` block, with fields like `name`, `recipeIngredient`, `recipeInstructions`, `totalTime`, and `recipeYield`. The importer (using cheerio) reads that JSON and returns parsed name, ingredients, instructions, cooking time, difficulty, and servings. The frontend opens a pre-filled edit dialog so the user can review and adjust before saving. If no JSON-LD is present, the importer falls back to HTML parsing (e.g. `og:title`, common ingredient selectors).
 
 ![Recipe Import Flow](docs/recipe-import-flow.svg)
 

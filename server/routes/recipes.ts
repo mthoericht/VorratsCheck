@@ -3,6 +3,7 @@ import { prisma } from '../lib/prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { toPositiveNumber, isValidDifficulty } from '../../shared/validation.js';
 import { getUserId, asyncHandler } from '../lib/routeHelpers.js';
+import { importRecipeFromUrl } from '../lib/recipeImport.js';
 
 export const recipesRouter = Router();
 recipesRouter.use(authMiddleware);
@@ -149,6 +150,25 @@ recipesRouter.patch('/:id', asyncHandler(async (req, res) =>
     },
   });
   res.json(mapRecipe(recipe));
+}));
+
+recipesRouter.post('/import', asyncHandler(async (req, res) => 
+{
+  const { url } = req.body;
+  if (!url || typeof url !== 'string') 
+  {
+    res.status(400).json({ error: 'serverErrors.urlRequired' });
+    return;
+  }
+  try 
+  {
+    const imported = await importRecipeFromUrl(url);
+    res.json(imported);
+  }
+  catch 
+  {
+    res.status(422).json({ error: 'serverErrors.importFailed' });
+  }
 }));
 
 recipesRouter.delete('/:id', asyncHandler(async (req, res) => 

@@ -6,6 +6,7 @@ import { useTranslation } from '../lib/i18n';
 import type { Recipe } from '../stores/recipesStore';
 import { computeRecipesWithMatch, type RecipeIngredient, type RecipeWithMatch } from '../lib/recipe';
 import type { Difficulty } from '@shared/constants';
+import type { ImportedRecipe } from '../lib/api/recipes';
 
 const initialFormData = {
   name: '',
@@ -165,6 +166,26 @@ export function useRecipesPage()
     }
   };
 
+  const openImported = (data: ImportedRecipe) =>
+  {
+    setEditingRecipe(null);
+    setFormData({
+      name: data.name,
+      ingredients: data.ingredients.length > 0
+        ? data.ingredients.map((ing) => ({
+          name: ing.name,
+          quantity: ing.quantity,
+          unit: ing.unit || 'stk',
+        }))
+        : [{ name: '', unit: 'stk' }],
+      instructions: data.instructions.join('\n'),
+      cookingTime: data.cookingTime.toString(),
+      difficulty: data.difficulty,
+      servings: data.servings.toString(),
+    });
+    setIsFormOpen(true);
+  };
+
   const handleDelete = async (id: string, name: string, e: React.MouseEvent) => 
   {
     e.stopPropagation();
@@ -186,6 +207,7 @@ export function useRecipesPage()
     isOpen: isFormOpen,
     openAdd,
     openEdit,
+    openImported,
     close: closeForm,
     handleSubmit,
     editingRecipe,

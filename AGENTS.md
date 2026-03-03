@@ -38,7 +38,7 @@ VorratsCheck/
 │       │   │   ├── mustHave.ts  # getMustHave, createMustHaveItem, updateMustHaveItem, deleteMustHaveItem
 │       │   │   ├── wishlist.ts  # getWishlist, createWishlistItem, updateWishlistItem, deleteWishlistItem
 │       │   │   ├── categories.ts# getCategories, createCategory, deleteCategory
-│       │   │   ├── recipes.ts   # getRecipes, create/update/deleteRecipe
+│       │   │   ├── recipes.ts   # getRecipes, create/update/deleteRecipe, importRecipe
 │       │   │   ├── deals.ts     # getDeals
 │       │   │   └── auth.ts      # login, signup
 │       │   ├── i18n/            # Internationalization system (DE + EN, fallback: EN)
@@ -114,6 +114,7 @@ VorratsCheck/
 │           │   ├── index.ts     # Re-exports all recipe components
 │           │   ├── RecipeCard.tsx
 │           │   ├── RecipeEditDialog.tsx
+│           │   ├── RecipeImportDialog.tsx
 │           │   ├── RecipeListSection.tsx
 │           │   └── RecipeViewDialog.tsx
 │           ├── settings/       # Settings sub-pages (Categories, Appearance, Language)
@@ -128,6 +129,7 @@ VorratsCheck/
 │   ├── app.ts                   # Express app: CORS, JSON, mounts /api/* routes, /api/health (exported for tests)
 │   ├── index.ts                 # Runs app.listen(); use app from app.ts for programmatic/testing use
 │   ├── lib/prisma.ts            # Prisma client singleton
+│   ├── lib/recipeImport.ts      # Recipe URL import: fetches URL, extracts JSON-LD Schema.org Recipe data (cheerio)
 │   ├── middleware/auth.ts       # authMiddleware (required), optionalAuth, signToken; JWT_SECRET
 │   └── routes/
 │       ├── auth.ts              # POST /api/auth/login, /api/auth/signup
@@ -148,6 +150,9 @@ VorratsCheck/
 │   └── test.db                  # SQLite test DB for API integration tests (gitignored)
 ├── test/
 │   ├── setup.ts                 # Shared Vitest setup
+│   ├── unit/
+│   │   └── lib/
+│   │       └── recipeImport.test.ts  # Recipe URL import: JSON-LD parsing, ingredient mapping, fallback (mocked fetch)
 │   └── integration/
 │       ├── api/                 # API integration tests (real API client, test DB)
 │       │   ├── auth.api.test.ts # signup, login, getInventory, createInventoryItem, health
@@ -206,7 +211,7 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 
 ### Testing
 
-- **Unit/component tests**: Vitest; `npm run test` (watch) or `npm run test:run` (single run). Config in `vitest.config.ts`; includes `src/**/*.test.{ts,tsx}` and `test/unit/**`; excludes `test/integration/api/**` so the default run does not use the test DB.
+- **Unit/component tests**: Vitest; `npm run test` (watch) or `npm run test:run` (single run). Config in `vitest.config.ts`; includes `src/**/*.test.{ts,tsx}` and `test/unit/**`; excludes `test/integration/api/**` so the default run does not use the test DB. Includes `test/unit/lib/recipeImport.test.ts` (recipe URL import parsing with mocked HTML).
 - **API integration tests**: In `test/integration/api/`. Use the **real API client** from `src/app/lib/api` (e.g. `login`, `signup`, `getInventory`, `createMustHave`, `getCategories`); do not use raw HTTP/supertest. Run with `npm run test:integration:api` (sets `DATABASE_URL=file:./data/test.db`). Setup: `setup-db.ts` pushes schema to test DB; `setup-server.ts` starts the Express app on a random port, sets `process.env.VITE_API_URL`, and provides a `localStorage` polyfill so `getAuthHeader()` works. Tests clean the DB in `beforeEach` and set `localStorage.setItem('vorratscheck_token', token)` after login/signup for protected calls. Config: `vitest.integration-api.config.ts` runs tests with `pool: 'forks'` and `singleFork: true` so tests run sequentially and do not share the same DB state across files. Test files: `auth.api.test.ts` (auth, inventory CRUD, health), `resources.api.test.ts` (must-have, wishlist, categories, recipes, deals).
 
 ---
@@ -236,6 +241,7 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 | GET/POST/PATCH/DELETE | /api/must-have | Must-have list. |
 | GET/POST/PATCH/DELETE | /api/wishlist | Wishlist. |
 | GET/POST/PATCH/DELETE | /api/recipes | Recipes. |
+| POST | /api/recipes/import | Import recipe from URL (extracts JSON-LD Schema.org Recipe data). Body: { url }. |
 | GET | /api/deals | Optional auth; authenticated users see own + seeded deals, unauthenticated see only seeded. |
 | POST | /api/deals | Create deal (auth required). |
 | DELETE | /api/deals/:id | Delete own deal (auth required). |
@@ -252,7 +258,7 @@ Protected routes require header: `Authorization: Bearer <token>`.
 - **Auth flow**: `server/routes/auth.ts`, `server/middleware/auth.ts`, `src/app/stores/authStore.ts`, `src/app/components/ProtectedRoute.tsx`.
 - **Data model**: `prisma/schema.prisma`, then `db:generate` and `db:push`; adjust routes and stores.
 - **UI/theme**: Tailwind + components in `src/app/components/ui/`; app shell and nav in `Layout.tsx`. **Colors**: edit only `src/styles/theme.css` – `:root` (light) and `.dark` (dark) with base and semantic variables. **Appearance**: user menu → Settings → Appearance (light/dark/system). **Language**: user menu → Settings → Language (DE/EN). **Categories**: user menu → Settings → Categories.
-- **Recipe UI**: All recipe-related components live in `src/app/components/recipe/` (RecipeCard, RecipeEditDialog, RecipeListSection, RecipeViewDialog). Import from `../components/recipe`. The Recipes page uses a single hook `useRecipesPage()` (match/sort, form state, delete); lib helpers in `src/app/lib/recipe.ts` (ingredients, difficulty, matching) and `lib/units.ts` (convertFromGivenToBaseUnit, convertFromBaseToGivenUnit, quantityCovers for matching).
+- **Recipe UI**: All recipe-related components live in `src/app/components/recipe/` (RecipeCard, RecipeEditDialog, RecipeImportDialog, RecipeListSection, RecipeViewDialog). Import from `../components/recipe`. The Recipes page uses a single hook `useRecipesPage()` (match/sort, form state, delete); lib helpers in `src/app/lib/recipe.ts` (ingredients, difficulty, matching) and `lib/units.ts` (convertFromGivenToBaseUnit, convertFromBaseToGivenUnit, quantityCovers for matching).
 - **Dashboard UI**: Alert and quick-action cards in `src/app/components/dashboard/` (ExpiredItemsCard, ExpiringSoonCard, LowStockCard, QuickActionsCard). Import from `../components/dashboard`. Dashboard page uses StatCard for stats and these components for alerts and quick actions. Dates use `formatDate(date)` from `useTranslation()` (`lib/i18n`) for locale-aware display.
 - **Inventory UI**: Components in `src/app/components/inventory/` (InventoryItemFormDialog, InventoryItemCard, InventoryFilter, InventoryFilterBar, InventoryEmptyState). Import from `../components/inventory`. The Inventory page uses `useInventoryPage()` for form state, filters, filtered list, and CRUD. Location options (form and filter) and expiry display come from `lib/inventory.ts` (`INVENTORY_LOCATION_OPTIONS`, `getExpiryStatus`). Date display uses `formatDate(date)` from `useTranslation()`. Dialogs use `Category` from `stores/categoriesStore`.
 - **Must-Have UI**: Components in `src/app/components/mustHave/` (MustHaveCard, MustHaveStats, MustHaveEmptyState, MustHaveItemDialog). Import from `../components/mustHave`. The Must-Have page uses `useMustHavePage()` for form state, stock counts (sufficient/low), and CRUD. Dialogs use `Category` from `stores/categoriesStore`. Low-stock logic (Dashboard and Must-Have page) uses `lib/mustHave.ts` (`getStockStatus`) for unit-aware comparison (weight→g, volume→ml, countable→same unit).

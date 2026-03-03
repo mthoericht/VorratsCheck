@@ -3,10 +3,11 @@ import { Button } from '../components/ui/button';
 import { StatCard } from '../components/ui/stat-card';
 import {
   RecipeEditDialog,
+  RecipeImportDialog,
   RecipeListSection,
   RecipeViewDialog,
 } from '../components/recipe';
-import { ChefHat, CheckCircle2, XCircle, Plus, TrendingUp } from 'lucide-react';
+import { ChefHat, CheckCircle2, XCircle, Plus, TrendingUp, Globe } from 'lucide-react';
 import { useRecipesPage } from '../hooks/useRecipesPage';
 import { useTranslation } from '../lib/i18n';
 import { StoreErrorAlert } from '../components/ui/store-error-alert';
@@ -51,6 +52,15 @@ export function Recipes()
           >
             {t('recipes.sortByTime')}
           </Button>
+          <RecipeImportDialog
+            trigger={
+              <Button variant="outline" className="gap-2 whitespace-normal text-center min-w-0">
+                <Globe className="w-4 h-4 shrink-0" />
+                <span>{t('recipes.importRecipe')}</span>
+              </Button>
+            }
+            onImported={form.openImported}
+          />
           <RecipeEditDialog
             form={form}
             trigger={

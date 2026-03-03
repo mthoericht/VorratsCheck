@@ -232,6 +232,14 @@ export const de = {
     confirmDelete: 'Möchten Sie das Rezept "{{name}}" wirklich löschen?',
     recipeUpdated: 'Rezept aktualisiert',
     recipeAdded: 'Rezept hinzugefügt',
+    importRecipe: 'URL importieren',
+    importTitle: 'Rezept von URL importieren',
+    importUrlLabel: 'Rezept-URL',
+    importUrlPlaceholder: 'https://www.chefkoch.de/rezepte/...',
+    importHelp: 'Unterstützt Chefkoch.de und andere Rezeptseiten mit strukturierten Daten.',
+    importButton: 'Importieren',
+    importing: 'Wird importiert...',
+    importError: 'Rezept konnte nicht importiert werden',
   },
   deals: {
     title: 'Angebote',
@@ -344,6 +352,8 @@ export const de = {
     categoryExists: 'Kategorie existiert bereits',
     categoryNotFound: 'Kategorie nicht gefunden',
     categoryInUse: 'Kategorie wird noch verwendet und kann nicht gelöscht werden. Verwendet u. a. von: {{examples}}',
+    urlRequired: 'Bitte geben Sie eine URL ein',
+    importFailed: 'Rezept konnte nicht von der URL importiert werden. Bitte prüfen Sie die URL.',
   },
 } as const;
 

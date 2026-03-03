@@ -7,11 +7,17 @@ Food storage management: inventory, wishlist, must-have list, recipes, deals, an
 - **Inventory** – Items with name, category (selectable), quantity, expiry date, location; barcode scanner with optional product lookup (Open Food Facts)
 - **Must-Have** – Items that should always be in stock (matched by name, optional category)
 - **Wishlist** – Entries with name, optional category and brand, and priority (high/medium/low); grouped by priority
-- **Recipes** – Recipes with ingredients, instructions, matched against inventory
+- **Recipes** – Recipes with ingredients, instructions, matched against inventory; **URL import** from Chefkoch.de and other sites with Schema.org Recipe markup
 - **Deals** – Deals filtered by must-have and wishlist
 - **Categories** – Central category management; in inventory, must-have, and wishlist only selectable (no free text)
 - **Localization** – UI in German (default) and English; switchable via **Settings → Language**. All user-facing text and dates use the i18n system (`src/app/lib/i18n`).
 - **Layout** – Responsive: burger menu (Sheet) on small viewports, horizontal nav from configurable breakpoint (see `src/app/lib/layoutNav.ts`: `LAYOUT_NAV_BREAKPOINT` = sm/md/lg)
+
+### Recipe URL Import
+
+Import recipes from external sites (Chefkoch.de, EatSmarter, etc.) via `POST /api/recipes/import`. The backend fetches the page, extracts structured data from JSON-LD Schema.org `Recipe` markup (with cheerio), and returns parsed name, ingredients, instructions, cooking time, difficulty, and servings. The frontend opens a pre-filled edit dialog so the user can review and adjust before saving. Falls back to HTML parsing (og:title, common ingredient selectors) when no JSON-LD is present.
+
+![Recipe Import Flow](docs/recipe-import-flow.svg)
 
 ## Tech Stack
 
@@ -175,6 +181,7 @@ The server implements the following security measures. Relevant code is commente
 - `GET/POST/PATCH/DELETE /api/must-have` – Must-have list
 - `GET/POST/PATCH/DELETE /api/wishlist` – Wishlist
 - `GET/POST/PATCH/DELETE /api/recipes` – Recipes
+- `POST /api/recipes/import` – Import recipe from URL (auth required; extracts data via JSON-LD Schema.org)
 - `GET /api/deals` – Deals (optional auth: authenticated users see own + seeded deals, unauthenticated see only seeded)
 - `POST /api/deals` – Create deal (auth required)
 - `DELETE /api/deals/:id` – Delete own deal (auth required)

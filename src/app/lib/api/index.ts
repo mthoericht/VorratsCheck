@@ -22,7 +22,8 @@ export { getWishlist, createWishlistItem, updateWishlistItem, deleteWishlistItem
 export { getCategories, createCategory, deleteCategory } from './categories';
 
 // Recipes
-export { getRecipes, createRecipe, updateRecipe, deleteRecipe } from './recipes';
+export { getRecipes, createRecipe, updateRecipe, deleteRecipe, importRecipe } from './recipes';
+export type { ImportedRecipe } from './recipes';
 
 // Deals
 export { getDeals } from './deals';

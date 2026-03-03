@@ -1,0 +1,21 @@
+sequenceDiagram
+    participant U as User (Recipes Page)
+    participant ID as RecipeImportDialog
+    participant API as Frontend API Client
+    participant S as POST /api/recipes/import
+    participant RI as recipeImport.ts (cheerio)
+    participant Web as Recipe Site (e.g. Chefkoch.de)
+    participant ED as RecipeEditDialog
+
+    U->>ID: Click "Import URL"
+    ID->>API: importRecipe(url)
+    API->>S: POST /api/recipes/import { url }
+    S->>RI: importRecipeFromUrl(url)
+    RI->>Web: fetch(url)
+    Web-->>RI: HTML with JSON-LD
+    RI-->>S: ImportedRecipe
+    S-->>API: ImportedRecipe (JSON)
+    API-->>ID: ImportedRecipe
+    ID->>U: onImported(data)
+    U->>ED: openImported(data) → pre-filled form
+    U->>ED: Review, edit, save

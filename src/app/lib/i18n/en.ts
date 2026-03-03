@@ -232,6 +232,14 @@ export const en = {
     confirmDelete: 'Do you really want to delete the recipe "{{name}}"?',
     recipeUpdated: 'Recipe updated',
     recipeAdded: 'Recipe added',
+    importRecipe: 'Import URL',
+    importTitle: 'Import Recipe from URL',
+    importUrlLabel: 'Recipe URL',
+    importUrlPlaceholder: 'https://www.chefkoch.de/rezepte/...',
+    importHelp: 'Supports Chefkoch.de and other recipe sites with structured data.',
+    importButton: 'Import',
+    importing: 'Importing...',
+    importError: 'Could not import recipe',
   },
   deals: {
     title: 'Deals',
@@ -344,5 +352,7 @@ export const en = {
     categoryExists: 'Category already exists',
     categoryNotFound: 'Category not found',
     categoryInUse: 'Category is still in use and cannot be deleted. Used by: {{examples}}',
+    urlRequired: 'Please enter a URL',
+    importFailed: 'Could not import recipe from the URL. Please check the URL.',
   },
 } as const;

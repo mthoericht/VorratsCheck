@@ -6,7 +6,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 import { Quantity } from '../Quantity';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from '@/app/lib/icons';
 import type { RecipeFormApi } from '../../hooks/useRecipesPage';
 import { DIFFICULTIES, type Difficulty } from '@shared/constants';
 import { useTranslation } from '../../lib/i18n';

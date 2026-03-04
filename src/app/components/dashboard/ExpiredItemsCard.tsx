@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@/app/lib/icons';
 import { useTranslation } from '../../lib/i18n';
 
 export interface ExpiredItem {

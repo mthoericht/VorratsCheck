@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { StatCard } from '@/app/components/ui/stat-card';
-import { Package, Clock } from 'lucide-react';
+import { Package, Clock } from '@/app/lib/icons';
 
 const meta: Meta<typeof StatCard> = {
   component: StatCard,

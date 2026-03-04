@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Link } from 'react-router';
-import { ListChecks } from 'lucide-react';
+import { ListChecks } from '@/app/lib/icons';
 
 export interface LowStockItem {
   id: string;

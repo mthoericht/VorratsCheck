@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Edit, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Edit, Trash2, AlertCircle, CheckCircle } from '@/app/lib/icons';
 import type { MustHaveItem } from '../../stores/mustHaveStore';
 import { useTranslation } from '../../lib/i18n';
 

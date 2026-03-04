@@ -1,5 +1,5 @@
 import { Card } from '../ui/card';
-import { TrendingDown } from 'lucide-react';
+import { TrendingDown } from '@/app/lib/icons';
 import { useTranslation } from '../../lib/i18n';
 
 export function DealsEmptyState() 

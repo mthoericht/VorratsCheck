@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/app/lib/icons';
 import { toast } from 'sonner';
 import { importRecipe } from '../../lib/api/recipes';
 import { useTranslation } from '../../lib/i18n';

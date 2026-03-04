@@ -1,12 +1,12 @@
-import type { LucideIcon } from 'lucide-react';
 import {
-  Package,
+  type LucideIcon,
+  Refrigerator,
   ListChecks,
   Heart,
   Tag,
   ChefHat,
   LayoutDashboard,
-} from 'lucide-react';
+} from '@/app/lib/icons';
 
 export interface NavItem {
   path: string;
@@ -40,7 +40,7 @@ export function getNavBreakpointClasses(): { burgerButton: string; desktopNav: s
 
 export const NAV_ITEMS: NavItem[] = [
   { path: '/', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
-  { path: '/inventory', icon: Package, labelKey: 'nav.inventory' },
+  { path: '/inventory', icon: Refrigerator, labelKey: 'nav.inventory' },
   { path: '/must-have', icon: ListChecks, labelKey: 'nav.mustHave' },
   { path: '/wishlist', icon: Heart, labelKey: 'nav.wishlist' },
   { path: '/recipes', icon: ChefHat, labelKey: 'nav.recipes' },

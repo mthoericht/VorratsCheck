@@ -26,7 +26,7 @@ export default [
   },
   reactRefresh.configs.vite,
   {
-    files: ['scripts/**/*.js'],
+    files: ['scripts/**/*.{js,mjs}'],
     languageOptions: {
       globals: globals.node,
     },

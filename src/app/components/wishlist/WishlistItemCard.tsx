@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { Heart, Edit, Trash2 } from 'lucide-react';
+import { Heart, Edit, Trash2 } from '@/app/lib/icons';
 import type { WishListItem } from '../../stores/wishlistStore';
 import { useTranslation } from '../../lib/i18n';
 

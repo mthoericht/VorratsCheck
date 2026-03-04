@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from 'react-router';
 import { cn } from '../components/ui/utils';
-import { FolderOpen, Globe, Palette } from 'lucide-react';
+import { FolderOpen, Globe, Palette } from '@/app/lib/icons';
 import { useTranslation } from '../lib/i18n';
 
 export function Settings() 

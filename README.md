@@ -22,11 +22,33 @@ Import recipes from external sites (Chefkoch.de, EatSmarter, etc.) via `POST /ap
 ## Tech Stack
 
 - **Frontend:** React 18, Vite 6, React Router 7, Tailwind CSS 4, Zustand
-- **UI:** Radix UI primitives, Lucide icons, shadcn-style components in `src/app/components/ui/`
+- **UI:** Radix UI primitives, Lucide icons (central re-export in `src/app/lib/icons.ts`; import from `@/app/lib/icons`), shadcn-style components in `src/app/components/ui/`
 - **Backend:** Express 4, TypeScript (tsx)
 - **Database:** Prisma 6, SQLite (dev); PostgreSQL supported for production
 - **Auth:** JWT, bcryptjs; token in `Authorization: Bearer <token>` and `localStorage` key `vorratscheck_token`
 - **Settings:** Theme (light/dark/system) and locale (DE/EN) in `settingsStore`, persisted to `localStorage` (key `vorratscheck-settings`); theme synced to `next-themes` via `SyncThemeFromStore` in `App.tsx`
+
+## PWA (Progressive Web App)
+
+VorratsCheck can be installed as a Progressive Web App on supported browsers (desktop and mobile, including Android and iOS). The PWA is powered by `vite-plugin-pwa` and provides:
+
+- **Installable app shell** – `display: 'standalone'`, custom theme color, and app icons.
+- **Offline-ready static assets** – compiled frontend assets are precached by a generated service worker. API requests still require network connectivity.
+
+### PWA Icons
+
+PWA icons are generated from `public/favicon.svg` into PNG assets:
+
+- `public/pwa-192x192.png`
+- `public/pwa-512x512.png`
+
+Generation script (Node + Sharp):
+
+```bash
+npm run pwa:icons
+```
+
+Run this script whenever you change `public/favicon.svg`. The generated PNGs are committed so that CI/builds do not depend on the script.
 
 ## Requirements
 

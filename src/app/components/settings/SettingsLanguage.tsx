@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { Globe } from 'lucide-react';
+import { Globe } from '@/app/lib/icons';
 import { useTranslation } from '../../lib/i18n';
 import { useSettingsStore } from '../../stores/settingsStore';
 

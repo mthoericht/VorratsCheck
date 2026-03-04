@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
-import { ChefHat } from 'lucide-react';
+import { ChefHat } from '@/app/lib/icons';
 import { RecipeListSection } from '@/app/components/recipe/RecipeListSection';
 import type { RecipeWithMatch } from '@/app/lib/recipe';
 

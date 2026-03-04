@@ -1,5 +1,5 @@
 import { useRouteError, isRouteErrorResponse, Link } from 'react-router';
-import { AlertCircle, Home } from 'lucide-react';
+import { AlertCircle, Home } from '@/app/lib/icons';
 import { Button } from './ui/button';
 import { isApiError } from '../lib/api';
 import { useTranslation } from '../lib/i18n';

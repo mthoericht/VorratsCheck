@@ -1,6 +1,6 @@
 import { useInventoryPage } from '../hooks/useInventoryPage';
 import { Button } from '../components/ui/button';
-import { Plus, Scan } from 'lucide-react';
+import { Plus, Scan } from '@/app/lib/icons';
 import { BarcodeScanner } from '../components/BarcodeScanner';
 import {
   InventoryItemFormDialog,

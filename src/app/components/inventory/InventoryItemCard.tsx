@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Pencil, Trash2, AlertTriangle, MapPin } from 'lucide-react';
+import { Pencil, Trash2, AlertTriangle, MapPin } from '@/app/lib/icons';
 import { getExpiryStatus, INVENTORY_LOCATIONS } from '../../lib/inventory';
 import { useTranslation } from '../../lib/i18n';
 import type { InventoryItem } from '../../stores/inventoryStore';

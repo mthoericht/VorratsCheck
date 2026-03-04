@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { Clock } from 'lucide-react';
+import { Clock } from '@/app/lib/icons';
 import { useTranslation } from '../../lib/i18n';
 
 export interface ExpiringSoonItem {

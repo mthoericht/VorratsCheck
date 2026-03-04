@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import { ChefHat, Edit, Trash2 } from 'lucide-react';
+import { ChefHat, Edit, Trash2 } from '@/app/lib/icons';
 import {
   formatIngredient,
   getDifficultyColor,

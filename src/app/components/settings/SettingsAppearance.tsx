@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { Sun, Moon, Palette, Monitor } from 'lucide-react';
+import { Sun, Moon, Palette, Monitor } from '@/app/lib/icons';
 import { useTranslation } from '../../lib/i18n';
 import { useSettingsStore, type Theme } from '../../stores/settingsStore';
 

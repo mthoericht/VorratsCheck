@@ -1,4 +1,4 @@
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle } from '@/app/lib/icons';
 import { Alert, AlertDescription } from './alert';
 
 interface StoreErrorAlertProps

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Button } from '../components/ui/button';
-import { Package, AlertCircle, Info } from 'lucide-react';
+import { Refrigerator, AlertCircle, Info } from '@/app/lib/icons';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { useTranslation } from '../lib/i18n';
 
@@ -74,7 +74,7 @@ export function Signup()
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
             <div className="w-16 h-16 bg-emerald-600 rounded-full flex items-center justify-center">
-              <Package className="w-10 h-10 text-white" />
+              <Refrigerator className="w-10 h-10 text-white" />
             </div>
           </div>
           <CardTitle className="text-2xl">VorratsCheck</CardTitle>

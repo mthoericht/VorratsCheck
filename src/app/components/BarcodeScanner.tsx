@@ -1,5 +1,5 @@
 import { Button } from './ui/button';
-import { X, Camera } from 'lucide-react';
+import { X, Camera } from '@/app/lib/icons';
 import { Card } from './ui/card';
 import { useBarcodeScanner } from '../hooks/useBarcodeScanner';
 import { useTranslation } from '../lib/i18n';

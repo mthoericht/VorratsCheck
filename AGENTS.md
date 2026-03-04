@@ -9,7 +9,7 @@ This document describes the **VorratsCheck** codebase for AI agents and develope
 | Layer | Technologies |
 |-------|--------------|
 | **Frontend** | React 18, Vite 6, React Router 7, Tailwind CSS 4, Zustand 5 |
-| **UI** | Radix UI primitives, Lucide icons, shadcn-style components in `src/app/components/ui/` |
+| **UI** | Radix UI primitives, Lucide icons (central re-export in `src/app/lib/icons.ts`), shadcn-style components in `src/app/components/ui/` |
 | **Backend** | Express 4, TypeScript (tsx) |
 | **Database** | Prisma 6, SQLite (dev); production can use PostgreSQL |
 | **Auth** | JWT (jsonwebtoken), bcryptjs; token in `Authorization: Bearer <token>` and `localStorage` key `vorratscheck_token` |
@@ -49,6 +49,7 @@ VorratsCheck/
 │       │   ├── recipe.ts       # Recipe helpers (ingredients, difficulty, inventory matching)
 │       │   ├── mustHave.ts     # getStockStatus (unit-aware low-stock logic for Dashboard and Must-Have)
 │       │   ├── inventory.ts    # INVENTORY_LOCATION_OPTIONS, getExpiryStatus (expiry badge for Inventory cards)
+│       │   ├── icons.ts       # Re-export of Lucide icons used in the app; import from '@/app/lib/icons'
 │       │   └── format.ts       # formatDateDE(date) – legacy German date display; prefer formatDate() from useTranslation()
 │       ├── stores/              # Zustand stores (auth persisted; others fetch on login)
 │       │   ├── authStore.ts
@@ -195,6 +196,7 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 - **API**: Use resource functions from `src/app/lib/api` (e.g. `getInventory`, `createCategory`, `login`). Do not call the internal `api()` directly. Base URL from `VITE_API_URL`; `Content-Type: application/json` and `Authorization: Bearer <token>` (via `getAuthHeader()`) are set in the client. On non-2xx or network errors the client throws `ApiError` (with `status`, `message`, optional `details`; helpers: `isApiError(e)`, `getErrorMessage(e)`; getters: `isUnauthorized`, `isNotFound`, `isServerError`).
 - **Stores**: Zustand. Each domain store (inventory, mustHave, wishlist, recipes, deals, categories) has `fetch` and CRUD-style methods that call the API layer (e.g. `getInventory`, `createRecipe`) and update local state. Auth store has `login`, `signup`, `logout`, `setUserFromToken`, `setLoading`.
 - **UI**: Tailwind + Radix-based components under `src/app/components/ui/`. User menu: Settings → sub-nav for Categories, Appearance (light/dark/system), and Language (DE/EN). Categories are under Settings, not main nav.
+- **Icons**: Lucide icons are re-exported from `src/app/lib/icons.ts`. Import from `@/app/lib/icons` (e.g. `import { Plus, Trash2 } from '@/app/lib/icons'`). Add new icons to `icons.ts` when needed; do not import from `lucide-react` directly in app code.
 - **Date display**: Use `formatDate(date)` from `useTranslation()` (`src/app/lib/i18n`) for locale-aware dates in the UI (dashboard, inventory, deal cards).
 - **Theming**: `next-themes` in `main.tsx`; theme preference in `settingsStore` (synced to next-themes via `SyncThemeFromStore` in `App.tsx`). All colors in `src/styles/theme.css`: `:root` (light), `.dark` (dark). Edit only that file for app-wide colors; base vars (e.g. `--background`, `--card`) and semantic (`--color-success`, `--color-warning`, `--color-danger`, `--color-brand` + `*_bg`, `*_border`). UI copy is translated via `t('key')` (German default, English fallback).
 
@@ -257,7 +259,7 @@ Protected routes require header: `Authorization: Bearer <token>`.
 - **New page**: Add component in `src/app/pages/`, add route in `src/app/routes.tsx`, add nav entry in `Layout.tsx` if needed.
 - **Auth flow**: `server/routes/auth.ts`, `server/middleware/auth.ts`, `src/app/stores/authStore.ts`, `src/app/components/ProtectedRoute.tsx`.
 - **Data model**: `prisma/schema.prisma`, then `db:generate` and `db:push`; adjust routes and stores.
-- **UI/theme**: Tailwind + components in `src/app/components/ui/`; app shell and nav in `Layout.tsx`. **Colors**: edit only `src/styles/theme.css` – `:root` (light) and `.dark` (dark) with base and semantic variables. **Appearance**: user menu → Settings → Appearance (light/dark/system). **Language**: user menu → Settings → Language (DE/EN). **Categories**: user menu → Settings → Categories.
+- **UI/theme**: Tailwind + components in `src/app/components/ui/`; app shell and nav in `Layout.tsx`. **Colors**: edit only `src/styles/theme.css` – `:root` (light) and `.dark` (dark) with base and semantic variables. **Appearance**: user menu → Settings → Appearance (light/dark/system). **Language**: user menu → Settings → Language (DE/EN). **Categories**: user menu → Settings → Categories. **Icons**: Add or use icons via `src/app/lib/icons.ts`; import from `@/app/lib/icons` (do not import from `lucide-react` directly in app code).
 - **Recipe UI**: All recipe-related components live in `src/app/components/recipe/` (RecipeCard, RecipeEditDialog, RecipeImportDialog, RecipeListSection, RecipeViewDialog). Import from `../components/recipe`. The Recipes page uses a single hook `useRecipesPage()` (match/sort, form state, delete); lib helpers in `src/app/lib/recipe.ts` (ingredients, difficulty, matching) and `lib/units.ts` (convertFromGivenToBaseUnit, convertFromBaseToGivenUnit, quantityCovers for matching).
 - **Dashboard UI**: Alert and quick-action cards in `src/app/components/dashboard/` (ExpiredItemsCard, ExpiringSoonCard, LowStockCard, QuickActionsCard). Import from `../components/dashboard`. Dashboard page uses StatCard for stats and these components for alerts and quick actions. Dates use `formatDate(date)` from `useTranslation()` (`lib/i18n`) for locale-aware display.
 - **Inventory UI**: Components in `src/app/components/inventory/` (InventoryItemFormDialog, InventoryItemCard, InventoryFilter, InventoryFilterBar, InventoryEmptyState). Import from `../components/inventory`. The Inventory page uses `useInventoryPage()` for form state, filters, filtered list, and CRUD. Location options (form and filter) and expiry display come from `lib/inventory.ts` (`INVENTORY_LOCATION_OPTIONS`, `getExpiryStatus`). Date display uses `formatDate(date)` from `useTranslation()`. Dialogs use `Category` from `stores/categoriesStore`.

@@ -1,5 +1,5 @@
 import { Button } from '../components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus } from '@/app/lib/icons';
 import { getStockStatus } from '../lib/mustHave';
 import { useTranslation } from '../lib/i18n';
 import {

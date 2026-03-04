@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router';
-import { Package, LogOut, User, ChevronDown, Settings, Menu } from 'lucide-react';
+import { Refrigerator, LogOut, User, ChevronDown, Settings, Menu } from '@/app/lib/icons';
 import { cn } from './ui/utils';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
@@ -90,7 +90,7 @@ export function Layout()
                   </div>
                 </SheetContent>
               </Sheet>
-              <Package className="w-8 h-8 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <Refrigerator className="w-8 h-8 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground truncate">VorratsCheck</h1>
             </div>
 

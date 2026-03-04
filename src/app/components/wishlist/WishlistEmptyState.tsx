@@ -1,6 +1,6 @@
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
-import { Heart } from 'lucide-react';
+import { Heart } from '@/app/lib/icons';
 import { useTranslation } from '../../lib/i18n';
 
 interface WishlistEmptyStateProps {

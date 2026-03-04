@@ -5,7 +5,7 @@ import { getStockStatus } from '../lib/mustHave';
 import { useTranslation } from '../lib/i18n';
 import { StatCard } from '../components/ui/stat-card';
 import { ExpiredItemsCard, ExpiringSoonCard, LowStockCard, QuickActionsCard } from '../components/dashboard';
-import { Clock, Package, Heart, TrendingDown } from 'lucide-react';
+import { Clock, Refrigerator, Heart, TrendingDown } from '@/app/lib/icons';
 import { StoreErrorAlert } from '../components/ui/store-error-alert';
 
 export function Dashboard() 
@@ -55,7 +55,7 @@ export function Dashboard()
           title={t('dashboard.totalItems')}
           value={inventory.length}
           subtitle={t('dashboard.inStock')}
-          icon={<Package className="w-4 h-4 text-gray-600" />}
+          icon={<Refrigerator className="w-4 h-4 text-gray-600" />}
         />
         <StatCard
           title={t('dashboard.expiringSoon')}

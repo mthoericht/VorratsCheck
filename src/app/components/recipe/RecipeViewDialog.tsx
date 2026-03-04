@@ -2,7 +2,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { ChefHat, Clock, Edit, Trash2, CheckCircle2, XCircle } from 'lucide-react';
+import { ChefHat, Clock, Edit, Trash2, CheckCircle2, XCircle } from '@/app/lib/icons';
 import {
   formatIngredient,
   getDifficultyColor,

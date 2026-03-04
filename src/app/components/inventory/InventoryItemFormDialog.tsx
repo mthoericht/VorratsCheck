@@ -3,7 +3,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Scan } from 'lucide-react';
+import { Scan } from '@/app/lib/icons';
 import { Link } from 'react-router';
 import { Quantity } from '../Quantity';
 import type { InventoryFormData } from '../../hooks/useInventoryPage';

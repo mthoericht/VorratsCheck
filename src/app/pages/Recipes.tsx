@@ -7,7 +7,7 @@ import {
   RecipeListSection,
   RecipeViewDialog,
 } from '../components/recipe';
-import { ChefHat, CheckCircle2, XCircle, Plus, TrendingUp, Globe, Search } from 'lucide-react';
+import { ChefHat, CheckCircle2, XCircle, Plus, TrendingUp, Globe, Search } from '@/app/lib/icons';
 import { useRecipesPage } from '../hooks/useRecipesPage';
 import { useTranslation } from '../lib/i18n';
 import { StoreErrorAlert } from '../components/ui/store-error-alert';

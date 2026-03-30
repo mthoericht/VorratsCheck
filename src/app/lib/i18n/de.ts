@@ -18,8 +18,12 @@ export const de = {
     none: 'Keine',
     removed: '{{name}} wurde entfernt',
     deleted: '{{name}} wurde gelöscht',
+    close: 'Schließen',
+    skipToContent: 'Zum Hauptinhalt springen',
   },
   nav: {
+    mainNavigation: 'Hauptnavigation',
+    userMenu: 'Benutzermenü',
     dashboard: 'Dashboard',
     inventory: 'Vorrat',
     mustHave: 'Must-Have',
@@ -261,6 +265,7 @@ export const de = {
   settings: {
     title: 'Einstellungen',
     subtitle: 'Kategorien und weitere Optionen verwalten',
+    subNavigation: 'Einstellungen: Bereiche',
     categories: 'Kategorien',
     appearance: 'Erscheinungsbild',
     categoriesDescription: 'Kategorien verwalten – werden in Vorrat, Must-Have und Wunschliste zur Auswahl genutzt',

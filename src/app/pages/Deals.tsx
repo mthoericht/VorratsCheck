@@ -23,7 +23,7 @@ export function Deals()
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold text-gray-900">{t('deals.title')}</h2>
+        <h1 className="text-3xl font-bold text-gray-900">{t('deals.title')}</h1>
         <p className="text-gray-600 mt-1">{t('deals.subtitle')}</p>
       </div>
 

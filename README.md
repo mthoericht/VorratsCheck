@@ -140,6 +140,21 @@ Run this script whenever you change `public/favicon.svg`. The generated PNGs are
 - **Language**: **Settings** → **Language**. Choose German (default) or English. Locale is stored in `settingsStore`; all UI text and dates use `useTranslation()` and `src/app/lib/i18n` (translations in `de.ts`, `en.ts`).
 - **Colors**: All theme colors are defined in `src/styles/theme.css`. Edit `:root` for light mode and `.dark` for dark mode; base variables (e.g. `--background`, `--card`) and semantic ones (`--color-success`, `--color-warning`, `--color-danger`, `--color-brand`) are managed there.
 
+## Accessibility (Barrierefreiheit)
+
+The UI aims to follow common accessibility practices (semantic HTML, keyboard use, screen reader support). Highlights:
+
+- **Language** – `index.html` sets a default `lang`; `SyncDocumentLangFromStore` in `src/app/App.tsx` keeps `document.documentElement.lang` in sync with **Settings → Language** (`de` / `en`).
+- **Skip link** – First keyboard focus can jump to the main region via the skip link in `src/app/components/Layout.tsx`, styled in `src/styles/index.css` (`.skip-to-main`).
+- **Landmarks & headings** – Protected app shell uses `<main id="main-content" tabIndex={-1}>` so the skip target can receive focus; primary page titles use a single `<h1>` per view; login/signup wrap content in `<main>`.
+- **Navigation** – Main nav and mobile sheet nav use `aria-label` (i18n keys under `nav.*`); active route links use `aria-current="page"` where applicable (including Settings sub-navigation).
+- **User menu** – Implemented with Radix **Dropdown** (`src/app/components/ui/dropdown-menu.tsx`) for keyboard support and focus behavior (replacing a custom click-outside menu).
+- **Dialogs & sheets** – Built on Radix Dialog primitives (`dialog.tsx`, `sheet.tsx`); the close control exposes a translated **“Close”** label (`common.close`). Several forms use `DialogDescription` and, where helpful, `aria-describedby` for helper text.
+- **Loading & alerts** – Auth loading in `ProtectedRoute` uses `role="status"` and `aria-live="polite"`; destructive/API-style alerts use appropriate roles where needed (e.g. `role="alert"` for errors).
+- **Barcode scanner** – `src/app/components/BarcodeScanner.tsx` uses dialog semantics (`role="dialog"`, `aria-modal`, labelled/described regions), initial focus on the close control, and live regions for instructions/errors.
+
+**Contributing:** When adding UI, prefer existing primitives (`Button`, `Dialog`, `Label` + `htmlFor`, Radix menus/selects), keep one logical `<h1>` per screen, and add any new user-visible strings to `src/app/lib/i18n/de.ts` and `en.ts`.
+
 ## Error Handling
 
 - **Backend**: Routes return errors as `{ error: 'serverErrors.<key>' }`. The `asyncHandler` wrapper in `server/lib/routeHelpers.ts` catches unhandled exceptions and returns a generic `serverErrors.serverError`. For specific, localized errors use `res.status(4xx).json({ error: 'serverErrors.<key>' })`.

@@ -1,2 +1,32 @@
 @import './tailwind.css';
 @import './theme.css';
+
+/**
+ * Skip link: off-screen until focused (keyboard / screen reader users).
+ */
+.skip-to-main {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.skip-to-main:focus {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  text-decoration: none;
+  font-weight: 500;
+}

@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -40,6 +40,7 @@ export function MustHaveItemDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{editingId ? t('mustHave.editTitle') : t('mustHave.addTitle')}</DialogTitle>
+          <DialogDescription>{t('mustHave.subtitle')}</DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
@@ -49,9 +50,10 @@ export function MustHaveItemDialog({
               value={formData.name}
               onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
               placeholder={t('mustHave.namePlaceholder')}
+              aria-describedby="musthave-name-help"
               required
             />
-            <p className="text-sm text-gray-500 mt-1">
+            <p id="musthave-name-help" className="text-sm text-gray-500 mt-1">
               {t('mustHave.nameHelp')}
             </p>
           </div>
@@ -61,7 +63,7 @@ export function MustHaveItemDialog({
               value={formData.category || 'none'}
               onValueChange={(v) => setFormData((prev) => ({ ...prev, category: v === 'none' ? '' : v }))}
             >
-              <SelectTrigger id="category">
+              <SelectTrigger id="category" aria-describedby="musthave-category-help">
                 <SelectValue placeholder={t('mustHave.categoryPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
@@ -73,7 +75,7 @@ export function MustHaveItemDialog({
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-sm text-gray-500 mt-1">
+            <p id="musthave-category-help" className="text-sm text-gray-500 mt-1">
               {t('mustHave.categoryHelp')}
             </p>
           </div>

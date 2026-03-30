@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -70,6 +70,7 @@ export function RecipeImportDialog({ trigger, onImported }: RecipeImportDialogPr
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>{t('recipes.importTitle')}</DialogTitle>
+          <DialogDescription>{t('recipes.importHelp')}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -80,15 +81,16 @@ export function RecipeImportDialog({ trigger, onImported }: RecipeImportDialogPr
               value={url}
               onChange={(e) => { setUrl(e.target.value); setError(''); }}
               placeholder={t('recipes.importUrlPlaceholder')}
+              aria-describedby="recipe-import-help"
               required
               disabled={loading}
             />
-            <p className="text-sm text-gray-500 mt-1">
+            <p id="recipe-import-help" className="text-sm text-gray-500 mt-1">
               {t('recipes.importHelp')}
             </p>
           </div>
           {error && (
-            <p className="text-sm text-red-600">{error}</p>
+            <p className="text-sm text-red-600" role="alert">{error}</p>
           )}
           <div className="flex gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)} className="flex-1" disabled={loading}>

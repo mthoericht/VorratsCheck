@@ -18,8 +18,12 @@ export const en = {
     none: 'None',
     removed: '{{name}} was removed',
     deleted: '{{name}} was deleted',
+    close: 'Close',
+    skipToContent: 'Skip to main content',
   },
   nav: {
+    mainNavigation: 'Main navigation',
+    userMenu: 'User menu',
     dashboard: 'Dashboard',
     inventory: 'Inventory',
     mustHave: 'Must-Have',
@@ -261,6 +265,7 @@ export const en = {
   settings: {
     title: 'Settings',
     subtitle: 'Manage categories and other options',
+    subNavigation: 'Settings: sections',
     categories: 'Categories',
     appearance: 'Appearance',
     categoriesDescription: 'Manage categories – used for selection in Inventory, Must-Have and Wishlist',

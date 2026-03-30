@@ -37,7 +37,7 @@ export function Recipes()
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">{t('recipes.title')}</h2>
+          <h1 className="text-3xl font-bold text-gray-900">{t('recipes.title')}</h1>
           <p className="text-gray-600 mt-1">{t('recipes.subtitle')}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

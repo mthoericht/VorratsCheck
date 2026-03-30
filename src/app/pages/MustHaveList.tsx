@@ -36,7 +36,7 @@ export function MustHaveList()
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">{t('mustHave.title')}</h2>
+          <h1 className="text-3xl font-bold text-gray-900">{t('mustHave.title')}</h1>
           <p className="text-gray-600 mt-1">{t('mustHave.subtitle')}</p>
         </div>
         <Button className="gap-2" onClick={openAdd}>

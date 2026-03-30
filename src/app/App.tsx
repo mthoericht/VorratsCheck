@@ -3,7 +3,7 @@ import { useTheme } from 'next-themes';
 import { RouterProvider } from 'react-router';
 import { Toaster } from './components/ui/sonner';
 import { useAuthStore } from './stores/authStore';
-import { useSettingsStore } from './stores/settingsStore';
+import { useSettingsStore, type Locale } from './stores/settingsStore';
 import { useInventoryStore } from './stores/inventoryStore';
 import { useMustHaveStore } from './stores/mustHaveStore';
 import { useWishlistStore } from './stores/wishlistStore';
@@ -11,6 +11,19 @@ import { useRecipesStore } from './stores/recipesStore';
 import { useDealsStore } from './stores/dealsStore';
 import { useCategoriesStore } from './stores/categoriesStore';
 import { router } from './routes';
+
+const HTML_LANG: Record<Locale, string> = { de: 'de', en: 'en' };
+
+/** Keeps document language in sync with app locale (screen readers, hyphenation). */
+function SyncDocumentLangFromStore()
+{
+  const locale = useSettingsStore((s) => s.locale);
+  useEffect(() =>
+  {
+    document.documentElement.lang = HTML_LANG[locale] ?? 'de';
+  }, [locale]);
+  return null;
+}
 
 /** Syncs theme preference from settingsStore to next-themes (store is source of truth). */
 function SyncThemeFromStore()
@@ -50,6 +63,7 @@ function App()
 
   return (
     <>
+      <SyncDocumentLangFromStore />
       <SyncThemeFromStore />
       <DataLoader />
       <RouterProvider router={router} />

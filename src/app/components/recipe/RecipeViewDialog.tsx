@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { ChefHat, Clock, Edit, Trash2, CheckCircle2, XCircle } from '@/app/lib/icons';
@@ -41,6 +41,7 @@ export function RecipeViewDialog({
             <ChefHat className="w-6 h-6" />
             {recipe.name}
           </DialogTitle>
+          <DialogDescription>{t('recipes.subtitle')}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">

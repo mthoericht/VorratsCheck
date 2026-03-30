@@ -17,13 +17,16 @@ export function Settings()
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('settings.title')}</h2>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('settings.title')}</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-1">
           {t('settings.subtitle')}
         </p>
       </div>
 
-      <nav className="border-b border-gray-200 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
+      <nav
+        className="border-b border-gray-200 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8"
+        aria-label={t('settings.subNavigation')}
+      >
         <div className="flex gap-6">
           {settingsNavItems.map((item) => 
           {
@@ -33,6 +36,7 @@ export function Settings()
               <Link
                 key={item.path}
                 to={item.path}
+                aria-current={isActive ? 'page' : undefined}
                 className={cn(
                   'flex items-center gap-2 px-1 py-3 border-b-2 text-sm font-medium transition-colors',
                   isActive
@@ -40,7 +44,7 @@ export function Settings()
                     : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:border-gray-300'
                 )}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-4 h-4" aria-hidden={true} />
                 {item.label}
               </Link>
             );

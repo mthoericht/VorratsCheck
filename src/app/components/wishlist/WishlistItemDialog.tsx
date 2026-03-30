@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -41,6 +41,7 @@ export function WishlistItemDialog({
           <DialogTitle>
             {editingId ? t('wishlist.editTitle') : t('wishlist.addTitle')}
           </DialogTitle>
+          <DialogDescription>{t('wishlist.subtitle')}</DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>

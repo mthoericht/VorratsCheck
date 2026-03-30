@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -31,6 +31,7 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
           <DialogTitle>
             {form.editingRecipe ? t('recipes.editTitle') : t('recipes.addTitle')}
           </DialogTitle>
+          <DialogDescription>{t('recipes.subtitle')}</DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit} className="space-y-4">
           <div>

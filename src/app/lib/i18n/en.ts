@@ -37,7 +37,6 @@ export const en = {
   },
   auth: {
     loginSubtitle: 'Sign in to continue',
-    loginInfo: 'Authentication via Express backend (JWT).',
     loginFailed: 'Login failed',
     email: 'Email',
     emailPlaceholder: 'your@email.com',

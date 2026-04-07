@@ -37,7 +37,6 @@ export const de = {
   },
   auth: {
     loginSubtitle: 'Melden Sie sich an, um fortzufahren',
-    loginInfo: 'Anmeldung erfolgt über das Express-Backend (JWT).',
     loginFailed: 'Login fehlgeschlagen',
     email: 'Email',
     emailPlaceholder: 'ihre@email.de',

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { login as apiLogin, signup as apiSignup } from '../lib/api';
-import { registerTokenProvider } from '../lib/api/client';
+import { registerTokenProvider, registerUnauthorizedHandler } from '../lib/api/client';
 
 export interface User {
   id: string;
@@ -75,3 +75,7 @@ export const useAuthStore = create<AuthState>()(
 
 // Register authStore as the single source of truth for the API client token
 registerTokenProvider(() => useAuthStore.getState().token);
+registerUnauthorizedHandler(() =>
+{
+  useAuthStore.getState().logout();
+});

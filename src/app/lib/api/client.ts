@@ -6,10 +6,16 @@ const API_BASE = import.meta.env.VITE_API_URL ?? '';
 // Token provider registered by authStore – single source of truth for the JWT token.
 // Falls back to localStorage for environments without the store (e.g. integration tests).
 let tokenProvider: (() => string | null) | null = null;
+let unauthorizedHandler: (() => void) | null = null;
 
 export function registerTokenProvider(provider: () => string | null) 
 {
   tokenProvider = provider;
+}
+
+export function registerUnauthorizedHandler(handler: () => void)
+{
+  unauthorizedHandler = handler;
 }
 
 export function getAuthHeader(): Record<string, string> 
@@ -59,6 +65,7 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
 
   if (!res.ok) 
   {
+    if (res.status === 401) unauthorizedHandler?.();
     throw new ApiError(translateError(data), res.status, data);
   }
 

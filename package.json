@@ -11,7 +11,7 @@
     "start": "concurrently -n server,dev -c blue,green \"npm run server\" \"npm run dev\"",
     "db:generate": "prisma generate",
     "db:push": "node scripts/db-push.js",
-    "db:studio": "prisma studio",
+    "db:studio": "node scripts/db-studio.js",
     "db:seed-deals": "tsx scripts/seed-deals.ts",
     "db:seed-categories": "tsx scripts/seed-categories.ts",
     "db:seed-recipes": "tsx scripts/seed-recipes.ts",

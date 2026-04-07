@@ -52,16 +52,20 @@ export function RecipeCard({
                 onEdit();
               }}
               className="h-8 w-8 p-0"
+              aria-label={t('common.edit')}
+              title={t('common.edit')}
             >
-              <Edit className="w-4 h-4" />
+              <Edit className="w-4 h-4" aria-hidden={true} />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={onDelete}
               className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+              aria-label={t('common.delete')}
+              title={t('common.delete')}
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-4 h-4" aria-hidden={true} />
             </Button>
           </div>
         </div>

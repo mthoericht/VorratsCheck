@@ -62,7 +62,7 @@ const preview: Preview = {
       return (
         <MemoryRouter initialEntries={initialEntries}>
           <ThemeProvider attribute="class" defaultTheme="light" storageKey="vorratscheck-theme" enableSystem>
-            <div className="min-h-[200px] p-4">
+            <div className="min-h-[200px] p-4" role="region" aria-label="Story preview">
               <Story />
             </div>
           </ThemeProvider>

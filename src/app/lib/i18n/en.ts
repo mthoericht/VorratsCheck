@@ -97,6 +97,7 @@ export const en = {
   },
   inventory: {
     title: 'Inventory',
+    subtitle: 'Manage your inventory items',
     itemCount: '{{count}} items in stock',
     scanBarcode: 'Scan barcode',
     addItem: 'Add item',

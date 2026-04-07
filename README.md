@@ -127,12 +127,20 @@ Run this script whenever you change `public/favicon.svg`. The generated PNGs are
   (watch mode)  
   `npm run test:run`  
   (single run; component/unit tests; excludes API integration tests)  
+  `npm run test:a11y`  
+  (Axe-based accessibility audit across Storybook stories in `test/storybook/a11y-audit.test.tsx`; includes targeted technical exceptions for jsdom and router-only stories)  
   `npm run test:integration:api`  
   (API integration tests: real API client against test DB; server started automatically; uses `data/test.db`. Tests in `test/integration/api/auth.api.test.ts` and `resources.api.test.ts`; run sequentially via `singleFork` to avoid shared-DB conflicts.)
 
 - **Prisma Studio (DB UI):**  
   `npm run db:studio`  
   (opens database browser at http://localhost:5555)
+
+### A11y CI
+
+- **Local development**: Run `npm run test:a11y` before merging UI changes (new components, changed dialogs/forms, navigation updates).
+- **CI recommendation**: Run `npm run test:a11y` on every pull request to catch accessibility regressions early.
+- **Scope note**: The audit uses Storybook stories as test fixtures and includes a few targeted technical exceptions (jsdom/platform limitations and router-only test stories). Keep those exceptions minimal and document any new one in `test/storybook/a11y-audit.test.tsx`.
 
 ## Theming and localization
 

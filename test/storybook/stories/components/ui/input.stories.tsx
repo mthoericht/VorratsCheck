@@ -36,5 +36,5 @@ export const Password: Story = {
 };
 
 export const Disabled: Story = {
-  args: { disabled: true, value: 'Deaktiviert' },
+  args: { disabled: true, value: 'Deaktiviert', 'aria-label': 'Deaktiviertes Eingabefeld' },
 };

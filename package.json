@@ -20,6 +20,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "vitest",
+    "test:a11y": "vitest run test/storybook/a11y-audit.test.tsx",
     "test:verbose": "vitest --reporter=verbose",
     "test:run": "vitest run",
     "test:integration:api": "vitest run --config vitest.integration-api.config.ts",
@@ -82,6 +83,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
+    "@storybook/addon-a11y": "^8.6.18",
     "@storybook/addon-essentials": "^8.6.17",
     "@storybook/addon-interactions": "^8.6.17",
     "@storybook/blocks": "^8.6.17",
@@ -115,7 +117,8 @@
     "typescript-eslint": "^8.0.0",
     "vite": "6.3.5",
     "vite-plugin-pwa": "^1.2.0",
-    "vitest": "^2.1.6"
+    "vitest": "^2.1.6",
+    "vitest-axe": "^0.1.0"
   },
   "peerDependencies": {
     "react": "18.3.1",

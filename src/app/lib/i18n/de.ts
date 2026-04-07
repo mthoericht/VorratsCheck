@@ -97,6 +97,7 @@ export const de = {
   },
   inventory: {
     title: 'Vorrat',
+    subtitle: 'Verwalten Sie Ihre Vorratsartikel',
     itemCount: '{{count}} Artikel im Vorrat',
     scanBarcode: 'Barcode scannen',
     addItem: 'Artikel hinzufügen',

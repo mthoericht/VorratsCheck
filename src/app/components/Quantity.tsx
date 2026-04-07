@@ -68,9 +68,10 @@ export function Quantity({
           onChange={(e) => onQuantityChange(e.target.value)}
           placeholder="–"
           className="w-20"
+          aria-label={effectiveLabel}
         />
         <Select value={unit || 'stk'} onValueChange={onUnitChange}>
-          <SelectTrigger id={idUnit} className="w-28" size="sm">
+          <SelectTrigger id={idUnit} className="w-28" size="sm" aria-label={t('common.unit')}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>{unitOptions}</SelectContent>
@@ -99,7 +100,7 @@ export function Quantity({
       <div>
         <Label htmlFor={idUnit}>{t('common.unit')}</Label>
         <Select value={unit || 'stk'} onValueChange={onUnitChange}>
-          <SelectTrigger id={idUnit}>
+          <SelectTrigger id={idUnit} aria-label={t('common.unit')}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>{unitOptions}</SelectContent>

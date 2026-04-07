@@ -3,8 +3,20 @@
  * Each story is rendered (and optional play function executed) to catch regressions.
  * Output: one describe block per component, one it() per story (visible in test reporter).
  */
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { composeStories } from '@storybook/react';
+import { configureAxe } from 'vitest-axe';
+
+const axe = configureAxe({
+  rules: {
+    // jsdom does not implement canvas/pseudo-element APIs needed for this rule.
+    'color-contrast': { enabled: false },
+    // Story-level rendering in isolation frequently triggers landmark false positives.
+    region: { enabled: false },
+    // We have dedicated component tests for icon-only controls; keep story a11y checks focused.
+    'button-name': { enabled: false },
+  },
+});
 
 // UI
 import * as buttonStories from './stories/components/ui/button.stories';
@@ -103,6 +115,8 @@ storyModules.forEach(({ name, stories }) =>
       it(`${name} › ${storyName}`, async () =>
       {
         await Story.run();
+        const axeResult = await axe(document.body);
+        expect(axeResult.violations).toEqual([]);
       });
     });
   });

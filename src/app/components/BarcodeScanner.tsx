@@ -52,7 +52,7 @@ export function BarcodeScanner({ onScan, onClose, autoStart = true }: BarcodeSca
             </div>
           )}
 
-          <div id={elementId} className="w-full rounded-lg overflow-hidden bg-gray-100" aria-label={t('barcode.title')} />
+          <div id={elementId} className="w-full rounded-lg overflow-hidden bg-gray-100" />
 
           {!isScanning ? (
             <Button onClick={startScanning} className="w-full gap-2">

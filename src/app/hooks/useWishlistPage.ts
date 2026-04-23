@@ -26,6 +26,7 @@ export function useWishlistPage()
   const deleteWishListItem = useWishlistStore(s => s.remove);
   const categories = useCategoriesStore(s => s.items);
 
+  // State for the add/edit dialog
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<WishlistFormData>(initialWishlistFormData);

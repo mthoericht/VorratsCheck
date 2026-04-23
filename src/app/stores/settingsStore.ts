@@ -12,6 +12,10 @@ interface SettingsState {
   setTheme: (theme: Theme) => void;
 }
 
+/**
+ * Settings store for the application. (is persisted to localStorage)
+ * @returns {SettingsState} The settings store.
+ */
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({

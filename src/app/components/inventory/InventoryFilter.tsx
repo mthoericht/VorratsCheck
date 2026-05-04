@@ -2,6 +2,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { InventoryFilterBar } from './InventoryFilterBar';
 import { useTranslation } from '../../lib/i18n';
+import { Box } from '@mui/material';
 
 interface InventoryFilterProps {
   locationOptions: readonly { value: string; id: string }[];
@@ -23,7 +24,15 @@ export function InventoryFilter({
 {
   const { t } = useTranslation();
   return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+    <Box
+      sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        columnGap: 3,
+        rowGap: 1.5,
+      }}
+    >
       <InventoryFilterBar
         label={t('inventory.filterLocation')}
         options={locationOptions.map(opt => ({ value: opt.value, label: t(`inventory.locations.${opt.id}`) }))}
@@ -31,7 +40,7 @@ export function InventoryFilter({
         onChange={onLocationChange}
         allLabel={t('common.all')}
       />
-      <div className="flex items-center gap-2">
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <Label htmlFor="filter-category" className="text-sm font-medium text-muted-foreground shrink-0">
           {t('inventory.filterCategory')}
         </Label>
@@ -48,7 +57,7 @@ export function InventoryFilter({
             ))}
           </SelectContent>
         </Select>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

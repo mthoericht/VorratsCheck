@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Link } from 'react-router';
+import { Box } from '@mui/material';
 import { Refrigerator, ListChecks, Heart } from '@/app/lib/icons';
 import { useTranslation } from '../../lib/i18n';
 
@@ -15,26 +16,32 @@ export function QuickActionsCard()
         <CardDescription>{t('dashboard.quickActionsDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Link to="/inventory">
-            <Button variant="outline" className="w-full justify-start gap-2">
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 2,
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))', lg: 'repeat(3, minmax(0, 1fr))' },
+          }}
+        >
+          <Button asChild variant="outline" className="w-full justify-start gap-2">
+            <Link to="/inventory">
               <Refrigerator className="w-4 h-4" />
               {t('dashboard.addItem')}
-            </Button>
-          </Link>
-          <Link to="/recipes">
-            <Button variant="outline" className="w-full justify-start gap-2">
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="w-full justify-start gap-2">
+            <Link to="/recipes">
               <ListChecks className="w-4 h-4" />
               {t('dashboard.findRecipes')}
-            </Button>
-          </Link>
-          <Link to="/deals">
-            <Button variant="outline" className="w-full justify-start gap-2">
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="w-full justify-start gap-2">
+            <Link to="/deals">
               <Heart className="w-4 h-4" />
               {t('dashboard.viewDeals')}
-            </Button>
-          </Link>
-        </div>
+            </Link>
+          </Button>
+        </Box>
       </CardContent>
     </Card>
   );

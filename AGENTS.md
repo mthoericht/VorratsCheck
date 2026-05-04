@@ -124,8 +124,7 @@ VorratsCheck/
 │           │   └── SettingsLanguage.tsx
 │           └── ui/              # Radix/shadcn-style primitives (button, dialog, select, stat-card, etc.)
 ├── src/styles/
-│   ├── index.css                 # Imports theme.css, tailwind
-│   └── theme.css                 # Central theme: :root (light), .dark (dark), CSS variables
+│   └── index.css                 # Global CSS: :root / .dark tokens, Tailwind @theme, base layer, skip link
 ├── server/
 │   ├── app.ts                   # Express app: CORS, JSON, mounts /api/* routes, /api/health (exported for tests)
 │   ├── index.ts                 # Runs app.listen(); use app from app.ts for programmatic/testing use
@@ -198,7 +197,7 @@ All user-scoped routes use `authMiddleware` and filter by `req.user.userId` from
 - **UI**: Tailwind + Radix-based components under `src/app/components/ui/`. User menu: Settings → sub-nav for Categories, Appearance (light/dark/system), and Language (DE/EN). Categories are under Settings, not main nav.
 - **Icons**: Lucide icons are re-exported from `src/app/lib/icons.ts`. Import from `@/app/lib/icons` (e.g. `import { Plus, Trash2 } from '@/app/lib/icons'`). Add new icons to `icons.ts` when needed; do not import from `lucide-react` directly in app code.
 - **Date display**: Use `formatDate(date)` from `useTranslation()` (`src/app/lib/i18n`) for locale-aware dates in the UI (dashboard, inventory, deal cards).
-- **Theming**: `next-themes` in `main.tsx`; theme preference in `settingsStore` (synced to next-themes via `SyncThemeFromStore` in `App.tsx`). All colors in `src/styles/theme.css`: `:root` (light), `.dark` (dark). Edit only that file for app-wide colors; base vars (e.g. `--background`, `--card`) and semantic (`--color-success`, `--color-warning`, `--color-danger`, `--color-brand` + `*_bg`, `*_border`). UI copy is translated via `t('key')` (German default, English fallback).
+- **Theming**: `next-themes` in `main.tsx`; theme preference in `settingsStore` (synced to next-themes via `SyncThemeFromStore` in `App.tsx`). CSS variables and Tailwind `@theme` live in `src/styles/index.css`: `:root` (light), `.dark` (dark). Edit that file for app-wide colors; base vars (e.g. `--background`, `--card`) and semantic overrides in `.dark` only (`--color-success`, `--color-warning`, `--color-danger`, `*_bg`, `*_border`, etc., for Tailwind utility fixes). MUI palette: `src/app/lib/muiTheme.ts`. UI copy is translated via `t('key')` (German default, English fallback).
 
 ### Backend
 
@@ -259,7 +258,7 @@ Protected routes require header: `Authorization: Bearer <token>`.
 - **New page**: Add component in `src/app/pages/`, add route in `src/app/routes.tsx`, add nav entry in `Layout.tsx` if needed.
 - **Auth flow**: `server/routes/auth.ts`, `server/middleware/auth.ts`, `src/app/stores/authStore.ts`, `src/app/components/ProtectedRoute.tsx`.
 - **Data model**: `prisma/schema.prisma`, then `db:generate` and `db:push`; adjust routes and stores.
-- **UI/theme**: Tailwind + components in `src/app/components/ui/`; app shell and nav in `Layout.tsx`. **Colors**: edit only `src/styles/theme.css` – `:root` (light) and `.dark` (dark) with base and semantic variables. **Appearance**: user menu → Settings → Appearance (light/dark/system). **Language**: user menu → Settings → Language (DE/EN). **Categories**: user menu → Settings → Categories. **Icons**: Add or use icons via `src/app/lib/icons.ts`; import from `@/app/lib/icons` (do not import from `lucide-react` directly in app code).
+- **UI/theme**: Tailwind + MUI components in `src/app/components/ui/`; app shell and nav in `Layout.tsx`. **CSS colors / Tailwind tokens**: edit `src/styles/index.css` (`:root`, `.dark`, `@theme inline`). **MUI**: `src/app/lib/muiTheme.ts`. **Appearance**: user menu → Settings → Appearance (light/dark/system). **Language**: user menu → Settings → Language (DE/EN). **Categories**: user menu → Settings → Categories. **Icons**: Add or use icons via `src/app/lib/icons.ts`; import from `@/app/lib/icons` (do not import from `lucide-react` directly in app code).
 - **Recipe UI**: All recipe-related components live in `src/app/components/recipe/` (RecipeCard, RecipeEditDialog, RecipeImportDialog, RecipeListSection, RecipeViewDialog). Import from `../components/recipe`. The Recipes page uses a single hook `useRecipesPage()` (match/sort, form state, delete); lib helpers in `src/app/lib/recipe.ts` (ingredients, difficulty, matching) and `lib/units.ts` (convertFromGivenToBaseUnit, convertFromBaseToGivenUnit, quantityCovers for matching).
 - **Dashboard UI**: Alert and quick-action cards in `src/app/components/dashboard/` (ExpiredItemsCard, ExpiringSoonCard, LowStockCard, QuickActionsCard). Import from `../components/dashboard`. Dashboard page uses StatCard for stats and these components for alerts and quick actions. Dates use `formatDate(date)` from `useTranslation()` (`lib/i18n`) for locale-aware display.
 - **Inventory UI**: Components in `src/app/components/inventory/` (InventoryItemFormDialog, InventoryItemCard, InventoryFilter, InventoryFilterBar, InventoryEmptyState). Import from `../components/inventory`. The Inventory page uses `useInventoryPage()` for form state, filters, filtered list, and CRUD. Location options (form and filter) and expiry display come from `lib/inventory.ts` (`INVENTORY_LOCATION_OPTIONS`, `getExpiryStatus`). Date display uses `formatDate(date)` from `useTranslation()`. Dialogs use `Category` from `stores/categoriesStore`.

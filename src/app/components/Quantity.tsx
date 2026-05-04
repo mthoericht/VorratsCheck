@@ -2,8 +2,8 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { UNITS } from '../lib/units';
-import { cn } from './ui/utils';
 import { useTranslation } from '../lib/i18n';
+import { Box } from '@mui/material';
 
 interface QuantityProps {
   /** Current quantity (empty = optional) */
@@ -58,7 +58,7 @@ export function Quantity({
   if (compact) 
   {
     return (
-      <div className={cn('flex items-center gap-2', className)}>
+      <Box className={className} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <Input
           id={idQty}
           type="number"
@@ -67,22 +67,22 @@ export function Quantity({
           value={qtyStr}
           onChange={(e) => onQuantityChange(e.target.value)}
           placeholder="–"
-          className="w-20"
+          style={{ width: 88 }}
           aria-label={effectiveLabel}
         />
         <Select value={unit || 'stk'} onValueChange={onUnitChange}>
-          <SelectTrigger id={idUnit} className="w-28" size="sm" aria-label={t('common.unit')}>
+          <SelectTrigger id={idUnit} size="sm" aria-label={t('common.unit')} style={{ width: 120 }}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>{unitOptions}</SelectContent>
         </Select>
-      </div>
+      </Box>
     );
   }
 
   return (
-    <div className={cn('grid grid-cols-2 gap-4', className)}>
-      <div>
+    <Box className={className} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+      <Box>
         <Label htmlFor={idQty}>
           {effectiveLabel}
           {optional ? null : ' *'}
@@ -96,8 +96,8 @@ export function Quantity({
           onChange={(e) => onQuantityChange(e.target.value)}
           placeholder={effectivePlaceholder}
         />
-      </div>
-      <div>
+      </Box>
+      <Box>
         <Label htmlFor={idUnit}>{t('common.unit')}</Label>
         <Select value={unit || 'stk'} onValueChange={onUnitChange}>
           <SelectTrigger id={idUnit} aria-label={t('common.unit')}>
@@ -105,7 +105,7 @@ export function Quantity({
           </SelectTrigger>
           <SelectContent>{unitOptions}</SelectContent>
         </Select>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

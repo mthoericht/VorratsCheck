@@ -2,10 +2,10 @@ import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
+import { Box, Stack, Typography } from '@mui/material';
 import { ChefHat, Clock, Edit, Trash2, CheckCircle2, XCircle } from '@/app/lib/icons';
 import {
   formatIngredient,
-  getDifficultyColor,
   ingredientMatches,
   type RecipeWithMatch,
 } from '../../lib/recipe';
@@ -30,6 +30,20 @@ export function RecipeViewDialog({
 }: RecipeViewDialogProps) 
 {
   const { t } = useTranslation();
+  const difficultyStyle = (() =>
+  {
+    switch (recipe?.difficulty)
+    {
+      case 'easy':
+        return { backgroundColor: '#dcfce7', color: '#166534', borderColor: '#86efac' };
+      case 'medium':
+        return { backgroundColor: '#fef3c7', color: '#92400e', borderColor: '#fcd34d' };
+      case 'hard':
+        return { backgroundColor: '#fee2e2', color: '#991b1b', borderColor: '#fca5a5' };
+      default:
+        return { backgroundColor: '#f3f4f6', color: '#374151', borderColor: '#d1d5db' };
+    }
+  })();
 
   if (!recipe) return null;
 
@@ -44,37 +58,35 @@ export function RecipeViewDialog({
           <DialogDescription>{t('recipes.subtitle')}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <Stack spacing={3}>
           {/* Meta Info */}
-          <div className="flex gap-4 flex-wrap">
-            <Badge className={getDifficultyColor(recipe.difficulty)}>
+          <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+            <Badge style={difficultyStyle}>
               {t(`difficulties.${recipe.difficulty}`)}
             </Badge>
-            <Badge variant="outline" className="gap-1">
+            <Badge variant="outline" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
               <Clock className="w-3 h-3" />
               {recipe.cookingTime} {t('recipes.minuteShort')}
             </Badge>
             <Badge variant="outline">
               {t('recipes.servings', { count: recipe.servings })}
             </Badge>
-            <Badge
-              className={
-                recipe.matchPercentage === 100
-                  ? 'bg-green-600 text-white'
-                  : recipe.matchPercentage > 0
-                    ? 'bg-yellow-600 text-white'
-                    : 'bg-gray-600 text-white'
-              }
-            >
+            <Badge style={
+              recipe.matchPercentage === 100
+                ? { backgroundColor: '#16a34a', color: '#ffffff', borderColor: '#16a34a' }
+                : recipe.matchPercentage > 0
+                  ? { backgroundColor: '#ca8a04', color: '#ffffff', borderColor: '#ca8a04' }
+                  : { backgroundColor: '#4b5563', color: '#ffffff', borderColor: '#4b5563' }
+            }>
               {t('recipes.available', { percent: Math.round(recipe.matchPercentage) })}
             </Badge>
-          </div>
+          </Box>
 
           {/* Action Buttons */}
-          <div className="flex gap-2">
+          <Box sx={{ display: 'flex', gap: 1 }}>
             <Button
               variant="outline"
-              className="flex-1 gap-2"
+              className="flex-1"
               onClick={() => { onClose(); onEdit(recipe); }}
             >
               <Edit className="w-4 h-4" />
@@ -82,68 +94,90 @@ export function RecipeViewDialog({
             </Button>
             <Button
               variant="outline"
-              className="flex-1 gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="flex-1"
+              sx={{ color: 'error.main' }}
               onClick={(e) => { onDelete(e); onClose(); }}
             >
               <Trash2 className="w-4 h-4" />
               {t('common.delete')}
             </Button>
-          </div>
+          </Box>
 
           {/* Ingredients */}
-          <div>
-            <h3 className="font-semibold mb-3">{t('recipes.ingredients')}</h3>
+          <Box>
+            <Typography variant="subtitle1" sx={{ mb: 1.5, fontWeight: 600 }}>{t('recipes.ingredients')}</Typography>
             <div className="space-y-2">
               {recipe.ingredients.map((ing, index) => 
               {
                 const isAvailable = ingredientMatches(ing, inventory);
                 return (
-                  <div
+                  <Box
                     key={index}
-                    className={`flex items-center gap-2 p-2 rounded ${
-                      isAvailable ? 'bg-green-50' : 'bg-red-50'
-                    }`}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      p: 1,
+                      borderRadius: 1,
+                      border: '1px solid',
+                      borderColor: isAvailable ? '#86efac' : '#fca5a5',
+                      backgroundColor: isAvailable ? '#f0fdf4' : '#fef2f2',
+                    }}
                   >
                     {isAvailable ? (
                       <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
                     ) : (
                       <XCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
                     )}
-                    <span className={isAvailable ? 'text-green-900' : 'text-red-900'}>
+                    <Typography sx={{ color: isAvailable ? '#14532d' : '#7f1d1d' }}>
                       {formatIngredient(ing)}
-                    </span>
-                  </div>
+                    </Typography>
+                  </Box>
                 );
               })}
             </div>
-          </div>
+          </Box>
 
           {/* Instructions */}
-          <div>
-            <h3 className="font-semibold mb-3">{t('recipes.preparation')}</h3>
-            <ol className="space-y-3">
+          <Box>
+            <Typography variant="subtitle1" sx={{ mb: 1.5, fontWeight: 600 }}>{t('recipes.preparation')}</Typography>
+            <Box component="ol" sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, pl: 0, m: 0 }}>
               {recipe.instructions.map((instruction, index) => (
-                <li key={index} className="flex gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm">
+                <Box key={index} component="li" sx={{ display: 'flex', gap: 1.5, listStyle: 'none' }}>
+                  <Box
+                    component="span"
+                    sx={{
+                      flexShrink: 0,
+                      width: 24,
+                      height: 24,
+                      borderRadius: '50%',
+                      backgroundColor: '#059669',
+                      color: '#ffffff',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 12,
+                    }}
+                  >
                     {index + 1}
-                  </span>
-                  <span className="pt-0.5">{instruction}</span>
-                </li>
+                  </Box>
+                  <Typography sx={{ pt: 0.25 }}>{instruction}</Typography>
+                </Box>
               ))}
-            </ol>
-          </div>
+            </Box>
+          </Box>
 
           {recipe.missingIngredients && recipe.missingIngredients.length > 0 && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <h4 className="font-semibold text-yellow-900 mb-2">
+            <Box sx={{ backgroundColor: '#fffbeb', border: '1px solid #fcd34d', borderRadius: 2, p: 2 }}>
+              <Typography component="h4" sx={{ fontWeight: 600, color: '#78350f', mb: 1 }}>
                 {t('recipes.missingIngredients', { count: recipe.missingIngredients.length })}
-              </h4>
-              <p className="text-sm text-yellow-800">
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#92400e' }}>
                 {recipe.missingIngredients.map(formatIngredient).join(', ')}
-              </p>
-            </div>
+              </Typography>
+            </Box>
           )}
-        </div>
+        </Stack>
       </DialogContent>
     </Dialog>
   );

@@ -1,4 +1,5 @@
 import { Button } from '../components/ui/button';
+import { Box, Stack, Typography } from '@mui/material';
 import { Plus } from '@/app/lib/icons';
 import { getStockStatus } from '../lib/mustHave';
 import { useTranslation } from '../lib/i18n';
@@ -33,17 +34,29 @@ export function MustHaveList()
   } = useMustHavePage();
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('mustHave.title')}</h1>
-          <p className="text-gray-600 mt-1">{t('mustHave.subtitle')}</p>
-        </div>
+    <Stack spacing={3}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: { xs: 'flex-start', md: 'center' },
+          justifyContent: 'space-between',
+          gap: 2,
+        }}
+      >
+        <Box>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
+            {t('mustHave.title')}
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
+            {t('mustHave.subtitle')}
+          </Typography>
+        </Box>
         <Button className="gap-2" onClick={openAdd}>
           <Plus className="w-4 h-4" />
           {t('mustHave.addItem')}
         </Button>
-      </div>
+      </Box>
 
       <StoreErrorAlert error={mustHaveError} />
 
@@ -63,7 +76,17 @@ export function MustHaveList()
         lowCount={lowCount}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 2,
+          gridTemplateColumns: {
+            xs: '1fr',
+            md: 'repeat(2, minmax(0, 1fr))',
+            lg: 'repeat(3, minmax(0, 1fr))',
+          },
+        }}
+      >
         {mustHaveList.map(item => (
           <MustHaveCard
             key={item.id}
@@ -73,9 +96,9 @@ export function MustHaveList()
             onDelete={handleDelete}
           />
         ))}
-      </div>
+      </Box>
 
       {mustHaveList.length === 0 && <MustHaveEmptyState onAddClick={openAdd} />}
-    </div>
+    </Stack>
   );
 }

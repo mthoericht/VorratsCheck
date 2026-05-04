@@ -1,7 +1,7 @@
 import { Link, Outlet, useLocation } from 'react-router';
-import { cn } from '../components/ui/utils';
 import { FolderOpen, Globe, Palette } from '@/app/lib/icons';
 import { useTranslation } from '../lib/i18n';
+import { Box, Link as MuiLink, Typography } from '@mui/material';
 
 export function Settings() 
 {
@@ -15,46 +15,67 @@ export function Settings()
   ];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('settings.title')}</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <Box>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
+          {t('settings.title')}
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
           {t('settings.subtitle')}
-        </p>
-      </div>
+        </Typography>
+      </Box>
 
-      <nav
-        className="border-b border-gray-200 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8"
+      <Box
+        component="nav"
         aria-label={t('settings.subNavigation')}
+        sx={{
+          borderBottom: 1,
+          borderColor: 'divider',
+          mx: { xs: -2, sm: -3, lg: -4 },
+          px: { xs: 2, sm: 3, lg: 4 },
+        }}
       >
-        <div className="flex gap-6">
+        <Box sx={{ display: 'flex', gap: 3 }}>
           {settingsNavItems.map((item) => 
           {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
             return (
-              <Link
+              <MuiLink
                 key={item.path}
+                component={Link}
                 to={item.path}
                 aria-current={isActive ? 'page' : undefined}
-                className={cn(
-                  'flex items-center gap-2 px-1 py-3 border-b-2 text-sm font-medium transition-colors',
-                  isActive
-                    ? 'border-emerald-600 text-emerald-600'
-                    : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:border-gray-300'
-                )}
+                underline="none"
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  px: 0.25,
+                  py: 1.5,
+                  borderBottom: '2px solid',
+                  borderBottomColor: isActive ? 'success.main' : 'transparent',
+                  color: isActive ? 'success.main' : 'text.secondary',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  transition: 'color 150ms, border-color 150ms',
+                  '&:hover': {
+                    color: 'text.primary',
+                    borderBottomColor: 'divider',
+                  },
+                }}
               >
                 <Icon className="w-4 h-4" aria-hidden={true} />
                 {item.label}
-              </Link>
+              </MuiLink>
             );
           })}
-        </div>
-      </nav>
+        </Box>
+      </Box>
 
-      <div>
+      <Box>
         <Outlet />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

@@ -5,6 +5,9 @@ import { Pencil, Trash2, AlertTriangle, MapPin } from '@/app/lib/icons';
 import { getExpiryStatus, INVENTORY_LOCATIONS } from '../../lib/inventory';
 import { useTranslation } from '../../lib/i18n';
 import type { InventoryItem } from '../../stores/inventoryStore';
+import { Box, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { getAppPalette } from '../../lib/muiTheme';
 
 interface InventoryItemCardProps {
   item: InventoryItem;
@@ -15,6 +18,8 @@ interface InventoryItemCardProps {
 export function InventoryItemCard({ item, onEdit, onDelete }: InventoryItemCardProps)
 {
   const { t, formatDate } = useTranslation();
+  const theme = useTheme();
+  const appPalette = getAppPalette(theme);
   const expiryStatus = getExpiryStatus(item.expiryDate);
   const expiryLabel = expiryStatus
     ? expiryStatus.status === 'expired'
@@ -23,16 +28,27 @@ export function InventoryItemCard({ item, onEdit, onDelete }: InventoryItemCardP
     : '';
   const locationId = INVENTORY_LOCATIONS.find(l => l.value === item.location)?.id;
   const locationLabel = locationId ? t(`inventory.locations.${locationId}`) : item.location;
+  const cardPalette = expiryStatus?.status === 'expired'
+    ? appPalette.danger
+    : expiryStatus?.status === 'warning'
+      ? appPalette.warning
+      : appPalette.info;
 
   return (
-    <Card className="relative">
+    <Card
+      className="relative"
+      sx={{
+        borderColor: cardPalette.border,
+        backgroundColor: cardPalette.bg,
+      }}
+    >
       <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <CardTitle className="text-lg">{item.name}</CardTitle>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1.5 }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <CardTitle>{item.name}</CardTitle>
             <CardDescription>{item.brand || item.category}</CardDescription>
-          </div>
-          <div className="flex gap-1">
+          </Box>
+          <Box sx={{ display: 'flex', gap: 0.5 }}>
             <Button
               variant="ghost"
               size="sm"
@@ -51,44 +67,46 @@ export function InventoryItemCard({ item, onEdit, onDelete }: InventoryItemCardP
             >
               <Trash2 className="w-4 h-4" />
             </Button>
-          </div>
-        </div>
+          </Box>
+        </Box>
       </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600">{t('inventory.quantityDisplay')}</span>
-          <span className="font-medium">{item.quantity} {item.unit}</span>
-        </div>
+      <CardContent>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="body2" color="text.secondary">{t('inventory.quantityDisplay')}</Typography>
+            <Typography sx={{ fontWeight: 600 }}>{item.quantity} {item.unit}</Typography>
+          </Box>
 
-        {item.expiryDate && (
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">{t('inventory.bestBefore')} {formatDate(item.expiryDate)}</span>
-            <div className="flex items-center gap-2">
-              {expiryStatus?.status === 'expired' && (
-                <AlertTriangle className="w-4 h-4 text-red-600" />
-              )}
-              {expiryStatus?.status === 'warning' && (
-                <AlertTriangle className="w-4 h-4 text-orange-600" />
-              )}
-              <Badge variant={expiryStatus?.variant}>
-                {expiryLabel}
-              </Badge>
-            </div>
-          </div>
-        )}
+          {item.expiryDate && (
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
+              <Typography variant="body2" color="text.secondary">{t('inventory.bestBefore')} {formatDate(item.expiryDate)}</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {expiryStatus?.status === 'expired' && (
+                  <AlertTriangle className="w-4 h-4 text-red-600" />
+                )}
+                {expiryStatus?.status === 'warning' && (
+                  <AlertTriangle className="w-4 h-4 text-orange-600" />
+                )}
+                <Badge variant={expiryStatus?.variant}>
+                  {expiryLabel}
+                </Badge>
+              </Box>
+            </Box>
+          )}
 
-        {item.location && (
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <MapPin className="w-4 h-4" />
-            {locationLabel}
-          </div>
-        )}
+          {item.location && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+              <MapPin className="w-4 h-4" />
+              <Typography variant="body2" color="text.secondary">{locationLabel}</Typography>
+            </Box>
+          )}
 
-        {item.barcode && (
-          <div className="text-xs text-gray-500 font-mono">
-            {t('inventory.barcodePrefix')} {item.barcode}
-          </div>
-        )}
+          {item.barcode && (
+            <Typography variant="caption" sx={{ fontFamily: 'monospace' }} color="text.secondary">
+              {t('inventory.barcodePrefix')} {item.barcode}
+            </Typography>
+          )}
+        </Box>
       </CardContent>
     </Card>
   );

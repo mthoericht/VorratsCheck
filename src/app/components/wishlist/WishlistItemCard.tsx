@@ -1,8 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Heart, Edit, Trash2 } from '@/app/lib/icons';
+import { Box, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import type { WishListItem } from '../../stores/wishlistStore';
 import { useTranslation } from '../../lib/i18n';
+import { getAppPalette } from '../../lib/muiTheme';
 
 interface WishlistItemCardProps {
   item: WishListItem;
@@ -13,22 +16,32 @@ interface WishlistItemCardProps {
 export function WishlistItemCard({ item, onEdit, onDelete }: WishlistItemCardProps) 
 {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const appPalette = getAppPalette(theme);
+  const priorityPalette = item.priority === 'high'
+    ? appPalette.danger
+    : item.priority === 'medium'
+      ? appPalette.warning
+      : appPalette.success;
+
   return (
-    <Card>
+    <Card sx={{ borderColor: priorityPalette.border, backgroundColor: priorityPalette.bg }}>
       <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Heart className="w-5 h-5 text-pink-600" />
-              {item.name}
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1.5 }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <CardTitle>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Heart className="w-5 h-5" style={{ color: priorityPalette.icon }} />
+                {item.name}
+              </Box>
             </CardTitle>
             {(item.category || item.brand) && (
               <CardDescription>
                 {[item.category, item.brand].filter(Boolean).join(' · ')}
               </CardDescription>
             )}
-          </div>
-          <div className="flex gap-1">
+          </Box>
+          <Box sx={{ display: 'flex', gap: 0.5, flexShrink: 0, alignSelf: 'flex-start' }}>
             <Button
               variant="ghost"
               size="sm"
@@ -47,22 +60,24 @@ export function WishlistItemCard({ item, onEdit, onDelete }: WishlistItemCardPro
             >
               <Trash2 className="w-4 h-4" />
             </Button>
-          </div>
-        </div>
+          </Box>
+        </Box>
       </CardHeader>
-      <CardContent className="space-y-2">
-        {item.category && (
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">{t('wishlist.categoryDisplay')}</span>
-            <span className="font-medium">{item.category}</span>
-          </div>
-        )}
-        {item.brand && (
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">{t('wishlist.brandDisplay')}</span>
-            <span className="font-medium">{item.brand}</span>
-          </div>
-        )}
+      <CardContent>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          {item.category && (
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography component="span" variant="body2" color="text.secondary">{t('wishlist.categoryDisplay')}</Typography>
+              <Typography component="span" variant="body2" sx={{ fontWeight: 600 }}>{item.category}</Typography>
+            </Box>
+          )}
+          {item.brand && (
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography component="span" variant="body2" color="text.secondary">{t('wishlist.brandDisplay')}</Typography>
+              <Typography component="span" variant="body2" sx={{ fontWeight: 600 }}>{item.brand}</Typography>
+            </Box>
+          )}
+        </Box>
       </CardContent>
     </Card>
   );

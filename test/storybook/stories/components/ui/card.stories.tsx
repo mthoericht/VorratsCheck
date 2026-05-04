@@ -45,3 +45,22 @@ export const OnlyContent: Story = {
     </Card>
   ),
 };
+
+export const DarkMode: Story = {
+  render: () => (
+    <div className="dark rounded-md bg-background p-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Dunkles Kartenbeispiel</CardTitle>
+          <CardDescription>Test fuer Kontrast und Lesbarkeit</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>Inhalt in Dark-Mode Umgebung.</p>
+        </CardContent>
+        <CardFooter>
+          <Button variant="secondary">Aktion</Button>
+        </CardFooter>
+      </Card>
+    </div>
+  ),
+};

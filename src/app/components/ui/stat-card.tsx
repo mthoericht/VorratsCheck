@@ -1,5 +1,9 @@
+import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { cn } from './utils';
+import { Box, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { getAppPalette, type AppTone } from '@/app/lib/muiTheme';
 
 export interface StatCardProps {
   /** Card title (headline) */
@@ -32,16 +36,38 @@ export function StatCard({
   valueClassName = 'text-2xl font-bold',
 }: StatCardProps) 
 {
+  const theme = useTheme();
+  const app = getAppPalette(theme);
+  const tone: AppTone = titleClassName.includes('green') || valueClassName.includes('green')
+    ? 'success'
+    : titleClassName.includes('yellow') || valueClassName.includes('yellow') || titleClassName.includes('orange') || valueClassName.includes('orange')
+      ? 'warning'
+      : titleClassName.includes('pink') || valueClassName.includes('pink')
+        ? 'accent'
+        : titleClassName.includes('blue') || valueClassName.includes('blue')
+          ? 'info'
+          : 'neutral';
+  const palette = app[tone];
+
   return (
-    <Card className={cn('gap-2', className)}>
+    <Card
+      className={cn('gap-2', className)}
+      sx={{ borderColor: palette.border, backgroundColor: palette.bg }}
+    >
       <CardHeader className={cn('px-4 pt-4 pb-0 md:px-6 md:pt-6', icon && 'flex flex-row items-center justify-between')}>
-        <CardTitle className={titleClassName}>{title}</CardTitle>
-        {icon && <span className="shrink-0">{icon}</span>}
+        <CardTitle>
+          <Typography variant="body2" sx={{ fontWeight: 600, color: palette.text }}>
+            {title}
+          </Typography>
+        </CardTitle>
+        {icon && <Box component="span" sx={{ flexShrink: 0 }}>{icon}</Box>}
       </CardHeader>
       <CardContent className="px-4 pb-4 pt-0 md:px-6 md:pb-6">
-        <div className={valueClassName}>{value}</div>
+        <Typography component="div" variant="h4" sx={{ fontWeight: 700, color: palette.value, lineHeight: 1.2 }}>
+          {value}
+        </Typography>
         {subtitle != null && subtitle !== '' && (
-          <p className="text-xs text-gray-600 dark:text-muted-foreground mt-0.5">{subtitle}</p>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{subtitle}</Typography>
         )}
       </CardContent>
     </Card>

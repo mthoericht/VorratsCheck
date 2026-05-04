@@ -1,6 +1,6 @@
 import { Button } from '../ui/button';
-import { cn } from '../ui/utils';
 import { useTranslation } from '../../lib/i18n';
+import { Box } from '@mui/material';
 
 export interface InventoryFilterBarOption {
   value: string;
@@ -37,9 +37,12 @@ export function InventoryFilterBar({
   const resolvedAllLabel = allLabel ?? t('common.all');
   const hasAll = resolvedAllLabel != null;
   return (
-    <div className={cn('flex flex-wrap items-center gap-2', className)}>
+    <Box
+      className={className}
+      sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 1 }}
+    >
       {label && (
-        <span className="text-sm font-medium text-muted-foreground shrink-0">
+        <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--muted-foreground)', flexShrink: 0 }}>
           {label}
         </span>
       )}
@@ -62,6 +65,6 @@ export function InventoryFilterBar({
           {opt.label}
         </Button>
       ))}
-    </div>
+    </Box>
   );
 }

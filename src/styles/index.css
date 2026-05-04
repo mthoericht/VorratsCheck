@@ -1,9 +1,232 @@
-@import './tailwind.css';
-@import './theme.css';
+/**
+ * Global styles (Tailwind + a11y).
+ *
+ * 1. Tailwind `dark:` variant (class on html via next-themes)
+ * 2. Design tokens — :root / .dark (also drives @theme below)
+ * 3. @theme — maps tokens → Tailwind color-* / radius-* utilities
+ * 4. @layer base — document defaults
+ * 5. Skip link
+ *
+ * Component colors (MUI): src/app/lib/muiTheme.ts
+ */
+
+/* -------------------------------------------------------------------------- */
+/* 1. Tailwind                                                                 */
+/* -------------------------------------------------------------------------- */
+
+@custom-variant dark (&:is(.dark *));
+
+/* -------------------------------------------------------------------------- */
+/* 2. Design tokens                                                            */
+/* -------------------------------------------------------------------------- */
+
+:root {
+  /* Document */
+  --font-size: 16px;
+  --radius: 0.625rem;
+  --ring: oklch(0.708 0 0);
+
+  /* Surfaces */
+  --background: #ffffff;
+  --foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+
+  /* Accent / actions */
+  --primary: #030213;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+
+  /* Forms & chrome */
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+}
+
+html {
+  background: var(--background);
+}
 
 /**
- * Skip link: off-screen until focused (keyboard / screen reader users).
+ * Dark theme + overrides for Tailwind palette utilities (badges, alerts, icons).
+ * Substring selectors match stacked utility classes on one element.
  */
+.dark {
+  color: var(--foreground);
+
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+
+  /* Semantic (only used by overrides below) */
+  --color-success: oklch(0.75 0.18 160);
+  --color-success-bg: oklch(0.28 0.08 160 / 0.4);
+  --color-success-border: oklch(0.4 0.1 160);
+  --color-warning: oklch(0.82 0.16 55);
+  --color-warning-alt: oklch(0.88 0.18 95);
+  --color-warning-alt-bg: oklch(0.35 0.12 95 / 0.4);
+  --color-warning-alt-border: oklch(0.45 0.12 95);
+  --color-danger: oklch(0.72 0.2 25);
+  --color-danger-bg: oklch(0.35 0.12 25 / 0.4);
+  --color-danger-border: oklch(0.45 0.12 25);
+  --color-brand-border: oklch(0.6 0.18 160);
+
+  /* Gray text utilities */
+  & [class*="text-gray-900"],
+  & [class*="text-gray-800"],
+  & [class*="text-gray-700"],
+  & [class*="text-gray-600"] {
+    color: var(--foreground) !important;
+  }
+
+  & [class*="text-gray-500"],
+  & [class*="text-gray-400"],
+  & [class*="text-gray-300"] {
+    color: var(--muted-foreground) !important;
+  }
+
+  /* Semantic text */
+  & [class*="text-green-"],
+  & [class*="text-emerald-"] {
+    color: var(--color-success) !important;
+  }
+
+  & [class*="text-orange-"],
+  & [class*="text-amber-"] {
+    color: var(--color-warning) !important;
+  }
+
+  & [class*="text-yellow-"] {
+    color: var(--color-warning-alt) !important;
+  }
+
+  & [class*="text-red-"] {
+    color: var(--color-danger) !important;
+  }
+
+  /* Pastel backgrounds (badges, alerts) */
+  & [class*="bg-green-50"],
+  & [class*="bg-green-100"] {
+    background-color: var(--color-success-bg) !important;
+  }
+
+  & [class*="bg-yellow-50"],
+  & [class*="bg-yellow-100"] {
+    background-color: var(--color-warning-alt-bg) !important;
+  }
+
+  & [class*="bg-red-50"],
+  & [class*="bg-red-100"] {
+    background-color: var(--color-danger-bg) !important;
+  }
+
+  /* Borders */
+  & [class*="border-green-200"],
+  & [class*="border-emerald-200"] {
+    border-color: var(--color-success-border) !important;
+  }
+
+  & [class*="border-yellow-200"] {
+    border-color: var(--color-warning-alt-border) !important;
+  }
+
+  & [class*="border-red-200"] {
+    border-color: var(--color-danger-border) !important;
+  }
+
+  & [class*="border-green-600"],
+  & [class*="border-emerald-600"] {
+    border-color: var(--color-brand-border) !important;
+  }
+
+  /* Cards that still use bg-white */
+  & [data-slot="card"] [class*="bg-white"],
+  & [data-slot="card-content"] [class*="bg-white"],
+  & [data-slot="card"] .bg-white,
+  & [data-slot="card-content"] .bg-white {
+    background-color: var(--muted) !important;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* 3. Tailwind theme bridge                                                    */
+/* -------------------------------------------------------------------------- */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* -------------------------------------------------------------------------- */
+/* 4. Base                                                                     */
+/* -------------------------------------------------------------------------- */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  html {
+    font-size: var(--font-size);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* 5. Skip link (keyboard / screen readers)                                   */
+/* -------------------------------------------------------------------------- */
+
 .skip-to-main {
   position: absolute;
   left: -10000px;
@@ -12,21 +235,21 @@
   height: 1px;
   overflow: hidden;
   z-index: 100;
-}
 
-.skip-to-main:focus {
-  position: fixed;
-  left: 1rem;
-  top: 1rem;
-  width: auto;
-  height: auto;
-  overflow: visible;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius);
-  background: var(--primary);
-  color: var(--primary-foreground);
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-  text-decoration: none;
-  font-weight: 500;
+  &:focus {
+    position: fixed;
+    left: 1rem;
+    top: 1rem;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    text-decoration: none;
+    font-weight: 500;
+  }
 }

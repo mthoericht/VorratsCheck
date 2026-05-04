@@ -11,6 +11,7 @@ export default [
     ignores: [
       '**/node_modules/**',
       '**/dist/**',
+      '**/dev-dist/**',
       '**/build/**',
       '**/coverage/**',
       '**/storybook-static/**',

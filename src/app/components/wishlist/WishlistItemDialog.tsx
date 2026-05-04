@@ -5,6 +5,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import type { Category } from '../../stores/categoriesStore';
 import { useTranslation } from '../../lib/i18n';
+import { Stack } from '@mui/material';
 
 export interface WishlistFormData {
   name: string;
@@ -43,7 +44,7 @@ export function WishlistItemDialog({
           </DialogTitle>
           <DialogDescription>{t('wishlist.subtitle')}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <Stack component="form" onSubmit={onSubmit} spacing={2}>
           <div>
             <Label htmlFor="wishlist-name">{t('common.name')}</Label>
             <Input
@@ -119,7 +120,7 @@ export function WishlistItemDialog({
               {editingId ? t('common.save') : t('common.add')}
             </Button>
           </div>
-        </form>
+        </Stack>
       </DialogContent>
     </Dialog>
   );

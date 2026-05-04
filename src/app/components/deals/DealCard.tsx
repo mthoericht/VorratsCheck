@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import { Box, Typography } from '@mui/material';
 import { MapPin, Tag, ShoppingCart } from '@/app/lib/icons';
 import type { Deal } from '../../stores/dealsStore';
 import { useTranslation } from '../../lib/i18n';
@@ -14,76 +15,79 @@ interface DealCardProps {
 export function DealCard({ deal, isMustHave, isWishList }: DealCardProps) 
 {
   const { t, formatDate } = useTranslation();
+  const savings = deal.originalPrice - deal.discountPrice;
 
   return (
     <Card className="relative overflow-hidden flex flex-col h-full">
       {/* Discount Badge */}
-      <div className="absolute top-4 right-4 z-10">
-        <Badge className="bg-red-600 text-white text-lg px-3 py-1">
+      <Box sx={{ position: 'absolute', top: 16, right: 16, zIndex: 10 }}>
+        <Badge style={{ backgroundColor: '#dc2626', color: '#ffffff', borderColor: '#dc2626', fontSize: 16, padding: '4px 12px' }}>
           -{deal.discount}%
         </Badge>
-      </div>
+      </Box>
 
       <CardHeader>
-        <CardTitle className="text-lg pr-20">{deal.product}</CardTitle>
-        <CardDescription className="flex items-center gap-2">
-          <Tag className="w-4 h-4" />
-          {deal.name}
+        <CardTitle style={{ paddingRight: 80 }}>{deal.product}</CardTitle>
+        <CardDescription>
+          <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.75 }}>
+            <Tag className="w-4 h-4" />
+            {deal.name}
+          </Box>
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="flex flex-col flex-1 min-h-0 space-y-3 pt-0">
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm text-gray-500 line-through">
+      <CardContent style={{ display: 'flex', flexDirection: 'column', flex: 1, paddingTop: 0 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box>
+              <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
                 €{deal.originalPrice.toFixed(2)}
-              </div>
-              <div className="text-2xl font-bold text-emerald-600">
+              </Typography>
+              <Typography component="div" variant="h5" sx={{ fontWeight: 700, color: '#059669' }}>
                 €{deal.discountPrice.toFixed(2)}
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-sm text-gray-500">{t('deals.savings')}</div>
-              <div className="font-bold text-red-600">
-                €{(deal.originalPrice - deal.discountPrice).toFixed(2)}
-              </div>
-            </div>
-          </div>
+              </Typography>
+            </Box>
+            <Box sx={{ textAlign: 'right' }}>
+              <Typography variant="body2" color="text.secondary">{t('deals.savings')}</Typography>
+              <Typography sx={{ fontWeight: 700, color: '#dc2626' }}>
+                €{savings.toFixed(2)}
+              </Typography>
+            </Box>
+          </Box>
 
-          <div className="flex items-center gap-2 text-sm">
-            <ShoppingCart className="w-4 h-4 text-gray-600" />
-            <span className="font-medium">{deal.store}</span>
-            <MapPin className="w-4 h-4 text-gray-600 ml-auto" />
-            <span className="text-gray-600">{deal.distance} km</span>
-          </div>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <ShoppingCart className="w-4 h-4" style={{ color: '#6b7280' }} />
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>{deal.store}</Typography>
+            <MapPin className="w-4 h-4" style={{ color: '#6b7280', marginLeft: 'auto' }} />
+            <Typography variant="body2" color="text.secondary">{deal.distance} km</Typography>
+          </Box>
 
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">{t('deals.validUntil')}</span>
-            <span className="font-medium">{formatDate(deal.validUntil)}</span>
-          </div>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography component="span" variant="body2" color="text.secondary">{t('deals.validUntil')}</Typography>
+            <Typography component="span" variant="body2" sx={{ fontWeight: 600 }}>{formatDate(deal.validUntil)}</Typography>
+          </Box>
 
-          <div className="flex gap-2">
+          <Box sx={{ display: 'flex', gap: 1 }}>
             {isMustHave && (
-              <Badge variant="outline" className="border-emerald-600 text-emerald-600 flex-1 justify-center">
+              <Badge variant="outline" style={{ borderColor: '#059669', color: '#059669', flex: 1, justifyContent: 'center' }}>
                 {t('deals.mustHave')}
               </Badge>
             )}
             {isWishList && (
-              <Badge variant="outline" className="border-pink-600 text-pink-600 flex-1 justify-center">
+              <Badge variant="outline" style={{ borderColor: '#db2777', color: '#db2777', flex: 1, justifyContent: 'center' }}>
                 {t('deals.wishlist')}
               </Badge>
             )}
-          </div>
+          </Box>
 
           {deal.inStock === false && (
-            <div className="text-sm text-orange-600 font-medium">
+            <Typography variant="body2" sx={{ fontWeight: 600, color: '#ea580c' }}>
               ⚠️ {t('deals.outOfStock')}
-            </div>
+            </Typography>
           )}
-        </div>
+        </Box>
 
-        <Button className="w-full gap-2 mt-auto">
+        <Button sx={{ width: '100%', gap: 1, mt: 'auto' }}>
           <ShoppingCart className="w-4 h-4" />
           {t('deals.goToDeal')}
         </Button>

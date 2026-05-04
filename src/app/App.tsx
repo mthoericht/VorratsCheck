@@ -11,6 +11,7 @@ import { useRecipesStore } from './stores/recipesStore';
 import { useDealsStore } from './stores/dealsStore';
 import { useCategoriesStore } from './stores/categoriesStore';
 import { router } from './routes';
+import { MuiThemeBridge } from './components/MuiThemeBridge';
 
 const HTML_LANG: Record<Locale, string> = { de: 'de', en: 'en' };
 
@@ -66,8 +67,10 @@ function App()
       <SyncDocumentLangFromStore />
       <SyncThemeFromStore />
       <DataLoader />
-      <RouterProvider router={router} />
-      <Toaster />
+      <MuiThemeBridge>
+        <RouterProvider router={router} />
+        <Toaster />
+      </MuiThemeBridge>
     </>
   );
 }

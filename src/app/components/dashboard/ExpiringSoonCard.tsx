@@ -2,6 +2,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Badge } from '../ui/badge';
 import { Clock } from '@/app/lib/icons';
 import { useTranslation } from '../../lib/i18n';
+import { Box, Typography } from '@mui/material';
+import { alpha, useTheme } from '@mui/material/styles';
+import { getAppPalette } from '../../lib/muiTheme';
 
 export interface ExpiringSoonItem {
   id: string;
@@ -18,34 +21,42 @@ interface ExpiringSoonCardProps {
 export function ExpiringSoonCard({ items, maxItems = 5 }: ExpiringSoonCardProps) 
 {
   const { t, formatDate } = useTranslation();
+  const theme = useTheme();
+  const warning = getAppPalette(theme).warning;
+  const rowBg =
+    theme.palette.mode === 'dark'
+      ? alpha(theme.palette.common.white, 0.06)
+      : alpha(theme.palette.common.black, 0.04);
 
   if (items.length === 0) return null;
 
   const displayItems = items.slice(0, maxItems);
 
   return (
-    <Card className="border-orange-200 bg-orange-50">
+    <Card sx={{ borderColor: warning.border, bgcolor: warning.bg }}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-orange-900">
-          <Clock className="w-5 h-5" />
-          {t('dashboard.expiringSoonTitle')}
+        <CardTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: warning.text }}>
+            <Clock className="w-5 h-5" />
+            {t('dashboard.expiringSoonTitle')}
+          </Box>
         </CardTitle>
         <CardDescription>{t('dashboard.expiringSoonDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           {displayItems.map(item => (
-            <div key={item.id} className="flex items-center justify-between p-2 bg-white rounded-lg">
-              <div>
-                <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-gray-600">{t('dashboard.bestBefore')}{item.expiryDate ? formatDate(item.expiryDate) : ''}</p>
-              </div>
-              <Badge variant="outline" className="border-orange-600 text-orange-600">
+            <Box key={item.id} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 1, bgcolor: rowBg, borderRadius: 1 }}>
+              <Box>
+                <Typography sx={{ fontWeight: 600 }}>{item.name}</Typography>
+                <Typography variant="body2" color="text.secondary">{t('dashboard.bestBefore')}{item.expiryDate ? formatDate(item.expiryDate) : ''}</Typography>
+              </Box>
+              <Badge variant="outline" style={{ borderColor: '#ea580c', color: '#ea580c' }}>
                 {t('dashboard.expiringBadge')}
               </Badge>
-            </div>
+            </Box>
           ))}
-        </div>
+        </Box>
       </CardContent>
     </Card>
   );

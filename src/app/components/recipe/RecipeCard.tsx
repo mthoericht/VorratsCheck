@@ -3,9 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { ChefHat, Edit, Trash2 } from '@/app/lib/icons';
+import { Box, LinearProgress, Typography } from '@mui/material';
 import {
   formatIngredient,
-  getDifficultyColor,
   type RecipeWithMatch,
 } from '../../lib/recipe';
 import { useTranslation } from '../../lib/i18n';
@@ -25,24 +25,48 @@ export function RecipeCard({
 }: RecipeCardProps) 
 {
   const { t } = useTranslation();
+  const difficultyStyle = (() =>
+  {
+    switch (recipe.difficulty)
+    {
+      case 'easy':
+        return { backgroundColor: '#dcfce7', color: '#166534', borderColor: '#86efac' };
+      case 'medium':
+        return { backgroundColor: '#fef3c7', color: '#92400e', borderColor: '#fcd34d' };
+      case 'hard':
+        return { backgroundColor: '#fee2e2', color: '#991b1b', borderColor: '#fca5a5' };
+      default:
+        return { backgroundColor: '#f3f4f6', color: '#374151', borderColor: '#d1d5db' };
+    }
+  })();
+  const availabilityStyle = recipe.matchPercentage === 100
+    ? { backgroundColor: '#16a34a', color: '#ffffff', borderColor: '#16a34a' }
+    : recipe.matchPercentage > 0
+      ? { backgroundColor: '#ca8a04', color: '#ffffff', borderColor: '#ca8a04' }
+      : { backgroundColor: '#4b5563', color: '#ffffff', borderColor: '#4b5563' };
+  const progressColor = recipe.matchPercentage === 100 ? '#16a34a' : recipe.matchPercentage > 0 ? '#ca8a04' : '#9ca3af';
 
   return (
     <Card 
       className="cursor-pointer hover:shadow-lg transition-shadow group"
+      style={{ height: '100%' }}
+      sx={{ border: '1px solid', borderColor: 'divider' }}
       onClick={onClick}
     >
       <CardHeader>
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <ChefHat className="w-5 h-5 text-emerald-600" />
-              {recipe.name}
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <CardTitle>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <ChefHat className="w-5 h-5" style={{ color: '#059669' }} />
+                {recipe.name}
+              </Box>
             </CardTitle>
             <CardDescription>
               {t('recipes.servingsMinutes', { servings: recipe.servings, time: recipe.cookingTime })}
             </CardDescription>
-          </div>
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          </Box>
+          <Box sx={{ display: 'flex', gap: 0.5 }}>
             <Button
               variant="ghost"
               size="sm"
@@ -67,56 +91,49 @@ export function RecipeCard({
             >
               <Trash2 className="w-4 h-4" aria-hidden={true} />
             </Button>
-          </div>
-        </div>
+          </Box>
+        </Box>
       </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="flex gap-2 flex-wrap">
-          <Badge className={getDifficultyColor(recipe.difficulty)}>
-            {t(`difficulties.${recipe.difficulty}`)}
-          </Badge>
-          <Badge 
-            className={
-              recipe.matchPercentage === 100 
-                ? 'bg-green-600 text-white' 
-                : recipe.matchPercentage > 0 
-                  ? 'bg-yellow-600 text-white' 
-                  : 'bg-gray-600 text-white'
-            }
-          >
-            {t('recipes.availableLower', { percent: Math.round(recipe.matchPercentage) })}
-          </Badge>
-        </div>
-        <div className="space-y-1">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">{t('recipes.ingredientsCount')}</span>
-            <span className="font-medium">
-              {recipe.availableIngredients?.length || 0} / {recipe.totalIngredientsCount ?? recipe.ingredients.length}
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className={`h-2 rounded-full transition-all ${
-                recipe.matchPercentage === 100 
-                  ? 'bg-green-600' 
-                  : recipe.matchPercentage > 0 
-                    ? 'bg-yellow-600' 
-                    : 'bg-gray-400'
-              }`}
-              style={{ width: `${recipe.matchPercentage}%` }}
+      <CardContent style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            <Badge style={difficultyStyle}>
+              {t(`difficulties.${recipe.difficulty}`)}
+            </Badge>
+            <Badge style={availabilityStyle}>
+              {t('recipes.availableLower', { percent: Math.round(recipe.matchPercentage) })}
+            </Badge>
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography variant="body2" color="text.secondary">{t('recipes.ingredientsCount')}</Typography>
+              <Typography sx={{ fontWeight: 600 }}>
+                {recipe.availableIngredients?.length || 0} / {recipe.totalIngredientsCount ?? recipe.ingredients.length}
+              </Typography>
+            </Box>
+            <LinearProgress
+              variant="determinate"
+              value={Math.max(0, Math.min(100, recipe.matchPercentage))}
+              aria-label={t('recipes.availableLower', { percent: Math.round(recipe.matchPercentage) })}
+              sx={{
+                height: 8,
+                borderRadius: 999,
+                backgroundColor: '#e5e7eb',
+                '& .MuiLinearProgress-bar': { backgroundColor: progressColor },
+              }}
             />
-          </div>
-        </div>
-        {recipe.missingIngredients && recipe.missingIngredients.length > 0 && (
-          <div className="text-sm text-gray-600">
-            {t('recipes.missing')}{recipe.missingIngredients.slice(0, 2).map(formatIngredient).join(', ')}
-            {recipe.missingIngredients.length > 2 && ` +${recipe.missingIngredients.length - 2}`}
-          </div>
-        )}
-        <Button className="w-full gap-2" variant="outline">
-          <ChefHat className="w-4 h-4" />
-          {t('recipes.viewRecipe')}
-        </Button>
+          </Box>
+          {recipe.missingIngredients && recipe.missingIngredients.length > 0 && (
+            <Typography variant="body2" color="text.secondary">
+              {t('recipes.missing')}{recipe.missingIngredients.slice(0, 2).map(formatIngredient).join(', ')}
+              {recipe.missingIngredients.length > 2 && ` +${recipe.missingIngredients.length - 2}`}
+            </Typography>
+          )}
+          <Button variant="outline" sx={{ mt: 'auto', width: '100%', gap: 1 }}>
+            <ChefHat className="w-4 h-4" />
+            {t('recipes.viewRecipe')}
+          </Button>
+        </Box>
       </CardContent>
     </Card>
   );

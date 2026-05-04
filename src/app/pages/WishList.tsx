@@ -1,4 +1,5 @@
 import { Button } from '../components/ui/button';
+import { Box, Stack, Typography } from '@mui/material';
 import { Plus } from '@/app/lib/icons';
 import {
   WishlistItemDialog,
@@ -30,17 +31,29 @@ export function WishList()
   } = useWishlistPage();
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('wishlist.title')}</h1>
-          <p className="text-gray-600 mt-1">{t('wishlist.subtitle')}</p>
-        </div>
+    <Stack spacing={3}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: { xs: 'flex-start', md: 'center' },
+          justifyContent: 'space-between',
+          gap: 2,
+        }}
+      >
+        <Box>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
+            {t('wishlist.title')}
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
+            {t('wishlist.subtitle')}
+          </Typography>
+        </Box>
         <Button className="gap-2" onClick={openAdd}>
           <Plus className="w-4 h-4" />
           {t('wishlist.addItem')}
         </Button>
-      </div>
+      </Box>
 
       <StoreErrorAlert error={wishlistError} />
 
@@ -67,6 +80,6 @@ export function WishList()
       ))}
 
       {wishList.length === 0 && <WishlistEmptyState onAddClick={openAdd} />}
-    </div>
+    </Stack>
   );
 }

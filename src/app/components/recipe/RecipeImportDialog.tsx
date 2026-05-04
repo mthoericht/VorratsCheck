@@ -9,6 +9,7 @@ import { importRecipe } from '../../lib/api/recipes';
 import { useTranslation } from '../../lib/i18n';
 import { isApiError, getErrorMessage } from '../../lib/api/errors';
 import type { ImportedRecipe } from '../../lib/api/recipes';
+import { Stack, Typography } from '@mui/material';
 
 interface RecipeImportDialogProps {
   trigger: React.ReactNode;
@@ -72,7 +73,7 @@ export function RecipeImportDialog({ trigger, onImported }: RecipeImportDialogPr
           <DialogTitle>{t('recipes.importTitle')}</DialogTitle>
           <DialogDescription>{t('recipes.importHelp')}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <Stack component="form" onSubmit={handleSubmit} spacing={2}>
           <div>
             <Label htmlFor="import-url">{t('recipes.importUrlLabel')}</Label>
             <Input
@@ -85,12 +86,12 @@ export function RecipeImportDialog({ trigger, onImported }: RecipeImportDialogPr
               required
               disabled={loading}
             />
-            <p id="recipe-import-help" className="text-sm text-gray-500 mt-1">
+            <Typography id="recipe-import-help" variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               {t('recipes.importHelp')}
-            </p>
+            </Typography>
           </div>
           {error && (
-            <p className="text-sm text-red-600" role="alert">{error}</p>
+            <Typography variant="body2" className="text-red-600" role="alert">{error}</Typography>
           )}
           <div className="flex gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setOpen(false)} className="flex-1" disabled={loading}>
@@ -101,7 +102,7 @@ export function RecipeImportDialog({ trigger, onImported }: RecipeImportDialogPr
               {loading ? t('recipes.importing') : t('recipes.importButton')}
             </Button>
           </div>
-        </form>
+        </Stack>
       </DialogContent>
     </Dialog>
   );

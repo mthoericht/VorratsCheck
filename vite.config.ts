@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import path from 'path';
 import basicSsl from '@vitejs/plugin-basic-ssl';
-import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
@@ -9,10 +8,11 @@ export default defineConfig({
   plugins: [
     basicSsl(),
     react(),
-    tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      devOptions: { enabled: true },
+      // Keep dev SW disabled to avoid HTTPS/certificate issues in local dev.
+      // PWA behavior remains active in production builds.
+      devOptions: { enabled: false },
       manifest: {
         name: 'VorratsCheck',
         short_name: 'VorratsCheck',

@@ -3,6 +3,7 @@ import { ThemeProvider } from 'next-themes';
 import { MemoryRouter } from 'react-router';
 import React from 'react';
 import { useSettingsStore } from '../src/app/stores/settingsStore';
+import { MuiThemeBridge } from '../src/app/components/MuiThemeBridge';
 import '../src/styles/index.css';
 
 const preview: Preview = {
@@ -59,13 +60,27 @@ const preview: Preview = {
       const locale = (context.parameters.locale as 'de' | 'en' | undefined) ?? (context.globals?.locale as 'de' | 'en') ?? 'de';
       useSettingsStore.getState().setLocale(locale);
       const initialEntries = context.parameters.router?.initialEntries as string[] | undefined;
-      return (
-        <MemoryRouter initialEntries={initialEntries}>
-          <ThemeProvider attribute="class" defaultTheme="light" storageKey="vorratscheck-theme" enableSystem>
+      /** Story uses createMemoryRouter + RouterProvider (e.g. errorElement); skip outer MemoryRouter. */
+      const storyProvidesRouter = context.parameters.reactRouter?.standalone === true;
+
+      const themed = (
+        <ThemeProvider attribute="class" defaultTheme="light" storageKey="vorratscheck-theme" enableSystem>
+          <MuiThemeBridge>
             <div className="min-h-[200px] p-4" role="region" aria-label="Story preview">
               <Story />
             </div>
-          </ThemeProvider>
+          </MuiThemeBridge>
+        </ThemeProvider>
+      );
+
+      if (storyProvidesRouter) 
+      {
+        return themed;
+      }
+
+      return (
+        <MemoryRouter initialEntries={initialEntries}>
+          {themed}
         </MemoryRouter>
       );
     },

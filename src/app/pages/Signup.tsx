@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../stores/authStore';
-import { useNavigate, Link } from 'react-router';
+import { useNavigate, Link as RouterLink } from 'react-router';
+import { Box, Stack, Typography, Link as MuiLink } from '@mui/material';
 import { Card, CardContent, CardDescription, CardHeader } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -69,17 +70,43 @@ export function Signup()
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center p-4">
-      <main className="w-full max-w-md">
+    <Box
+      component="main"
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        px: 2,
+        py: 3,
+        background: (theme) =>
+          theme.palette.mode === 'dark'
+            ? 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(20,184,166,0.08))'
+            : 'linear-gradient(135deg, rgba(16,185,129,0.10), rgba(20,184,166,0.10))',
+      }}
+    >
+      <Box sx={{ width: '100%', maxWidth: 460 }}>
         <Card className="w-full">
-          <CardHeader className="space-y-1 text-center">
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-emerald-600 rounded-full flex items-center justify-center">
-                <Refrigerator className="w-10 h-10 text-white" />
-              </div>
-            </div>
-            <h1 className="text-2xl font-semibold leading-none">VorratsCheck</h1>
-            <CardDescription>{t('auth.signupSubtitle')}</CardDescription>
+          <CardHeader className="text-center">
+            <Stack spacing={1} sx={{ alignItems: 'center' }}>
+              <Box
+                sx={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: '50%',
+                  bgcolor: 'primary.main',
+                  color: 'primary.contrastText',
+                  display: 'grid',
+                  placeItems: 'center',
+                }}
+              >
+                <Refrigerator className="w-10 h-10" />
+              </Box>
+              <Typography component="h1" variant="h5" sx={{ fontWeight: 600 }}>
+                VorratsCheck
+              </Typography>
+              <CardDescription>{t('auth.signupSubtitle')}</CardDescription>
+            </Stack>
           </CardHeader>
           <CardContent>
             <Alert className="mb-4 bg-yellow-50 border-yellow-200">
@@ -96,7 +123,7 @@ export function Signup()
               </AlertDescription>
             </Alert>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <Stack component="form" onSubmit={handleSubmit} spacing={2}>
               {error && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
@@ -175,16 +202,16 @@ export function Signup()
                 {isLoading ? t('auth.registering') : t('auth.register')}
               </Button>
 
-              <div className="text-center text-sm">
-                <span className="text-gray-600">{t('auth.hasAccount')} </span>
-                <Link to="/login" className="text-emerald-600 hover:underline">
+              <Typography variant="body2" align="center" color="text.secondary">
+                {t('auth.hasAccount')}{' '}
+                <MuiLink component={RouterLink} to="/login" underline="hover">
                   {t('auth.loginNow')}
-                </Link>
-              </div>
-            </form>
+                </MuiLink>
+              </Typography>
+            </Stack>
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </Box>
+    </Box>
   );
 }

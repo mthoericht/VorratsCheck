@@ -10,6 +10,7 @@ import {
 import { Sun, Moon, Palette, Monitor } from '@/app/lib/icons';
 import { useTranslation } from '../../lib/i18n';
 import { useSettingsStore, type Theme } from '../../stores/settingsStore';
+import { Stack, Typography } from '@mui/material';
 
 export function SettingsAppearance()
 {
@@ -24,12 +25,14 @@ export function SettingsAppearance()
   ] as const;
 
   return (
-    <div className="space-y-6">
+    <Stack spacing={3}>
       <div>
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{t('settings.appearanceTitle')}</h3>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
+        <Typography variant="h6" component="h3" sx={{ fontWeight: 600 }}>
+          {t('settings.appearanceTitle')}
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
           {t('settings.appearanceDescription')}
-        </p>
+        </Typography>
       </div>
 
       <Card>
@@ -70,6 +73,6 @@ export function SettingsAppearance()
           </div>
         </CardContent>
       </Card>
-    </div>
+    </Stack>
   );
 }

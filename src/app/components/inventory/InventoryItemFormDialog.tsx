@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Scan } from '@/app/lib/icons';
 import { Link } from 'react-router';
 import { Quantity } from '../Quantity';
+import { Box, Stack, Typography } from '@mui/material';
 import type { InventoryFormData } from '../../hooks/useInventoryPage';
 import type { Category } from '../../stores/categoriesStore';
 import { INVENTORY_LOCATION_OPTIONS } from '../../lib/inventory';
@@ -45,7 +46,7 @@ export function InventoryItemFormDialog({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{t('inventory.subtitle')}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <Stack component="form" onSubmit={onSubmit} spacing={2}>
           <div>
             <Label htmlFor={`${idPrefix}-name`}>{t('inventory.nameLabel')}</Label>
             <Input
@@ -69,9 +70,12 @@ export function InventoryItemFormDialog({
               </SelectTrigger>
               <SelectContent>
                 {categories.length === 0 ? (
-                  <div className="px-2 py-4 text-sm text-muted-foreground text-center">
-                    {t('inventory.noCategories')} <Link to="/categories" className="text-primary underline">{t('inventory.createCategories')}</Link>
-                  </div>
+                  <Box sx={{ px: 1, py: 2, textAlign: 'center' }}>
+                    <Typography variant="body2" color="text.secondary">
+                      {t('inventory.noCategories')}{' '}
+                      <Link to="/categories" className="text-primary underline">{t('inventory.createCategories')}</Link>
+                    </Typography>
+                  </Box>
                 ) : (
                   categories.map(c => (
                     <SelectItem key={c.id} value={c.name}>
@@ -156,7 +160,7 @@ export function InventoryItemFormDialog({
               {submitLabel}
             </Button>
           </div>
-        </form>
+        </Stack>
       </DialogContent>
     </Dialog>
   );

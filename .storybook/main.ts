@@ -15,7 +15,6 @@ const config: StorybookConfig = {
   },
   async viteFinal(config) 
   {
-    const tailwindcss = (await import('@tailwindcss/vite')).default;
     return mergeConfig(config, {
       resolve: {
         alias: {
@@ -23,7 +22,6 @@ const config: StorybookConfig = {
           '@shared': path.resolve(__dirname, '../shared'),
         },
       },
-      plugins: [tailwindcss()],
     });
   },
 };

@@ -1,5 +1,6 @@
 import { useDealsPage } from '../hooks/useDealsPage';
 import { DealsStats, DealsFilterBar, DealCard, DealsEmptyState } from '../components/deals';
+import { Box, Stack, Typography } from '@mui/material';
 import { useTranslation } from '../lib/i18n';
 import { StoreErrorAlert } from '../components/ui/store-error-alert';
 
@@ -21,11 +22,15 @@ export function Deals()
   const { t } = useTranslation();
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t('deals.title')}</h1>
-        <p className="text-gray-600 mt-1">{t('deals.subtitle')}</p>
-      </div>
+    <Stack spacing={3}>
+      <Box>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
+          {t('deals.title')}
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
+          {t('deals.subtitle')}
+        </Typography>
+      </Box>
 
       <StoreErrorAlert error={dealsError} />
 
@@ -44,7 +49,17 @@ export function Deals()
       />
 
       {/* Deals Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 2,
+          gridTemplateColumns: {
+            xs: '1fr',
+            md: 'repeat(2, minmax(0, 1fr))',
+            lg: 'repeat(3, minmax(0, 1fr))',
+          },
+        }}
+      >
         {deals.map(deal => (
           <DealCard
             key={deal.id}
@@ -53,9 +68,9 @@ export function Deals()
             isWishList={isWishListDeal(deal)}
           />
         ))}
-      </div>
+      </Box>
 
       {deals.length === 0 && <DealsEmptyState />}
-    </div>
+    </Stack>
   );
 }

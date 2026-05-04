@@ -11,7 +11,7 @@ export default defineConfig({
     globals: true,
     pool: 'forks',
     poolOptions: { forks: { singleFork: true } },
-    setupFiles: ['./test/setup.ts', './test/integration/api/setup-db.ts', './test/integration/api/setup-server.ts'],
+    setupFiles: ['./test/setup.tsx', './test/integration/api/setup-db.ts', './test/integration/api/setup-server.ts'],
     include: ['test/integration/api/**/*.test.ts'],
   },
   resolve: {

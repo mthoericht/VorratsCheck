@@ -27,7 +27,9 @@ const meta: Meta<typeof RouteErrorBoundary> = {
   title: 'Components/RouteErrorBoundary',
   tags: ['autodocs'],
   parameters: {
-    reactRouter: { routePath: '/' },
+    layout: 'fullscreen',
+    /** Avoid nested Router: preview MemoryRouter is skipped; this story uses RouterProvider. */
+    reactRouter: { standalone: true, routePath: '/' },
   },
 };
 

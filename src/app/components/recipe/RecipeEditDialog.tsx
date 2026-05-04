@@ -10,6 +10,7 @@ import { Plus, Trash2 } from '@/app/lib/icons';
 import type { RecipeFormApi } from '../../hooks/useRecipesPage';
 import { DIFFICULTIES, type Difficulty } from '@shared/constants';
 import { useTranslation } from '../../lib/i18n';
+import { Box, Stack, Typography } from '@mui/material';
 
 interface RecipeEditDialogProps {
   form: RecipeFormApi;
@@ -33,7 +34,7 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
           </DialogTitle>
           <DialogDescription>{t('recipes.subtitle')}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={form.handleSubmit} className="space-y-4">
+        <Stack component="form" onSubmit={form.handleSubmit} spacing={2}>
           <div>
             <Label htmlFor="name">{t('recipes.recipeNameLabel')}</Label>
             <Input
@@ -45,8 +46,8 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
-            <div>
+          <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: 'repeat(3, minmax(0, 1fr))' } }}>
+            <Box>
               <Label htmlFor="servings">{t('recipes.servingsLabel')}</Label>
               <Input
                 id="servings"
@@ -57,8 +58,8 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
                 placeholder={t('recipes.servingsPlaceholder')}
                 required
               />
-            </div>
-            <div>
+            </Box>
+            <Box>
               <Label htmlFor="cookingTime">{t('recipes.cookingTimeLabel')}</Label>
               <Input
                 id="cookingTime"
@@ -69,8 +70,8 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
                 placeholder={t('recipes.cookingTimePlaceholder')}
                 required
               />
-            </div>
-            <div>
+            </Box>
+            <Box>
               <Label htmlFor="difficulty">{t('recipes.difficultyLabel')}</Label>
               <Select
                 value={form.formData.difficulty}
@@ -86,11 +87,11 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-          </div>
+            </Box>
+          </Box>
 
-          <div>
-            <div className="flex items-center justify-between mb-2">
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
               <Label>{t('recipes.ingredientsLabel')}</Label>
               <Button
                 type="button"
@@ -105,10 +106,18 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
                 <Plus className="w-4 h-4 mr-1" />
                 {t('recipes.addIngredient')}
               </Button>
-            </div>
-            <div className="space-y-3">
+            </Box>
+            <Stack spacing={1.5}>
               {form.formData.ingredients.map((ing, index) => (
-                <div key={index} className="flex gap-2 items-center flex-wrap">
+                <Box
+                  key={index}
+                  sx={{
+                    display: 'grid',
+                    gap: 1,
+                    alignItems: 'center',
+                    gridTemplateColumns: { xs: '1fr', md: 'minmax(220px, 1fr) auto auto' },
+                  }}
+                >
                   <Input
                     placeholder={t('recipes.ingredientPlaceholder')}
                     value={ing.name}
@@ -118,7 +127,7 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
                       next[index] = { ...next[index], name: e.target.value };
                       form.setFormData({ ...form.formData, ingredients: next });
                     }}
-                    className="flex-1 min-w-[140px]"
+                    style={{ minWidth: 180 }}
                   />
                   <Quantity
                     quantity={ing.quantity ?? ''}
@@ -147,7 +156,7 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50 shrink-0"
+                    sx={{ color: 'error.main', justifySelf: { md: 'start' } }}
                     onClick={() => 
                     {
                       const next = form.formData.ingredients.filter((_, i) => i !== index);
@@ -159,13 +168,13 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
-                </div>
+                </Box>
               ))}
-            </div>
-            <p className="text-sm text-gray-500 mt-1">
+            </Stack>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               {t('recipes.ingredientHelp')}
-            </p>
-          </div>
+            </Typography>
+          </Box>
 
           <div>
             <Label htmlFor="instructions">{t('recipes.instructionsLabel')}</Label>
@@ -177,20 +186,20 @@ export function RecipeEditDialog({ form, trigger }: RecipeEditDialogProps)
               rows={8}
               required
             />
-            <p className="text-sm text-gray-500 mt-1">
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               {t('recipes.instructionsHelp')}
-            </p>
+            </Typography>
           </div>
 
-          <div className="flex gap-2 pt-4">
+          <Box sx={{ display: 'flex', gap: 1, pt: 2 }}>
             <Button type="button" variant="outline" onClick={form.close} className="flex-1">
               {t('common.cancel')}
             </Button>
             <Button type="submit" className="flex-1">
               {form.editingRecipe ? t('recipes.update') : t('common.add')}
             </Button>
-          </div>
-        </form>
+          </Box>
+        </Stack>
       </DialogContent>
     </Dialog>
   );

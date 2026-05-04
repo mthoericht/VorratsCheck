@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Quantity } from '../Quantity';
 import type { Category } from '../../stores/categoriesStore';
 import { useTranslation } from '../../lib/i18n';
+import { Stack, Typography } from '@mui/material';
 
 export interface MustHaveFormData {
   name: string;
@@ -42,7 +43,7 @@ export function MustHaveItemDialog({
           <DialogTitle>{editingId ? t('mustHave.editTitle') : t('mustHave.addTitle')}</DialogTitle>
           <DialogDescription>{t('mustHave.subtitle')}</DialogDescription>
         </DialogHeader>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <Stack component="form" onSubmit={onSubmit} spacing={2}>
           <div>
             <Label htmlFor="name">{t('common.name')}</Label>
             <Input
@@ -53,9 +54,9 @@ export function MustHaveItemDialog({
               aria-describedby="musthave-name-help"
               required
             />
-            <p id="musthave-name-help" className="text-sm text-gray-500 mt-1">
+            <Typography id="musthave-name-help" variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               {t('mustHave.nameHelp')}
-            </p>
+            </Typography>
           </div>
           <div>
             <Label htmlFor="category">{t('common.category')}</Label>
@@ -75,9 +76,9 @@ export function MustHaveItemDialog({
                 ))}
               </SelectContent>
             </Select>
-            <p id="musthave-category-help" className="text-sm text-gray-500 mt-1">
+            <Typography id="musthave-category-help" variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               {t('mustHave.categoryHelp')}
-            </p>
+            </Typography>
           </div>
           <Quantity
             label={t('mustHave.minQuantityLabel')}
@@ -89,9 +90,9 @@ export function MustHaveItemDialog({
             optional={false}
             idPrefix="musthave"
           />
-          <p className="text-sm text-gray-500 -mt-2">
+          <Typography variant="body2" color="text.secondary" sx={{ mt: -1 }}>
             {t('mustHave.minQuantityHelp')}
-          </p>
+          </Typography>
           <div className="flex gap-2 pt-4">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="flex-1">
               {t('common.cancel')}
@@ -100,7 +101,7 @@ export function MustHaveItemDialog({
               {editingId ? t('common.save') : t('common.add')}
             </Button>
           </div>
-        </form>
+        </Stack>
       </DialogContent>
     </Dialog>
   );

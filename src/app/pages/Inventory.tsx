@@ -1,5 +1,6 @@
 import { useInventoryPage } from '../hooks/useInventoryPage';
 import { Button } from '../components/ui/button';
+import { Box, Stack, Typography } from '@mui/material';
 import { Plus, Scan } from '@/app/lib/icons';
 import { BarcodeScanner } from '../components/BarcodeScanner';
 import {
@@ -44,13 +45,25 @@ export function Inventory()
   } = useInventoryPage();
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('inventory.title')}</h1>
-          <p className="text-gray-600 mt-1">{t('inventory.itemCount', { count: inventory.length })}</p>
-        </div>
-        <div className="flex gap-2">
+    <Stack spacing={3}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: { xs: 'flex-start', md: 'center' },
+          justifyContent: 'space-between',
+          gap: 2,
+        }}
+      >
+        <Box>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
+            {t('inventory.title')}
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
+            {t('inventory.itemCount', { count: inventory.length })}
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 1, width: { xs: '100%', sm: 'auto' } }}>
           <Button onClick={() => setShowScanner(true)} variant="outline" className="gap-2">
             <Scan className="w-4 h-4" />
             {t('inventory.scanBarcode')}
@@ -59,8 +72,8 @@ export function Inventory()
             <Plus className="w-4 h-4" />
             {t('inventory.addItem')}
           </Button>
-        </div>
-      </div>
+        </Box>
+      </Box>
 
       <StoreErrorAlert error={inventoryError} />
 
@@ -99,7 +112,17 @@ export function Inventory()
         onCategoryChange={setFilterCategory}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 2,
+          gridTemplateColumns: {
+            xs: '1fr',
+            md: 'repeat(2, minmax(0, 1fr))',
+            lg: 'repeat(3, minmax(0, 1fr))',
+          },
+        }}
+      >
         {filteredInventory.map(item => (
           <InventoryItemCard
             key={item.id}
@@ -108,7 +131,7 @@ export function Inventory()
             onDelete={handleDelete}
           />
         ))}
-      </div>
+      </Box>
 
       {filteredInventory.length === 0 && (
         <InventoryEmptyState onAddClick={openAdd} />
@@ -120,6 +143,6 @@ export function Inventory()
           onClose={() => setShowScanner(false)}
         />
       )}
-    </div>
+    </Stack>
   );
 }

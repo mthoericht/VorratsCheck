@@ -38,3 +38,15 @@ export const Password: Story = {
 export const Disabled: Story = {
   args: { disabled: true, value: 'Deaktiviert', 'aria-label': 'Deaktiviertes Eingabefeld' },
 };
+
+export const DarkMode: Story = {
+  render: (args) => (
+    <div className="dark rounded-md bg-background p-4">
+      <div className="grid w-full max-w-sm gap-2">
+        <Label htmlFor="input-dark">Name</Label>
+        <Input id="input-dark" {...args} />
+      </div>
+    </div>
+  ),
+  args: { placeholder: 'Name eingeben' },
+};

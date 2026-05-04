@@ -1,5 +1,8 @@
-import { StatCard } from '../ui/stat-card';
 import { useTranslation } from '../../lib/i18n';
+import { Box, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { Card } from '../ui/card';
+import { getAppPalette } from '../../lib/muiTheme';
 
 interface MustHaveStatsProps {
   totalCount: number;
@@ -10,19 +13,51 @@ interface MustHaveStatsProps {
 export function MustHaveStats({ totalCount, sufficientCount, lowCount }: MustHaveStatsProps) 
 {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const appPalette = getAppPalette(theme);
+  const successPalette = appPalette.success;
+  const dangerPalette = appPalette.danger;
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <StatCard title={t('mustHave.totalItems')} value={totalCount} />
-      <StatCard
-        title={t('mustHave.sufficient')}
-        value={sufficientCount}
-        valueClassName="text-2xl font-bold text-green-600"
-      />
-      <StatCard
-        title={t('mustHave.restock')}
-        value={lowCount}
-        valueClassName="text-2xl font-bold text-red-600"
-      />
-    </div>
+    <Box
+      sx={{
+        display: 'grid',
+        gap: 2,
+        gridTemplateColumns: {
+          xs: '1fr',
+          md: 'repeat(3, minmax(0, 1fr))',
+        },
+      }}
+    >
+      <Card>
+        <Box sx={{ p: 2.5 }}>
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            {t('mustHave.totalItems')}
+          </Typography>
+          <Typography component="div" variant="h4" sx={{ fontWeight: 700 }}>
+            {totalCount}
+          </Typography>
+        </Box>
+      </Card>
+      <Card sx={{ borderColor: successPalette.border, backgroundColor: successPalette.bg }}>
+        <Box sx={{ p: 2.5 }}>
+          <Typography variant="body2" sx={{ fontWeight: 600, color: successPalette.text }}>
+            {t('mustHave.sufficient')}
+          </Typography>
+          <Typography component="div" variant="h4" sx={{ fontWeight: 700, color: successPalette.value }}>
+            {sufficientCount}
+          </Typography>
+        </Box>
+      </Card>
+      <Card sx={{ borderColor: dangerPalette.border, backgroundColor: dangerPalette.bg }}>
+        <Box sx={{ p: 2.5 }}>
+          <Typography variant="body2" sx={{ fontWeight: 600, color: dangerPalette.text }}>
+            {t('mustHave.restock')}
+          </Typography>
+          <Typography component="div" variant="h4" sx={{ fontWeight: 700, color: dangerPalette.value }}>
+            {lowCount}
+          </Typography>
+        </Box>
+      </Card>
+    </Box>
   );
 }

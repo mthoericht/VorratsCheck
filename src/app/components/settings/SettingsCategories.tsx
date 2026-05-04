@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Plus, Trash2, FolderOpen } from '@/app/lib/icons';
 import { toast } from 'sonner';
 import { useTranslation } from '../../lib/i18n';
+import { Box, Stack, Typography } from '@mui/material';
 
 export function SettingsCategories()
 {
@@ -54,14 +55,16 @@ export function SettingsCategories()
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-xl font-semibold text-gray-900">{t('settings.categories')}</h3>
-          <p className="text-gray-600 mt-1">
+    <Stack spacing={3}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+        <Box>
+          <Typography variant="h6" component="h3" sx={{ fontWeight: 600 }}>
+            {t('settings.categories')}
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
             {t('settings.categoriesDescription')}
-          </p>
-        </div>
+          </Typography>
+        </Box>
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogTrigger asChild>
             <Button className="gap-2">
@@ -74,7 +77,7 @@ export function SettingsCategories()
               <DialogTitle>{t('settings.newCategory')}</DialogTitle>
               <DialogDescription>{t('settings.newCategoryDescription')}</DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <Stack component="form" onSubmit={handleSubmit} spacing={2}>
               <div>
                 <Label htmlFor="categoryName">{t('common.name')}</Label>
                 <Input
@@ -93,10 +96,10 @@ export function SettingsCategories()
                   {t('common.add')}
                 </Button>
               </div>
-            </form>
+            </Stack>
           </DialogContent>
         </Dialog>
-      </div>
+      </Box>
 
       <Card>
         <CardHeader>
@@ -128,12 +131,12 @@ export function SettingsCategories()
             ))}
           </ul>
           {categories.length === 0 && (
-            <p className="text-muted-foreground text-center py-8">
+            <Typography color="text.secondary" align="center" sx={{ py: 4 }}>
               {t('settings.noCategoriesEmpty')}
-            </p>
+            </Typography>
           )}
         </CardContent>
       </Card>
-    </div>
+    </Stack>
   );
 }

@@ -56,3 +56,18 @@ export const Large: Story = {
 export const Disabled: Story = {
   args: { disabled: true, children: 'Deaktiviert' },
 };
+
+export const DarkModeSet: Story = {
+  render: () => (
+    <div className="dark rounded-md bg-background p-4">
+      <div className="flex flex-wrap gap-3">
+        <Button>Default</Button>
+        <Button variant="secondary">Sekundär</Button>
+        <Button variant="outline">Outline</Button>
+        <Button variant="destructive">Löschen</Button>
+        <Button variant="ghost">Ghost</Button>
+        <Button variant="link">Link</Button>
+      </div>
+    </div>
+  ),
+};

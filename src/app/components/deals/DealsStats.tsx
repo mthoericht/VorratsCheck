@@ -1,5 +1,8 @@
-import { StatCard } from '../ui/stat-card';
 import { useTranslation } from '../../lib/i18n';
+import { Box, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { Card } from '../ui/card';
+import { getAppPalette } from '../../lib/muiTheme';
 
 interface DealsStatsProps {
   totalCount: number;
@@ -11,31 +14,47 @@ interface DealsStatsProps {
 export function DealsStats({ totalCount, mustHaveCount, wishListCount, avgDiscount }: DealsStatsProps) 
 {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const app = getAppPalette(theme);
+  const success = app.success;
+  const accent = app.accent;
+  const info = app.info;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <StatCard title={t('deals.allDeals')} value={totalCount} />
-      <StatCard
-        title={t('deals.mustHaveDeals')}
-        value={mustHaveCount}
-        className="border-emerald-200"
-        titleClassName="text-sm font-medium text-emerald-800"
-        valueClassName="text-2xl font-bold text-emerald-600"
-      />
-      <StatCard
-        title={t('deals.wishlistDeals')}
-        value={wishListCount}
-        className="border-pink-200"
-        titleClassName="text-sm font-medium text-pink-800"
-        valueClassName="text-2xl font-bold text-pink-600"
-      />
-      <StatCard
-        title={t('deals.avgDiscount')}
-        value={totalCount ? `${avgDiscount}%` : '0%'}
-        className="border-blue-200"
-        titleClassName="text-sm font-medium text-blue-800"
-        valueClassName="text-2xl font-bold text-blue-600"
-      />
-    </div>
+    <Box
+      sx={{
+        display: 'grid',
+        gap: 2,
+        gridTemplateColumns: {
+          xs: '1fr',
+          md: 'repeat(4, minmax(0, 1fr))',
+        },
+      }}
+    >
+      <Card>
+        <Box sx={{ p: 2.5 }}>
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>{t('deals.allDeals')}</Typography>
+          <Typography component="div" variant="h4" sx={{ fontWeight: 700 }}>{totalCount}</Typography>
+        </Box>
+      </Card>
+      <Card sx={{ borderColor: success.border, backgroundColor: success.bg }}>
+        <Box sx={{ p: 2.5 }}>
+          <Typography variant="body2" sx={{ fontWeight: 600, color: success.text }}>{t('deals.mustHaveDeals')}</Typography>
+          <Typography component="div" variant="h4" sx={{ fontWeight: 700, color: success.value }}>{mustHaveCount}</Typography>
+        </Box>
+      </Card>
+      <Card sx={{ borderColor: accent.border, backgroundColor: accent.bg }}>
+        <Box sx={{ p: 2.5 }}>
+          <Typography variant="body2" sx={{ fontWeight: 600, color: accent.text }}>{t('deals.wishlistDeals')}</Typography>
+          <Typography component="div" variant="h4" sx={{ fontWeight: 700, color: accent.value }}>{wishListCount}</Typography>
+        </Box>
+      </Card>
+      <Card sx={{ borderColor: info.border, backgroundColor: info.bg }}>
+        <Box sx={{ p: 2.5 }}>
+          <Typography variant="body2" sx={{ fontWeight: 600, color: info.text }}>{t('deals.avgDiscount')}</Typography>
+          <Typography component="div" variant="h4" sx={{ fontWeight: 700, color: info.value }}>{totalCount ? `${avgDiscount}%` : '0%'}</Typography>
+        </Box>
+      </Card>
+    </Box>
   );
 }
